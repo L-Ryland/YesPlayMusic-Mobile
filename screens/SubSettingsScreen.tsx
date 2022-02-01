@@ -1,17 +1,22 @@
 import { StyleSheet } from 'react-native';
+import * as React from 'react';
 
-import EditScreenInfo from '../components/EditScreenInfo';
-import { Text, View } from '../components/Themed';
+import {  View  } from '../components/Themed';
+import { SubSettings } from '../components';
+import { SettingsStackScreenProps } from "../types";
 
-export default function TabTwoScreen() {
+
+
+export function SubSettingsScreen (props: SettingsStackScreenProps<'SubSettingsScreen'>) {
+  console.log(props);
+  
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab Two</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="/screens/TabTwoScreen.tsx" />
+      <SubSettings {...props}/>
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -28,4 +33,6 @@ const styles = StyleSheet.create({
     height: 1,
     width: '80%',
   },
+
 });
+

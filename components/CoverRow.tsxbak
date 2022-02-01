@@ -1,0 +1,43 @@
+import React from "react"
+
+export const CoverRow = () => {
+  return (
+    <><div class="cover-row" style="rowStyles">
+      
+      <div
+        v-for="item in items" />
+      :key="item.id"
+      class="item"
+      :class="{artist: type === 'artist'}"
+      >
+      <Cover 
+        :id="item.id"
+        :image-url="getImageUrl(item)"
+        :type="type"
+        :play-button-size="type === 'artist' ? 26 : playButtonSize"
+      />
+      <div className="text">
+        <div v-if="showPlayCount" className="info">
+          <span className="play-count"
+          ><svg-icon icon-class="play" />{{
+            item.playCount | formatPlayCount
+          }}
+          </span>
+        </div>
+        <div class="title" /> :style="{fontSize: subTextFontSize }">
+        <span v-if="isExplicit(item)" className="explicit-symbol"
+        ><ExplicitSymbol
+         /></span>
+        <span v-if="isPrivacy(item)" class="lock-icon">
+          <svg-icon icon-class="lock" 
+          /></span>
+        <router-link  :to="getTitleLink(item)">{{ item.name }}</router-link>
+    </div>
+    <div v-if="type !== 'artist' && subText !== 'none'" className="info">
+        <span v-html="getSubText(item)"></span>
+      </div>
+      </div>
+    </div>
+  </div> 
+  );
+};
