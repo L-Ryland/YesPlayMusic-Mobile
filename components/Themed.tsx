@@ -3,13 +3,18 @@
  * https://docs.expo.io/guides/color-schemes/
  */
 
-import { Text as DefaultText, View as DefaultView, ScrollView as DefaultScrollView, Image as DefaultImage, Button as DefaultButton} from 'react-native';
-import { SettingsScreen as DefaultSettingsScreen } from 'react-native-settings-screen';
+import {
+  Text as DefaultText,
+  View as DefaultView,
+  ScrollView as DefaultScrollView,
+  Image as DefaultImage,
+  Button as DefaultButton,
+} from "react-native";
+import { SettingsScreen as DefaultSettingsScreen } from "react-native-settings-screen";
+import styled from "styled-components/native";
 
-
-
-import Colors from '../constants/Colors';
-import useColorScheme from '../hooks/useColorScheme';
+import Colors from "../constants/Colors";
+import useColorScheme from "../hooks/useColorScheme";
 
 export function useThemeColor(
   props: { light?: string; dark?: string },
@@ -30,48 +35,74 @@ type ThemeProps = {
   darkColor?: string;
 };
 
-export type TextProps = ThemeProps & DefaultText['props'];
-export type ViewProps = ThemeProps & DefaultView['props'];
-export type ScrollViewProps = ThemeProps & DefaultScrollView['props'];
-export type ImageProps = ThemeProps & DefaultImage['props'];
-export type SettingsScreenProps = ThemeProps & DefaultSettingsScreen['props'] & DefaultScrollView['props'];
-
+export type TextProps = ThemeProps & DefaultText["props"];
+export type ViewProps = ThemeProps & DefaultView["props"];
+export type ScrollViewProps = ThemeProps & DefaultScrollView["props"];
+export type ImageProps = ThemeProps & DefaultImage["props"];
+export type SettingsScreenProps = ThemeProps &
+  DefaultSettingsScreen["props"] &
+  DefaultScrollView["props"];
 
 export function Text(props: TextProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+  const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
 
   return <DefaultText style={[{ color }, style]} {...otherProps} />;
 }
 
 export function View(props: ViewProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
-  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
+  const backgroundColor = useThemeColor(
+    { light: lightColor, dark: darkColor },
+    "background"
+  );
 
   return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />;
 }
 export function ScrollView(props: ScrollViewProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
-  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
+  const backgroundColor = useThemeColor(
+    { light: lightColor, dark: darkColor },
+    "background"
+  );
+  const DefaultScrollView = styled.ScrollView`
+    flex: 1;
+    align-self: stretch;
+    backgroundColor: ${backgroundColor};
+  `;
 
-  return <DefaultScrollView style={[{ backgroundColor }, style]} {...otherProps} />;
+  return (
+    <DefaultScrollView {...otherProps} />
+  );
 }
 
 export function Image(props: ImageProps) {
   const { style, source, lightColor, darkColor, ...otherProps } = props;
-  
-  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
 
-  return <DefaultImage source={source} style={[{ backgroundColor }, style]} {...otherProps}  />;
+  const backgroundColor = useThemeColor(
+    { light: lightColor, dark: darkColor },
+    "background"
+  );
+
+  return (
+    <DefaultImage
+      source={source}
+      style={[{ backgroundColor }, style]}
+      {...otherProps}
+    />
+  );
 }
 
-export function SettingsScreen(props: SettingsScreenProps){
+export function SettingsScreen(props: SettingsScreenProps) {
   let { style, data, lightColor, darkColor, ...otherProps } = props;
-  
-  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
 
-  return <DefaultSettingsScreen data={data} {...otherProps}  />;
+  const backgroundColor = useThemeColor(
+    { light: lightColor, dark: darkColor },
+    "background"
+  );
+
+  return <DefaultSettingsScreen data={data} {...otherProps} />;
 }
-export function Button(props:ThemeProps&DefaultButton['props']){
-  return <DefaultButton {...props}/>
+export function Button(props: ThemeProps & DefaultButton["props"]) {
+  return <DefaultButton {...props} />;
 }

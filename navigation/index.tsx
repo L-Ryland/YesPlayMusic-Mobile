@@ -140,6 +140,9 @@ function SettingsNavigator() {
         <SettingsStack.Screen
           name="SettingsScreen"
           component={SettingsScreen}
+          options={{
+            headerShown: false
+          }}
         />
         <SettingsStack.Screen
           name="LanguageSettings"

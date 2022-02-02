@@ -1,29 +1,30 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from "react-native";
 
-import EditScreenInfo from '../components/EditScreenInfo';
-import { Text, View } from '../components/Themed';
+import EditScreenInfo from "../components/EditScreenInfo";
+import { Text, ScrollView } from "../components/Themed";
+import ConnectBackend from "../components/ConnectBackend";
 
-export const LibraryScreen = function() {
+export const LibraryScreen = function () {
   return (
-    <View >
-    <Text style={styles.title}> Library </Text>
-  </View>
+    <ScrollView>
+      <Text style={styles.title}> Library </Text>
+      <ConnectBackend />
+    </ScrollView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignSelf: "stretch",
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   separator: {
     marginVertical: 30,
     height: 1,
-    width: '80%',
+    width: "80%",
   },
 });

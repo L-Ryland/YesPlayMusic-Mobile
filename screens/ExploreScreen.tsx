@@ -6,22 +6,27 @@ import { Text, View } from '../components/Themed';
 export function ExploreScreen () {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Explore</Text>
+      {/* <Text style={styles.title}>Explore</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="/screens/Explore.tsx" />
+      <EditScreenInfo path="/screens/Explore.tsx" /> */}
+      <Text style={styles.title}>Explore</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    flex: 2,
+    // alignItems: 'center',
+    // justifyContent: 'center',
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+  title:  {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    marginBottom: 20,
+    fontSize: 40,
+    fontWeight: '700',
   },
   separator: {
     marginVertical: 30,
