@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-import EditScreenInfo from "../components/EditScreenInfo";
+// import EditScreenInfo from "../components/EditScreenInfo";
 import { Text, ScrollView } from "../components/Themed";
 import ConnectBackend from "../components/ConnectBackend";
 
