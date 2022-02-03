@@ -1,14 +1,23 @@
 import React, { Component } from 'react';
 import { Text, Button } from "react-native";
-import { banner } from '../NeteaseCloudMusicApi'
+import nodejs from 'nodejs-mobile-react-native';
 
 
 
-export default async() => {
-  const result = await banner({ type: 0 }).then((res) => {
-    console.log(res)
-  })
-  console.log(result);
-  
-  return <Text>test</Text>;
+
+export default class ConnectBackend extends Component {
+  componentWillMount()
+  {
+    nodejs.start("NeteaseCloudMusicApi/app.js");
+    nodejs.channel.addListener(
+      "message",
+      (msg) => {
+        console.log("From node: " + msg);
+      },
+      this
+    );
+  }
+  render() {
+    return <Text>Connected to Backend</Text>;
+  }
 }
