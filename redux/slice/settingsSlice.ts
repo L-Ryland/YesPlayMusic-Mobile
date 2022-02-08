@@ -18,21 +18,55 @@ interface GeneralState {
   showLyricsTranslation: showLyricsTranslationProp,
   lyricsBackground: lyricsBackgroundProp,
   lyricFontSize: lyricFontSizeProp,
+  outputDevice: String,
+  showPlaylistsByAppleMusic: Boolean,
+  enableUnblockNeteaseMusic: Boolean 
+  automaticallyCacheSongs: Boolean,
+  cacheLimit: Number,
+  enableReversedMode: Boolean,
+  nyancatStyle: Boolean,
+  enableDiscordRichPresence: Boolean,
+  enableGlobalShortcut: Boolean
+  subTitleDefault: Boolean
+  enabledPlaylistCategories: Boolean,
+  showLibraryDefault: Boolean,
+  proxyConfig: {
+    protocol: String,
+    server: String, 
+    port: Number
+  }
 }
 
 // Define the initial state using that type
 const initialState: GeneralState = {
-  lang: 'en',
-  appearance: 'auto',
-  musicLanguage: 'all',
-  musicQuality: 128000,
-  showLyricsTranslation: true,
-  lyricsBackground: 'off',
-  lyricFontSize: 'medium'
+    lang: 'en',
+    musicLanguage: 'all',
+    appearance: 'auto',
+    musicQuality: 320000,
+    lyricFontSize: 'medium',
+    outputDevice: 'default',
+    showPlaylistsByAppleMusic: true,
+    enableUnblockNeteaseMusic: true,
+    automaticallyCacheSongs: true,
+    cacheLimit: 8192,
+    enableReversedMode: false,
+    nyancatStyle: false,
+    showLyricsTranslation: true,
+    lyricsBackground: 'on',
+    enableDiscordRichPresence: false,
+    enableGlobalShortcut: true,
+    showLibraryDefault: false,
+    subTitleDefault: false,
+    enabledPlaylistCategories: true,
+    proxyConfig: {
+      protocol: 'noProxy',
+      server: '',
+      port: 0,
+    },
 }
 
 export const settingsSlice = createSlice({
-  name: 'counter',
+  name: 'settings',
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {

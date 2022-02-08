@@ -12,7 +12,7 @@ import {
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as React from "react";
-import { ColorSchemeName } from "react-native";
+import { ColorSchemeName, Modal } from "react-native";
 
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
@@ -21,10 +21,12 @@ import {
   LibraryScreen,
   ExploreScreen,
   SettingsScreen,
-  ModalScreen,
+  PlayerScreen,
   NotFoundScreen,
   SubSettingsScreen,
-} from "../screens";
+  ModalScreen,
+  PlaylistScreen
+} from "@/screens";
 import { LanguageSettings } from "../components";
 import {
   RootStackParamList,
@@ -70,6 +72,12 @@ function RootNavigator() {
       />
       <RootStack.Group screenOptions={{ presentation: "modal" }}>
         <RootStack.Screen name="Modal" component={ModalScreen} />
+      </RootStack.Group>
+      <RootStack.Group screenOptions={{ presentation: "modal" }}>
+        <RootStack.Screen name="Player" component={PlayerScreen} />
+      </RootStack.Group>
+      <RootStack.Group screenOptions={{ presentation: "modal" }}>
+        <RootStack.Screen name="Playlist" component={PlaylistScreen} />
       </RootStack.Group>
     </RootStack.Navigator>
   );
@@ -143,10 +151,6 @@ function SettingsNavigator() {
           options={{
             headerShown: false
           }}
-        />
-        <SettingsStack.Screen
-          name="LanguageSettings"
-          component={LanguageSettings}
         />
         <SettingsStack.Screen
           name="SubSettingsScreen"

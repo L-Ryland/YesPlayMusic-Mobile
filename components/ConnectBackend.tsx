@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
-import { Text, Button } from "react-native";
+import { Button } from "react-native";
 import nodejs from 'nodejs-mobile-react-native';
 
 
 
-
 export default class ConnectBackend extends Component {
-  componentWillMount()
+  UNSAFE_componentWillMount()
   {
-    nodejs.start("NeteaseCloudMusicApi/app.js");
+    nodejs.start("main.js", {redirectOutputToLogcat: false});
     nodejs.channel.addListener(
       "message",
       (msg) => {
@@ -18,6 +17,8 @@ export default class ConnectBackend extends Component {
     );
   }
   render() {
-    return <Text>Connected to Backend</Text>;
+    return   <Button title="Message Node"
+    onPress={() => nodejs.channel.send('A message!')}
+    />;
   }
 }

@@ -12,6 +12,8 @@ import {
 } from "react-native";
 import { SettingsScreen as DefaultSettingsScreen } from "react-native-settings-screen";
 import styled from "styled-components/native";
+import Explicit from "../assets/icons/explicit.svg";
+import Lock from "../assets/icons/lock.svg";
 
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
@@ -65,14 +67,10 @@ export function ScrollView(props: ScrollViewProps) {
     { light: lightColor, dark: darkColor },
     "background"
   );
-  const DefaultScrollView = styled.ScrollView`
-    flex: 1;
-    align-self: stretch;
-    backgroundColor: ${backgroundColor};
-  `;
+
 
   return (
-    <DefaultScrollView {...otherProps} />
+    <DefaultScrollView style={[{ backgroundColor }, style]} {...otherProps} />
   );
 }
 
@@ -106,3 +104,5 @@ export function SettingsScreen(props: SettingsScreenProps) {
 export function Button(props: ThemeProps & DefaultButton["props"]) {
   return <DefaultButton {...props} />;
 }
+export const ExplicitSymbol = styled(Explicit)``;
+export const LockSymbol = styled(Lock)``;

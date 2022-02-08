@@ -89,6 +89,7 @@ export function SubSettings({
 
   // select methods as parameters passedd to settingsData Array. 
   function selectGeneral(optionName?: String) {
+
     let optionsName: OptionType[] = [];
     let currentAction, currentState;
     switch (optionName) {

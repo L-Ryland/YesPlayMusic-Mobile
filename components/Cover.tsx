@@ -1,27 +1,61 @@
 import { StyleSheet, Pressable, Image } from "react-native";
+import styled from "styled-components/native";
 
-import { View } from "./Themed";
+import { View, Text, ExplicitSymbol, LockSymbol } from "./Themed";
 
-const handleCoverPress = () => {};
-const handleCoverContainerPress = () => {};
-const imageUrl: string = '';
 
-export function Cover(props:any) {
-  console.log(props);
-  
+type CoverProps = {
+  id: Number;
+  name: String;
+  imageUrl: string;
+  type: "album" | "playlist" | undefined;
+  playCount?: Number;
+  isExplicit?: Boolean;
+  isPrivacy?: Boolean;
+  subText: String;
+};
+
+const CoverTitle = styled(Text)`
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+  display: flex;
+  overflow: hidden;
+  numberoflines: "3";
+  ellipsizemode: middle;
+`;
+const SubTitle = styled.Text`
+  font-size: 12px;
+  color: #e8e6e3;
+  opacity: 0.68;
+  line-height: 18px;
+  display: flex;
+  overflow: hidden;
+`;
+export function Cover(props: CoverProps) {
+  // console.log(props);
+  const { imageUrl, subText, name, isPrivacy, isExplicit } = props;
   return (
     <View>
-      <Pressable onPress={handleCoverPress}>
-        <View style={styles.cover}></View>
-      </Pressable>
-      <Pressable onPress={handleCoverContainerPress}>
-        <View style={styles.coverContainer}>
-          {/* <Image source={require(imageUrl)} /> */}
-        </View>
-      </Pressable>
+      <View style={styles.coverContainer}>
+        <Image
+          source={{
+            uri: imageUrl,
+          }}
+          style={styles.imageStyles}
+        />
+        <CoverTitle>
+          {isExplicit && <ExplicitSymbol />}
+          {isPrivacy && <LockSymbol />}
+          {name}
+        </CoverTitle>
+        {/* <Text>{name}</Text> */}
+        <SubTitle>{subText}</SubTitle>
+      </View>
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   cover: {
     position: "relative",
@@ -29,5 +63,10 @@ const styles = StyleSheet.create({
   },
   coverContainer: {
     position: "relative",
+  },
+  imageStyles: {
+    width: 200,
+    height: 200,
+    resizeMode: "stretch",
   },
 });

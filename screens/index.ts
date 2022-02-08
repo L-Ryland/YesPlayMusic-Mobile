@@ -5,3 +5,7 @@ export * from './LibraryScreen';
 export * from './ExploreScreen';
 export * from './SubSettingsScreen';
 export * from './SettingsScreen'
+export * from './PlayerScreen'
+export * from './PlaylistScreen'
+
+

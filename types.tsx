@@ -17,6 +17,8 @@ export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined;
   Modal: undefined;
   NotFound: undefined;
+  Player: undefined;
+  Playlist: undefined
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<
@@ -62,3 +64,26 @@ export interface OptionType {
   option: string|number, 
   name: string
 }
+export type ItemType = {
+  coverImgUrl: String;
+  name: String;
+  id: Number;
+  img1v1ID?: String;
+  mark?: Number;
+  img1v1Url?: String;
+  picUrl?: String;
+  privacy?: Number;
+  type?: "album" | "playlist";
+};
+export type CoverRowProps = {
+  items: ItemType[];
+  type: String;
+  subText: String;
+  subTextFontSize?: String;
+  showPlayCount?: Boolean;
+  columnNumber?: Number;
+  gap?: String;
+  playButtonSize?: Number;
+  imageSize?: Number;
+  rowNumber?: Number;
+};

@@ -5,7 +5,7 @@
 
 //node's libUV requires all arguments being on contiguous memory.
 extern "C" jint JNICALL
-Java_com_yourorg_sample_MainActivity_startNodeWithArguments(
+Java_com_rylandliu_yesplaymusic_MainActivity_startNodeWithArguments(
         JNIEnv *env,
         jobject /* this */,
         jobjectArray arguments) {

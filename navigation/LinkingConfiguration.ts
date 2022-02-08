@@ -39,10 +39,12 @@ const linking: LinkingOptions<RootStackParamList> = {
               SubSettingsScreen: "sub_settings",
             },
           },
+
         },
       },
       Modal: "modal",
       NotFound: "*",
+      Playlist: "playlist"
     },
   },
 };

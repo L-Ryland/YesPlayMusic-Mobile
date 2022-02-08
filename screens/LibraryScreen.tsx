@@ -2,13 +2,13 @@ import { StyleSheet } from "react-native";
 
 // import EditScreenInfo from "../components/EditScreenInfo";
 import { Text, ScrollView } from "../components/Themed";
-import ConnectBackend from "../components/ConnectBackend";
+// import ConnectBackend from "../components/ConnectBackend";
 
 export const LibraryScreen = function () {
   return (
     <ScrollView>
       <Text style={styles.title}> Library </Text>
-      <ConnectBackend />
+      {/* <ConnectBackend /> */}
     </ScrollView>
   );
 };
