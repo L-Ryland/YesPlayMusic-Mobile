@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getCookie } from '@/utils/auth';
 
-let baseURL = 'http://localhost:3000/';
+export const baseURL = 'http://localhost:3000/';
 // Web 和 Electron 跑在不同端口避免同时启动时冲突
 // if (process.env.IS_ELECTRON) {
 //   if (process.env.NODE_ENV === 'production') {

@@ -1,12 +1,15 @@
-import { LockSymbol } from "@/components";
+import { Cover, LockSymbol, ScrollView } from "@/components";
 import React from "react";
+import { StyleSheet } from "react-native";
 import styled from "styled-components/native";
 import { MusicModal, TrackList, ContextMenu } from "@/components";
-import { RootStackParamList, RootTabParamList, RootTabScreenProps } from "@/types";
+import { RootStackScreenProps, PlaylistProps } from "@/types";
 import { useGetPlaylistDetailQuery } from "@/redux/slice/apiSlice";
+import { apiSlice } from "@/redux/slice/apiSlice";
 
 const Playlist = styled.ScrollView`
-  margin=top: 32px;
+  margin-top: 32px;
+  flex: 1;
 `;
 const PlaylistInfo = styled.View`
   display: flex;
@@ -25,35 +28,55 @@ const Title = styled.Text`
   color: var(--color-text);
 `;
 const ArtistTitle = styled.Text`
-font-size: 18px;
-opacity: 0.88;
-color: var(--color-text);
-margin-top: 24px;
-`
-export function PlaylistScreen({navigation, route}: RootStackParamList<"Playlist">) {
-  const {playlist} = route.params;
-  console.log(doPlaylistQuery(playlist.id));
+  font-size: 18px;
+  opacity: 0.88;
+  color: var(--color-text);
+  margin-top: 24px;
+`;
+export function PlaylistScreen({
+  navigation,
+  route,
+}: RootStackScreenProps<"Playlist">) {
+  const [playlist, setPlaylist] = React.useState<PlaylistProps>();
+  const {currentPlaylist} = route.params;
+  console.log(currentPlaylist);
+  
+  setPlaylist(currentPlaylist)
+  const {currentData, isLoading} = useGetPlaylistDetailQuery(currentPlaylist.id)
+  const fetchedPlaylist = currentData?.result;
+  console.log(currentData,fetchedPlaylist,isLoading);
   
   return (
-    <Playlist>
-      <PlaylistInfo>
-        <Info>
-          <Title>
-            {playlist.privacy === 10 && <LockSymbol />}
-            {playlist.name}aaa
-          </Title>
-          <ArtistTitle></ArtistTitle>
-        </Info>
-      </PlaylistInfo>
-      <TrackList />
-      <MusicModal />
-      <ContextMenu />
-    </Playlist>
+    <ScrollView style={styles.container}>
+      <Playlist>
+        {playlist && (
+          <PlaylistInfo>
+            {/* <Cover
+              id={playlist.id}
+              imageUrl={playlist.coverImgUrl}
+              type="playlist"
+            /> */}
+            <Info>
+              <Title>
+                {/* {fetchedPlaylist?.privacy === 10 && <LockSymbol />}
+                {fetchedPlaylist?.name}aa */}
+              </Title>
+              <ArtistTitle></ArtistTitle>
+            </Info>
+          </PlaylistInfo>
+        )}
+
+        <TrackList />
+        <MusicModal />
+        <ContextMenu />
+      </Playlist>
+    </ScrollView>
   );
 }
-function doPlaylistQuery(id:Number) {
-  console.log(useGetPlaylistDetailQuery(id))
-  // if (isSuccess) {
-  //   return data;
-  // }
-}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignSelf: "stretch",
+  },
+});

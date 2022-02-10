@@ -1,4 +1,4 @@
-import { CoverRowProps, ItemType } from "@/types";
+import { CoverRowProps, CoverProps } from "@/types";
 import { iteratorSymbol } from "immer/dist/internal";
 import { StyleSheet, TouchableHighlight, ViewProps } from "react-native";
 import { SafeAreaView, ListRenderItem } from "react-native";
@@ -16,7 +16,7 @@ export function CoverRow(props: CoverRowProps|any) {
   let { items, type, subText, rowNumber, setCallback} = props;
   console.log(items);
 
-  const getImageUrl = (item: ItemType) => {
+  const getImageUrl = (item: CoverProps) => {
     if (item.img1v1Url) {
       let img1v1ID = item.img1v1Url.split("/");
       let imgName = img1v1ID[img1v1ID.length - 1];
@@ -30,7 +30,7 @@ export function CoverRow(props: CoverRowProps|any) {
   }
   const handlePress = (item) => {
     console.log(item, props);
-    props.navigate('Playlist', {playlist: item})
+    props.navigate('Playlist', {currentPlaylist: item})
   };
   
   const renderItem = ({item}: any) => {

@@ -18,7 +18,7 @@ export const apiSlice = createApi({
      * @param {limit=number} params.limit
      */
     recommendPlaylist: builder.query({
-      query: (limit=30) => ({ url: `personalized?limit=${limit}`, method: "get" }),
+      query: (limit=30) => ({ url: `personalized?`, method: "get", params: limit}),
     }),
     /**
      * 获取歌单详情
@@ -32,9 +32,8 @@ export const apiSlice = createApi({
      */
     getPlaylistDetail: builder.query({
       query: (id, nocache=false) => {
-        let param = id
-        // if (nocache) param.timestamp = new Date().getTime();
-        return { url: `playlist/detail?id=${param}`, method: 'GET'}},
+        if (nocache) id.timestamp = new Date().getTime();
+        return { url: `playlist/detail`, method: 'get', params: id}},
     }),
     /**
      * 收藏/取消收藏歌单

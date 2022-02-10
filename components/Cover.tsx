@@ -1,19 +1,11 @@
+import { CoverProps } from "@/types";
 import { StyleSheet, Pressable, Image } from "react-native";
 import styled from "styled-components/native";
 
 import { View, Text, ExplicitSymbol, LockSymbol } from "./Themed";
 
 
-type CoverProps = {
-  id: Number;
-  name: String;
-  imageUrl: string;
-  type: "album" | "playlist" | undefined;
-  playCount?: Number;
-  isExplicit?: Boolean;
-  isPrivacy?: Boolean;
-  subText: String;
-};
+
 
 const CoverTitle = styled(Text)`
   font-size: 16px;

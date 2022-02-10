@@ -18,7 +18,7 @@ export type RootStackParamList = {
   Modal: undefined;
   NotFound: undefined;
   Player: undefined;
-  Playlist: undefined
+  Playlist: {currentPlaylist: any}
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<
@@ -64,9 +64,9 @@ export interface OptionType {
   option: string|number, 
   name: string
 }
-export type ItemType = {
-  coverImgUrl: String;
-  name: String;
+export type CoverProps = {
+  coverImgUrl?: string;
+  name?: String;
   id: Number;
   img1v1ID?: String;
   mark?: Number;
@@ -74,9 +74,10 @@ export type ItemType = {
   picUrl?: String;
   privacy?: Number;
   type?: "album" | "playlist";
+  imageUrl?, subText?, isPrivacy?, isExplicit?
 };
 export type CoverRowProps = {
-  items: ItemType[];
+  items: CoverProps[];
   type: String;
   subText: String;
   subTextFontSize?: String;
@@ -87,3 +88,9 @@ export type CoverRowProps = {
   imageSize?: Number;
   rowNumber?: Number;
 };
+export type PlaylistProps = {
+  id: Number,
+  coverImgUrl: String,
+  name: String
+  privacy: Number
+}

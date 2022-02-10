@@ -1,18 +1,18 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, createEntityAdapter, PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from '../store'
 
 
 export type langProp = 'en'|'tr'|'zh-CN'|'zh-TW';
-export type apreanceProp = 'auto'|'light'|'dark';
+export type appreanceProp = 'auto'|'light'|'dark';
 export type musicLangProp = 'all'|'zh'|'ea'|'jp'|'kr';
 export type musicQualityProp =128000|192000|320000|999000;
 export type showLyricsTranslationProp = Boolean;
 export type lyricsBackgroundProp = 'on'|'off'|'blur';
 export type lyricFontSizeProp = 'small'|'medium'|'large'|'xlarge';
 // Define a type for the slice state
-interface GeneralState {
+interface SettingsState {
   lang: langProp,
-  appearance: apreanceProp,
+  appearance: appreanceProp,
   musicLanguage: musicLangProp,
   musicQuality: musicQualityProp, 
   showLyricsTranslation: showLyricsTranslationProp,
@@ -36,9 +36,9 @@ interface GeneralState {
     port: Number
   }
 }
-
+const settingsAdapter = createEntityAdapter<SettingsState>({});
 // Define the initial state using that type
-const initialState: GeneralState = {
+const initialState: SettingsState = {
     lang: 'en',
     musicLanguage: 'all',
     appearance: 'auto',
@@ -68,12 +68,12 @@ const initialState: GeneralState = {
 export const settingsSlice = createSlice({
   name: 'settings',
   // `createSlice` will infer the state type from the `initialState` argument
-  initialState,
+  initialState: settingsAdapter.getInitialState(initialState),
   reducers: {
     switchLang: (state, action: PayloadAction<langProp>) => {
       state.lang = action.payload;
     },
-    switchAppearance: (state, action: PayloadAction<apreanceProp>) => {
+    switchAppearance: (state, action: PayloadAction<appreanceProp>) => {
       state.appearance = action.payload;
     },
     switchMusicLang: (state, action: PayloadAction<musicLangProp>) => {
@@ -105,6 +105,6 @@ export const {
 } = settingsSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type
-export const selectSettings = (state: RootState) => state.settings
+export const selectSettings = (state: RootState) => state.settings;
 
-export default settingsSlice.reducer
+export default settingsSlice.reducer;

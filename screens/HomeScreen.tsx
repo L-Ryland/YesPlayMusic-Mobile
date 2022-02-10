@@ -8,26 +8,16 @@ import { RootTabScreenProps } from "../types";
 import { byAppleMusic } from "../utils/staticData.js";
 import { useRecommendPlaylistQuery } from "@/redux/slice/apiSlice";
 
+
+
 export function HomeScreen(props: RootTabScreenProps<"Home">) {
-  let recommendPlaylist;
-  const { data , isLoading, isFetching, isError, isSuccess } = useRecommendPlaylistQuery();
-  if (isSuccess) {
-    // console.log(data);
-    console.log("success");
-    
-    recommendPlaylist = data.result;
-  }
-  if (isLoading) {
-    console.log("loading");
-    
-  }
-  if (isError) {
-    console.log("error");
-    
-  }
 
-
-
+    const {
+      currentData,
+      isLoading
+    } = useRecommendPlaylistQuery(undefined);
+    const recommendPlaylist = currentData?.result
+ 
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>by Apple Music</Text>
@@ -42,13 +32,14 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
       <Text style={styles.title} adjustsFontSizeToFit={true}>
         Recommended PlayLists
       </Text>
+      {isLoading?<Text>Loading</Text>:
       <CoverRow
         rowNumber={2}
         type="playlist"
         items={recommendPlaylist}
         subText="copywriter"
         navigate={props.navigation.navigate}
-      />
+      />}
       <Text style={styles.title}>For You</Text>
       <Text style={styles.title}>Recommended Artists</Text>
       <Text style={styles.title}>Latest Albums</Text>
