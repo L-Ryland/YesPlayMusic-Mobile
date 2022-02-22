@@ -1,5 +1,5 @@
-import request from '@/utils/request';
-import { mapTrackPlayableStatus } from '@/utils/common';
+import request from "@/utils/request";
+import { mapTrackPlayableStatus } from "@/utils/common";
 
 /**
  * 推荐歌单
@@ -8,11 +8,12 @@ import { mapTrackPlayableStatus } from '@/utils/common';
  * - 调用例子 : /personalized?limit=1
  * @param {Object} params
  * @param {number=} params.limit
+ * @param {Object=} params.cancelToken
  */
 export function recommendPlaylist(params) {
   return request({
-    url: '/personalized',
-    method: 'get',
+    url: "/personalized",
+    method: "get",
     params,
   });
 }
@@ -24,8 +25,8 @@ export function recommendPlaylist(params) {
  */
 export function dailyRecommendPlaylist(params) {
   return request({
-    url: '/recommend/resource',
-    method: 'get',
+    url: "/recommend/resource",
+    method: "get",
     params,
   });
 }
@@ -40,19 +41,24 @@ export function dailyRecommendPlaylist(params) {
  * @param {boolean=} noCache
  */
 export function getPlaylistDetail(id, noCache = false) {
+  console.log("getPlayListDetail", id);
   let params = { id };
   if (noCache) params.timestamp = new Date().getTime();
   return request({
-    url: '/playlist/detail',
-    method: 'get',
+    url: "/playlist/detail",
+    method: "get",
     params,
-  }).then(data => {
+  }).then((data) => {
     if (data.playlist) {
+    console.log("getPlayListDetail", data);
       data.playlist.tracks = mapTrackPlayableStatus(
         data.playlist.tracks,
-        data.privileges || []
+        // data.privileges || []
+        data.privileges
       );
+      console.log(data.playlist.tracks);
     }
+    console.log("getPlayListDetail", data);
     return data;
   });
 }
@@ -69,8 +75,8 @@ export function getPlaylistDetail(id, noCache = false) {
  */
 export function highQualityPlaylist(params) {
   return request({
-    url: '/top/playlist/highquality',
-    method: 'get',
+    url: "/top/playlist/highquality",
+    method: "get",
     params,
   });
 }
@@ -81,16 +87,16 @@ export function highQualityPlaylist(params) {
  * - order: 可选值为 'new' 和 'hot', 分别对应最新和最热 , 默认为 'hot'
  * - cat: tag, 比如 " 华语 "、" 古风 " 、" 欧美 "、" 流行 ", 默认为 "全部",可从歌单分类接口获取(/playlist/catlist)
  * - limit: 取出歌单数量 , 默认为 50
- * @param {Object} params
- * @param {string} params.order
- * @param {string} params.cat
+ * @param {Object=} params
+ * @param {string=} params.order
+ * @param {string=} params.cat
  * @param {number=} params.limit
  */
 export function topPlaylist(params) {
   return request({
-    url: '/top/playlist',
-    method: 'get',
-    params,
+    url: "/top/playlist",
+    method: "get",
+    params: params,
   });
 }
 
@@ -100,8 +106,8 @@ export function topPlaylist(params) {
  */
 export function playlistCatlist() {
   return request({
-    url: '/playlist/catlist',
-    method: 'get',
+    url: "/playlist/catlist",
+    method: "get",
   });
 }
 
@@ -111,8 +117,8 @@ export function playlistCatlist() {
  */
 export function toplists() {
   return request({
-    url: '/toplist',
-    method: 'get',
+    url: "/toplist",
+    method: "get",
   });
 }
 
@@ -128,8 +134,8 @@ export function toplists() {
 export function subscribePlaylist(params) {
   params.timestamp = new Date().getTime();
   return request({
-    url: '/playlist/subscribe',
-    method: 'post',
+    url: "/playlist/subscribe",
+    method: "post",
     params,
   });
 }
@@ -142,8 +148,8 @@ export function subscribePlaylist(params) {
  */
 export function deletePlaylist(id) {
   return request({
-    url: '/playlist/delete',
-    method: 'post',
+    url: "/playlist/delete",
+    method: "post",
     params: { id },
   });
 }
@@ -162,8 +168,8 @@ export function deletePlaylist(id) {
 export function createPlaylist(params) {
   params.timestamp = new Date().getTime();
   return request({
-    url: '/playlist/create',
-    method: 'post',
+    url: "/playlist/create",
+    method: "post",
     params,
   });
 }
@@ -180,8 +186,8 @@ export function createPlaylist(params) {
 export function addOrRemoveTrackFromPlaylist(params) {
   params.timestamp = new Date().getTime();
   return request({
-    url: '/playlist/tracks',
-    method: 'post',
+    url: "/playlist/tracks",
+    method: "post",
     params,
   });
 }
@@ -195,10 +201,10 @@ export function addOrRemoveTrackFromPlaylist(params) {
  */
 export function dailyRecommendTracks() {
   return request({
-    url: '/recommend/songs',
-    method: 'get',
+    url: "/recommend/songs",
+    method: "get",
     params: { timestamp: new Date().getTime() },
-  }).then(result => {
+  }).then((result) => {
     result.data.dailySongs = mapTrackPlayableStatus(
       result.data.dailySongs,
       result.data.privileges
@@ -219,8 +225,8 @@ export function dailyRecommendTracks() {
  */
 export function intelligencePlaylist(params) {
   return request({
-    url: '/playmode/intelligence/list',
-    method: 'get',
+    url: "/playmode/intelligence/list",
+    method: "get",
     params,
   });
 }

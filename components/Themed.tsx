@@ -3,17 +3,16 @@
  * https://docs.expo.io/guides/color-schemes/
  */
 
+import React from "react";
 import {
   Text as DefaultText,
   View as DefaultView,
   ScrollView as DefaultScrollView,
   Image as DefaultImage,
   Button as DefaultButton,
+  TextInput as DefaultTextInput,
 } from "react-native";
 import { SettingsScreen as DefaultSettingsScreen } from "react-native-settings-screen";
-import styled from "styled-components/native";
-import Explicit from "../assets/icons/explicit.svg";
-import Lock from "../assets/icons/lock.svg";
 
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
@@ -68,7 +67,6 @@ export function ScrollView(props: ScrollViewProps) {
     "background"
   );
 
-
   return (
     <DefaultScrollView style={[{ backgroundColor }, style]} {...otherProps} />
   );
@@ -99,10 +97,39 @@ export function SettingsScreen(props: SettingsScreenProps) {
     "background"
   );
 
-  return <DefaultSettingsScreen data={data} {...otherProps} />;
+  return <DefaultSettingsScreen data={data} style={{backgroundColor}} {...otherProps} />;
 }
 export function Button(props: ThemeProps & DefaultButton["props"]) {
   return <DefaultButton {...props} />;
 }
-export const ExplicitSymbol = styled(Explicit)``;
-export const LockSymbol = styled(Lock)``;
+
+
+// export function TextInput(props: ThemeProps & React.LegacyRef<DefaultTextInput> & DefaultTextInput["props"]) {
+// export function TextInput(props: any) {
+//   let { style, lightColor, darkColor, ref, ...otherProps } = props;
+
+//   const backgroundColor = useThemeColor(
+//     { light: lightColor, dark: darkColor },
+//     "background"
+//   );
+//   const color = useThemeColor(
+//     { light: lightColor, dark: darkColor },
+//     "text"
+//   );
+
+//   return <DefaultTextInput style={[{backgroundColor}, {color}, style]} ref={ref} {...otherProps} />;
+// }
+export const TextInput = React.forwardRef((props: ThemeProps & DefaultTextInput["props"], ref: React.Ref<DefaultTextInput>|undefined)=>{
+  let { style, lightColor, darkColor, ...otherProps } = props;
+
+  const backgroundColor = useThemeColor(
+    { light: lightColor, dark: darkColor },
+    "background"
+  );
+  const color = useThemeColor(
+    { light: lightColor, dark: darkColor },
+    "text"
+  );
+
+  return <DefaultTextInput style={[{backgroundColor}, {color}, style]} ref={ref} {...otherProps} />;
+})

@@ -1,23 +1,78 @@
 import { StyleSheet, Appearance } from "react-native";
-import { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import EditScreenInfo from "../components/EditScreenInfo";
 import { Text, View, ScrollView } from "../components/Themed";
-import { CoverRow } from "../components";
+import { CoverRow, DailyTracksCard, FMCard } from "../components";
 import { RootTabScreenProps } from "../types";
 import { byAppleMusic } from "../utils/staticData.js";
 import { useRecommendPlaylistQuery } from "@/redux/slice/apiSlice";
-
-
+import {
+  recommendPlaylist,
+  newAlbums,
+  toplistOfArtists,
+  toplists,
+  topPlaylist
+} from "@/api";
+import { useAppSelector } from "@/hooks/useRedux";
+import { selectSettings } from "@/redux/slice/settingsSlice";
 
 export function HomeScreen(props: RootTabScreenProps<"Home">) {
-
-    const {
-      currentData,
-      isLoading
-    } = useRecommendPlaylistQuery(undefined);
-    const recommendPlaylist = currentData?.result
- 
+  const [recommendPlaylists, setRecommendPlaylists] = useState("");
+  const [newAlbum, setNewAlbum] = useState("");
+  const [topArtists, setTopArtists] = useState("");
+  const [toplist, setToplist] = useState("");
+  const [data, setData] = useState("");
+  const { currentData, isLoading } = useRecommendPlaylistQuery(undefined);
+  // const recommendPlaylist = currentData?.result;
+  const mountedRef = React.useRef(true);
+  const settings = useAppSelector(selectSettings);
+  const fetchData = async () => {
+    let response: any;
+    response = await recommendPlaylist({ limit: 10});
+    setRecommendPlaylists(response.result);
+    response = await newAlbums({ limit: 10, area: "ALL" });
+    // console.log(response);
+    
+    setNewAlbum(response.albums);
+    const toplistOfArtistsAreaTable = {
+      all: undefined,
+      zh: 1,
+      ea: 2,
+      jp: 4,
+      kr: 3,
+    };
+    response = await toplistOfArtists(
+      toplistOfArtistsAreaTable[settings.musicLanguage]
+    ).then((data: any) => {
+      let indexs: Number[] = [];
+      while (indexs.length < 6) {
+        let tmp = ~~(Math.random() * 100);
+        if (!indexs.includes(tmp)) indexs.push(tmp);
+      }
+      const filterArtists = data.list.artists.filter((l, index) =>
+        indexs.includes(index)
+      );
+      setTopArtists(filterArtists)
+    });
+    response = await toplists();
+    setToplist(response.list);
+    response = await topPlaylist();
+    // console.log(response);
+    
+  };
+  
+  useEffect(() => {
+    if (mountedRef.current) {
+      fetchData();
+    }
+    return () => {
+      mountedRef.current = false;
+    };
+  }, [mountedRef]);
+  // console.log(recommendPlaylists, newAlbum);
+  // console.log(data);
+  
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>by Apple Music</Text>
@@ -32,18 +87,44 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
       <Text style={styles.title} adjustsFontSizeToFit={true}>
         Recommended PlayLists
       </Text>
-      {isLoading?<Text>Loading</Text>:
-      <CoverRow
-        rowNumber={2}
-        type="playlist"
-        items={recommendPlaylist}
-        subText="copywriter"
-        navigate={props.navigation.navigate}
-      />}
+      {!recommendPlaylists ? (
+        <Text>Loading</Text>
+      ) : (
+        <CoverRow
+          rowNumber={2}
+          type="playlist"
+          items={recommendPlaylists}
+          subText="copywriter"
+          navigate={props.navigation.navigate}
+        />
+      )}
       <Text style={styles.title}>For You</Text>
+      <DailyTracksCard />
+      <FMCard />
       <Text style={styles.title}>Recommended Artists</Text>
+      {/* <CoverRow rowNumber={1} type="artist" items={topArtists} /> */}
       <Text style={styles.title}>Latest Albums</Text>
+      {!newAlbum ? (
+        <Text>Loading</Text>
+      ) : (
+        <CoverRow
+          rowNumber={1}
+          type="album"
+          items={newAlbum}
+          sub-text="artist"
+        />
+      )}
       <Text style={styles.title}>Charts</Text>
+      {!toplist ? (
+        <Text>Loading</Text>
+      ) : (
+        <CoverRow
+          rowNumber={1}
+          type="playlist"
+          items={toplist}
+          sub-text="updateFrequency"
+        />
+      )}
     </ScrollView>
   );
 }

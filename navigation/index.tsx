@@ -114,7 +114,7 @@ function BottomTabNavigator() {
         options={{
           title: "Library",
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerShown: false,
+          headerShown: true,
         }}
       />
       <BottomTab.Screen
@@ -123,7 +123,7 @@ function BottomTabNavigator() {
         options={{
           title: "Explore",
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerShown: false,
+          headerShown: true,
         }}
       />
       <BottomTab.Screen
@@ -132,7 +132,7 @@ function BottomTabNavigator() {
         options={{
           title: "Settings",
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerShown: false,
+          headerShown: true,
         }}
       />
     </BottomTab.Navigator>

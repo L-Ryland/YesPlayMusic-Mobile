@@ -21,16 +21,22 @@ module.exports = (async () => {
   } = await getDefaultConfig(__dirname);
   return {
     transformer: {
-      babelTransformerPath: require.resolve("react-native-svg-transformer"),
-    },
+      getTransfromOptions: async () => ({
+        transform: {
+          experimentalImportSupport: false, 
+          inlineRequires: false
+        }
+      }),
+      babelTransfromerPath: require.resolve("react-native-svg-transformer")
+    }, 
     resolver: {
-      assetExts: assetExts.filter((ext) => ext !== "svg"),
+      assetExts: assetExts.filter(ext => ext !== "svg"),
       sourceExts: [...sourceExts, "svg"],
       blacklistRE: blacklist([
         /\/nodejs-assets\/.*/,
         /\/android\/.*/,
         /\/ios\/.*/,
       ]),
-    },
+    }
   };
 })();

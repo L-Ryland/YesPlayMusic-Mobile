@@ -2,12 +2,11 @@ import { CoverProps } from "@/types";
 import { StyleSheet, Pressable, Image } from "react-native";
 import styled from "styled-components/native";
 
-import { View, Text, ExplicitSymbol, LockSymbol } from "./Themed";
+import { View, Text } from "./Themed";
+import { Explicit, Lock } from "./icons";
 
-
-
-
-const CoverTitle = styled(Text)`
+const CoverTitle = styled.Text`
+  color: white;
   font-size: 16px;
   font-weight: 600;
   line-height: 20px;
@@ -15,34 +14,38 @@ const CoverTitle = styled(Text)`
   overflow: hidden;
   numberoflines: "3";
   ellipsizemode: middle;
+  width: 200px;
+  margin: auto 20px auto 20px;
 `;
 const SubTitle = styled.Text`
-  font-size: 12px;
+  font-size: 13px;
   color: #e8e6e3;
   opacity: 0.68;
   line-height: 18px;
   display: flex;
   overflow: hidden;
+  margin: auto 20px auto 20px;
 `;
-export function Cover(props: CoverProps) {
-  // console.log(props);
-  const { imageUrl, subText, name, isPrivacy, isExplicit } = props;
+export function Cover(props: any) {
+  // console.log('@', props);
+  const { imageUrl, subText, name, isPrivacy, isExplicit, imageStyle } = props;
   return (
     <View>
       <View style={styles.coverContainer}>
         <Image
           source={{
-            uri: imageUrl,
+            uri: imageUrl, 
           }}
-          style={styles.imageStyles}
+          style={[imageStyle, styles.imageStyles]}
         />
-        <CoverTitle>
-          {isExplicit && <ExplicitSymbol />}
-          {isPrivacy && <LockSymbol />}
-          {name}
-        </CoverTitle>
-        {/* <Text>{name}</Text> */}
-        <SubTitle>{subText}</SubTitle>
+        <View >
+          <CoverTitle>
+            {isExplicit && <Explicit />}
+            {isPrivacy && <Lock />}
+            {name??''}
+          </CoverTitle>
+          {subText && <SubTitle>{subText}</SubTitle>}
+        </View>
       </View>
     </View>
   );
@@ -51,7 +54,7 @@ export function Cover(props: CoverProps) {
 const styles = StyleSheet.create({
   cover: {
     position: "relative",
-    // transition: transform 0.3s,
+    transition: 'transform 0.3s',
   },
   coverContainer: {
     position: "relative",
@@ -59,6 +62,6 @@ const styles = StyleSheet.create({
   imageStyles: {
     width: 200,
     height: 200,
-    resizeMode: "stretch",
+    resizeMode: "cover",
   },
 });

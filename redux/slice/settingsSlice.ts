@@ -1,6 +1,6 @@
+import { playlistCategories } from '@/utils/staticData';
 import { createSlice, createEntityAdapter, PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from '../store'
-
 
 export type langProp = 'en'|'tr'|'zh-CN'|'zh-TW';
 export type appreanceProp = 'auto'|'light'|'dark';
@@ -10,6 +10,9 @@ export type showLyricsTranslationProp = Boolean;
 export type lyricsBackgroundProp = 'on'|'off'|'blur';
 export type lyricFontSizeProp = 'small'|'medium'|'large'|'xlarge';
 // Define a type for the slice state
+const enabledPlaylistCategories = playlistCategories
+  .filter(c => c.enable)
+  .map(c => c.name);
 interface SettingsState {
   lang: langProp,
   appearance: appreanceProp,
@@ -28,7 +31,7 @@ interface SettingsState {
   enableDiscordRichPresence: Boolean,
   enableGlobalShortcut: Boolean
   subTitleDefault: Boolean
-  enabledPlaylistCategories: Boolean,
+  enabledPlaylistCategories: string[],
   showLibraryDefault: Boolean,
   proxyConfig: {
     protocol: String,
@@ -57,7 +60,7 @@ const initialState: SettingsState = {
     enableGlobalShortcut: true,
     showLibraryDefault: false,
     subTitleDefault: false,
-    enabledPlaylistCategories: true,
+    enabledPlaylistCategories,
     proxyConfig: {
       protocol: 'noProxy',
       server: '',

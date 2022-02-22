@@ -2,12 +2,14 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
+    "checkJs": false,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
     },
     "target": "ES6",
     "module": "commonjs",
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "noImplicitAny": false
   }

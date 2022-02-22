@@ -31,9 +31,11 @@ export const apiSlice = createApi({
      * @param {boolean=} noCache
      */
     getPlaylistDetail: builder.query({
-      query: (id, nocache=false) => {
-        if (nocache) id.timestamp = new Date().getTime();
-        return { url: `playlist/detail`, method: 'get', params: id}},
+      query: (id: number, nocache=false) => {
+        let params;
+        params = {id};
+        if (nocache) params.timestamp = new Date().getTime()
+        return { url: `playlist/detail`, method: 'get', params}},
     }),
     /**
      * 收藏/取消收藏歌单

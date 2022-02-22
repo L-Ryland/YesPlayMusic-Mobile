@@ -18,7 +18,7 @@ export type RootStackParamList = {
   Modal: undefined;
   NotFound: undefined;
   Player: undefined;
-  Playlist: {currentPlaylist: any}
+  Playlist: {itemProps: any, Cover: any}
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<
@@ -88,9 +88,17 @@ export type CoverRowProps = {
   imageSize?: Number;
   rowNumber?: Number;
 };
-export type PlaylistProps = {
+export interface PlaylistProps {
   id: Number,
   coverImgUrl: String,
   name: String
   privacy: Number
+}
+export interface PlaylistDetailProp {
+  updateTime: Date;
+  trackCount: Number,
+  creator: {
+    nickname: string,
+  },
+  description: string,
 }

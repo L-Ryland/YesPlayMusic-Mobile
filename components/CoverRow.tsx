@@ -4,7 +4,7 @@ import { StyleSheet, TouchableHighlight, ViewProps } from "react-native";
 import { SafeAreaView, ListRenderItem } from "react-native";
 import styled from "styled-components/native";
 
-import { View, Text, Cover } from "./";
+import { ScrollView, Text, Cover } from ".";
 
 
 
@@ -14,7 +14,7 @@ const FlatList = styled.FlatList`
 
 export function CoverRow(props: CoverRowProps|any) {
   let { items, type, subText, rowNumber, setCallback} = props;
-  console.log(items);
+  // console.log(items, subText);
 
   const getImageUrl = (item: CoverProps) => {
     if (item.img1v1Url) {
@@ -28,21 +28,37 @@ export function CoverRow(props: CoverRowProps|any) {
     let img = item.img1v1Url || item.picUrl || item.coverImgUrl;
     return `${img?.replace("http://", "https://")}?param=512y512`;
   }
-  const handlePress = (item) => {
-    console.log(item, props);
-    props.navigate('Playlist', {currentPlaylist: item})
-  };
+
   
   const renderItem = ({item}: any) => {
-    let subText = getSubText(item);
+    // let subText = getSubText(item);
+    const universalStyle = {
+      // height: 256,
+      // width: 256,
+      borderRadius: 22,
+      margin: 20
+    }
+    const circleStyle = {
+      // height: 256,
+      // width: 256,
+      borderRadius: 128,
+      margin: 20
+    };
     const itemProps = {
-      id: item.id, imageUrl: getImageUrl(item), type: item.type, name: item.name,
+      id: item.id, imageUrl: getImageUrl(item), type, name: item.name,
       isExplicit: Boolean(type === "album" && item.mark === 1056768),
       isPrivacy: Boolean(type === "playlist" && item.privacy === 10),
-      subText: subText
+      subText: subText??undefined,
+      imageStyle: type=="artist"?circleStyle:universalStyle,
     }
+    const handlePress = () => {
+      console.log(itemProps);
+      props.navigate('Playlist', {itemProps, Cover: <Cover {...itemProps} /> })
+    };
+    // console.log(item, itemProps);
+    
     return (
-      <TouchableHighlight onPress={()=>handlePress(item)}>
+      <TouchableHighlight onPress={handlePress}>
         <Cover {...itemProps} />
       </TouchableHighlight>
     );
@@ -68,12 +84,14 @@ export function CoverRow(props: CoverRowProps|any) {
   }
   return (
     <SafeAreaView>
+      <ScrollView>
       <FlatList
         data={items}
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
         horizontal={true}
       />
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -109,3 +127,4 @@ function getSubText(item) {
   }
   if (item.subText === 'appleMusic') return 'by Apple Music';
 }
+

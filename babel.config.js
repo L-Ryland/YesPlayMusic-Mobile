@@ -15,7 +15,7 @@ module.exports = function(api) {
           ".ts",
           ".tsx",
         ]
-      }]
+      }],
     ]
   };
 };

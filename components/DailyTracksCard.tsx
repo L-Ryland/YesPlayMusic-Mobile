@@ -53,6 +53,15 @@ const DailyRecommendCard = styled.View`
   position: relative;
   overflow: hidden;
 `;
+const CoverImage = styled(Animated.createAnimatedComponent(ImageBackground))`
+  // position: center;
+  // top: 0;
+  // left: 0;
+  width: 400%;
+  height: 400%;
+  z-index: -1;
+  // flex: 1;
+`;
 const defaultCovers = [
   "https://p2.music.126.net/0-Ybpa8FrDfRgKYCTJD8Xg==/109951164796696795.jpg",
   "https://p2.music.126.net/QxJA2mr4hhb9DZyucIOIQw==/109951165422200291.jpg",
@@ -60,8 +69,9 @@ const defaultCovers = [
 ];
 
 // const CoverImage = Animated.createAnimatedComponent(ImageBackground);
-export function DailyTracksCard(props) {
-  const translateValue = new Animated.Value(0);
+export function DailyTracksCard2(props) {
+  const translateValue = React.useRef(new Animated.Value(0)).current;
+
   // const translateValue = React.useRef(new Animated.Value(0)).current;
   const AnimationTranslate = translateValue.interpolate({
     inputRange: [0, 2],
@@ -74,18 +84,14 @@ export function DailyTracksCard(props) {
   // }).start(() => startMoving());
   // }).stop(() => startMoving());
   React.useEffect(() => {
-    
-    
     mounted.current = true;
     if (mounted.current) {
       Animated.timing(translateValue, {
-        toValue: 2,
+        toValue: -792,
         duration: 3800,
         easing: Easing.linear,
         useNativeDriver: true,
-      }).start(()=>{
-        
-      });
+      }).start(() => {});
       // startMoving.stop();
     }
     return () => {
@@ -93,15 +99,7 @@ export function DailyTracksCard(props) {
       // translateValue
     };
   }, [translateValue]);
-  const CoverImage = styled(Animated.createAnimatedComponent(ImageBackground))`
-    // position: center;
-    // top: 0;
-    // left: 0;
-    width: 400%;
-    height: 400%;
-    z-index: -1;
-    // flex: 1;
-  `;
+
   // console.log(AnimationTranslate, translateValue);
 
   // const AnimatedCover = Animated.createAnimatedComponent(CoverImage);
@@ -117,7 +115,7 @@ export function DailyTracksCard(props) {
           source={{ uri: defaultCovers[1] }}
           resizeMode="repeat"
           style={{
-            transform: [{ translateY: AnimationTranslate }],
+            transform: [{ translateY: translateValue }],
           }}
         />
         {props.childs}
@@ -125,6 +123,44 @@ export function DailyTracksCard(props) {
       </DailyRecommendCard>
     </SafeAreaView>
   );
+}
+
+export class DailyTracksCard extends React.Component {
+  translateValue = new Animated.Value(0);
+  animationTranslate = this.translateValue.interpolate({
+    inputRange: [0, 2],
+    outputRange: [-198, -792],
+  });
+  componentDidMount(){
+
+    Animated.timing(this.translateValue, {
+      toValue: 2,
+      duration: 3800,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    }).start(() => {});
+  }
+  render() {
+    return (
+      <SafeAreaView>
+        <DailyRecommendCard>
+          <Container>
+            <TitleBox>
+              <Title>每日推荐</Title>
+            </TitleBox>
+          </Container>
+          <CoverImage
+            source={{ uri: defaultCovers[1] }}
+            resizeMode="repeat"
+            style={{
+              transform: [{ translateY: this.animationTranslate }],
+            }}
+          />
+          {/* <ImageBackground style={{height: '100%',width: '100%'}} source={{uri: defaultCovers[1]}}/> */}
+        </DailyRecommendCard>
+      </SafeAreaView>
+    );
+  }
 }
 
 const styles = StyleSheet.create({

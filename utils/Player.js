@@ -11,10 +11,10 @@ import { isAccountLoggedIn } from '@/utils/auth';
 import { trackUpdateNowPlaying, trackScrobble } from '@/api/lastfm';
 import { isCreateTray } from '@/utils/platform';
 
-const electron =
-  process.env.IS_ELECTRON === true ? window.require('electron') : null;
-const ipcRenderer =
-  process.env.IS_ELECTRON === true ? electron.ipcRenderer : null;
+// const electron =
+//   process.env.IS_ELECTRON === true ? window.require('electron') : null;
+// const ipcRenderer =
+//   process.env.IS_ELECTRON === true ? electron.ipcRenderer : null;
 const delay = ms =>
   new Promise(resolve => {
     setTimeout(() => {
