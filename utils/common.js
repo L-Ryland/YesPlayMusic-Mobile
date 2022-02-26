@@ -7,17 +7,18 @@ import { useAppSelector } from "@/hooks/useRedux";
 import { selectData, setLastRefreshCookieDate } from "@/redux/slice/dataSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-let data = {};
-(async () => {
-  try {
-    data = await AsyncStorage.getItem("persist: data");
-    console.log(data);
-  } catch (e) {
-    // error reading value
-    console.log(e);
-  }
-})();
 
+const parseData = async () => {
+  try {
+    const data = await AsyncStorage.getItem("persist:data");
+    return data?JSON.parse(data):null;
+  } catch (error) {
+    console.error("data parse error", error);
+  }
+}
+let data = {};
+(async () => data = await parseData())();
+console.log();
 export function isTrackPlayable(track) {
   let result = {
     playable: true,

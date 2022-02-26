@@ -5,9 +5,7 @@ module.exports = function(api) {
     plugins: [
       ["module-resolver", {
         "alias": {
-          "@": '.',
-          "@/utils": "./utils",
-          "@/api": "./api",
+          "@": './',
         },
         "extensions": [
           ".js",
@@ -16,6 +14,7 @@ module.exports = function(api) {
           ".tsx",
         ]
       }],
+      ["@babel/plugin-proposal-decorators", { "legacy": true }],
     ]
   };
 };

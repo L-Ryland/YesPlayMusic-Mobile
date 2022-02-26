@@ -1,8 +1,9 @@
 import axios from 'axios';
 import Dexie from 'dexie';
-import { useAppSelector } from '@/hooks/useRedux';
-import { selectSettings } from '@/redux/slice/settingsSlice';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 // import pkg from "../../package.json";
+
+
 
 const db = new Dexie('yesplaymusic');
 
@@ -30,9 +31,11 @@ db.version(1).stores({
 });
 
 let tracksCacheBytes = 0;
+console.log(db);
 
 async function deleteExcessCache() {
-  const settings = useAppSelector(selectSettings);
+  // const settings = useAppSelector(selectSettings);
+  const settings = await AsyncStorage.getItem("persist:settings")
   if (
     settings.cacheLimit === false ||
     tracksCacheBytes < settings.cacheLimit * Math.pow(1024, 2)

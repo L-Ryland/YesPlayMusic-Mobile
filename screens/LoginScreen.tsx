@@ -186,7 +186,6 @@ const LoginBox = styled(View)`
   border-radius: 20px;
   height: 64px;
   width: 300px;
-  transition: all 0.3s;
   padding-left: 22px;
   box-sizing: border-box;
 `;
@@ -217,7 +216,6 @@ const ConfirmBox = styled(View)`
   color: var(--color-primary);
   border-radius: 8px;
   margin-top: 24px;
-  transition: 0.2s;
   padding: 8px;
   width: 100%;
   width: 300px;

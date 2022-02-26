@@ -54,7 +54,6 @@ export function Cover(props: any) {
 const styles = StyleSheet.create({
   cover: {
     position: "relative",
-    transition: 'transform 0.3s',
   },
   coverContainer: {
     position: "relative",

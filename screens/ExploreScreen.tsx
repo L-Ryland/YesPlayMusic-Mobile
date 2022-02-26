@@ -146,7 +146,6 @@ const CatagoryButton = styled.Pressable`
   border: 2px white;
   background-color: var(--color-secondary-bg);
   color: var(--color-secondary);
-  transition: 0.2s;
 `;
 const styles = StyleSheet.create({
   container: {
