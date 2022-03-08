@@ -37,13 +37,11 @@ const Info = styled.View`
 const Title = styled.Text`
   font-size: 36px;
   font-weight: 700;
-  color: var(--color-text);
   margin-bottom: 18px;
 `;
 const ArtistTitle = styled(Text)`
   font-size: 18px;
   opacity: 0.88;
-  color: var(--color-text);
   margin-top: 24px;
 `;
 const ArtistInfo = styled.Text`
@@ -52,19 +50,16 @@ const ArtistInfo = styled.Text`
 const DateAndCount = styled(Text)`
   font-size: 14px;
   opacity: 0.68;
-  color: var(--color-text);
   margin-top: 2px;
 `;
 const Description = styled(Text)`
   font-size: 14px;
   opacity: 0.68;
-  color: var(--color-text);
   margin-top: 24px;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3px;
   overflow: hidden;
-  cursor: pointer;
 `;
 const ButtonBox = styled(View)`
   margin-top: 32px;

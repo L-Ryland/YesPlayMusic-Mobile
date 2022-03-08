@@ -14,7 +14,7 @@ registerRootComponent(App);
 
 const adapter = new SQLiteAdapter({
     dbName: 'yeaplaymusic',
-    schema, jsi: true, onSetUpError: error => { console.error('sqlite db setup failure', error);}
+    schema, jsi: false, onSetUpError: error => { console.error('sqlite db setup failure', error);}
 })
 
 export const database = new Database({

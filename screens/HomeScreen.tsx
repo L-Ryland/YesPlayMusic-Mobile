@@ -18,23 +18,32 @@ import { useAppSelector } from "@/hooks/useRedux";
 import { selectSettings } from "@/redux/slice/settingsSlice";
 
 export function HomeScreen(props: RootTabScreenProps<"Home">) {
-  const [recommendPlaylists, setRecommendPlaylists] = useState("");
-  const [newAlbum, setNewAlbum] = useState("");
-  const [topArtists, setTopArtists] = useState("");
-  const [toplist, setToplist] = useState("");
-  const [data, setData] = useState("");
+  const [recommendPlaylists, setRecommendPlaylists] = useState(undefined);
+  const [newAlbum, setNewAlbum] = useState(undefined);
+  const [topArtists, setTopArtists] = useState(undefined);
+  const [toplist, setToplist] = useState(undefined);
+  const [data, setData] = useState(undefined);
   const { currentData, isLoading } = useRecommendPlaylistQuery(undefined);
   // const recommendPlaylist = currentData?.result;
   const mountedRef = React.useRef(true);
   const settings = useAppSelector(selectSettings);
-  const fetchData = async () => {
-    let response: any;
-    response = await recommendPlaylist({ limit: 10});
-    setRecommendPlaylists(response.result);
-    response = await newAlbums({ limit: 10, area: "ALL" });
+  const fetchData = () => {
+    // let response: any;
+    // response = await recommendPlaylist({ limit: 10});
+    recommendPlaylist({limit: 30}).then(
+      (data: any) => {
+        setRecommendPlaylists(data.result);
+      }
+    );
+    // setRecommendPlaylists(response.result);
+    // response = await newAlbums({ limit: 10, area: "ALL" });
     // console.log(response);
-    
-    setNewAlbum(response.albums);
+    newAlbums({ limit: 10, area: 'ALL'}).then(
+      (data: any) => {
+        setNewAlbum(data.albums);
+      }
+    );
+    // setNewAlbum(response.albums);
     const toplistOfArtistsAreaTable = {
       all: undefined,
       zh: 1,
@@ -42,7 +51,7 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
       jp: 4,
       kr: 3,
     };
-    response = await toplistOfArtists(
+    toplistOfArtists(
       toplistOfArtistsAreaTable[settings.musicLanguage]
     ).then((data: any) => {
       let indexs: Number[] = [];
@@ -53,11 +62,18 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
       const filterArtists = data.list.artists.filter((l, index) =>
         indexs.includes(index)
       );
+      console.log("filtered artists", filterArtists);
+      
       setTopArtists(filterArtists)
     });
-    response = await toplists();
-    setToplist(response.list);
-    response = await topPlaylist();
+    toplists().then(
+      (data: any) => {
+        setToplist(data.list);
+      }
+    );
+    // response = await toplists();
+    // setToplist(response.list);
+    // response = await topPlaylist();
     // console.log(response);
     
   };
@@ -102,7 +118,7 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
       <DailyTracksCard />
       <FMCard />
       <Text style={styles.title}>Recommended Artists</Text>
-      {/* <CoverRow rowNumber={1} type="artist" items={topArtists} /> */}
+      <CoverRow rowNumber={1} type="artist" items={topArtists} />
       <Text style={styles.title}>Latest Albums</Text>
       {!newAlbum ? (
         <Text>Loading</Text>

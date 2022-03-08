@@ -1,3 +1,2 @@
-ninja: Entering directory `/Users/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/.cxx/cmake/debug/x86'
-[1/2] Building CXX object CMakeFiles/native-lib.dir/src/main/cpp/native-lib.cpp.o
-[2/2] Linking CXX shared library ../../../../build/intermediates/cmake/debug/obj/x86/libnative-lib.so
+ninja: Entering directory `/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/.cxx/cmake/debug/x86'
+ninja: no work to do.

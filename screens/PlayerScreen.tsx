@@ -11,8 +11,6 @@ const Player = styled.View`
   justify-content: space-around;
   height: 64px;
   backdrop-filter: saturate(180%) blur(30px);
-  // background-color: rgba(255, 255, 255, 0.86);
-  background-color: var(--color-navbar-bg);
   z-index: 100;
 `;
 const ProgressBar = styled.View`
@@ -24,7 +22,7 @@ const Slider = styled.View`
   height: 2;
 `;
 const ControlBox = styled.View `
-display: grid;
+display: flex;
 grid-template-columns: repeat(3, 1fr);
 height: 100%;
 padding: {

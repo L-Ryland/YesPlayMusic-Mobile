@@ -140,7 +140,6 @@ const styles = StyleSheet.create({
     marginTop: 40,
     marginBottom: 50,
     paddingVertical: 20,
-    justifyContent: "center",
     alignItems: "center",
     backgroundColor: "white",
     borderTopWidth: StyleSheet.hairlineWidth,

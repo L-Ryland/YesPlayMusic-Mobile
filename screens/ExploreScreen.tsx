@@ -20,14 +20,15 @@ export function ExploreScreen() {
   const [playlists, setPlaylists] = React.useState([]);
   const [hasMore, setHasMore] = React.useState([]);
   const mountRef = React.useRef(true);
-  let response;
   /**
    * Fetch recommend playlist from api
    */
-  const getRecommendPlayList = async () => {
-    response = await recommendPlaylist({ limit: 30 });
-    // setRecommendList(response.result);
-    setPlaylists(response.result);
+  const getRecommendPlayList = () => {
+    recommendPlaylist({ limit: 30 }).then(
+      (data: any) => {
+        setPlaylists(data.result);
+      }
+    );
   };
   /**
    * Fetch high quality playlist from api
@@ -35,35 +36,37 @@ export function ExploreScreen() {
   const getHighQualityPlaylist = async () => {
     let before =
       playlists.length !== 0 ? playlists[playlists.length - 1].updateTime : 0;
-    response = await highQualityPlaylist({
+    highQualityPlaylist({
       limit: 50,
       before,
       cat: activeCategory,
+    }).then(( data: any ) => {
+      setPlaylists(data.playlists);
+      setHasMore(data.more);
     });
     // setHqlist(response.playlists);
-    setPlaylists(response.playlists);
-    setHasMore(response.more);
   };
 
   /**
    * Fetch top list from api
    */
   const getTopLists = async () => {
-    response = await toplists();
+    toplists().then(( data: any ) => {
+      setPlaylists(data.list);
+    });
     // setToplist(response.list);
-    setPlaylists(response.list);
   };
 
   /**
    *  Fetch topPlaylist from api
    */
-  const getTopPlayList = async () => {
-    response = await topPlaylist({
+  const getTopPlayList = () => {
+    topPlaylist({
       cat: activeCategory,
+    }).then(( data: any ) => {
+      setPlaylists(data.playlists);
+      setHasMore(data.more)
     });
-    console.log(response.playlists);
-    setPlaylists(response.playlists);
-    setHasMore(response.more);
   };
   React.useEffect(() => {
     (async () => {
@@ -133,19 +136,14 @@ const ButtonContainer = styled.ScrollView`
 `;
 const CatagoryButton = styled.Pressable`
   height: 4%;
-  user-select: none;
-  cursor: pointer;
   padding: 8px 16px;
   margin: 10px 16px 6px 0;
-  // display: flex;
   justify-content: center;
   align-items: center;
   font-weight: 600;
   font-size: 18px;
-  border-radius: 2rem;
+  border-radius: 32;
   border: 2px white;
-  background-color: var(--color-secondary-bg);
-  color: var(--color-secondary);
 `;
 const styles = StyleSheet.create({
   container: {

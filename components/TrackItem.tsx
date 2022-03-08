@@ -11,14 +11,13 @@ export function TrackItem(props: TrackProps) {
   const { title, artist } = props;
   console.log(props);
   const TrackView = styled(View)`
-    display: "grid";
+    display: "flex";
     gap: "4px";
     padding-bottom: 18px;
   `;
   const Title = styled(Text)`
     font-size: 18px;
     font-weight: 600;
-    color: var(--color-text);
     cursor: default;
     padding-right: 16px;
     display: -webkit-box;

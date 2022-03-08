@@ -16,10 +16,7 @@ const Title = styled.Text`
   font-size: 64px;
   line-height: 48px;
   opacity: 0.96;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  justify-items: center;
-  place-items: center;
+  display: flex;
 `;
 const TitleBox = styled.View`
   height: 100%;
@@ -28,18 +25,14 @@ const TitleBox = styled.View`
   font-size: 64px;
   line-height: 48px;
   opacity: 0.96;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  justify-items: center;
-  place-items: center;
+  display: flex;
 `;
 const Container = styled.View`
-  // background: linear-gradient(to left, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.28));
   height: 198px;
   width: 50%;
   display: flex;
   align-items: center;
-  border-radius: 0.94rem;
+  border-radius: 15;
   z-index: 2;
 `;
 
@@ -47,20 +40,15 @@ const Container = styled.View`
 // animation: move 38s infinite;
 // animation-direction: alternate;
 const DailyRecommendCard = styled.View`
-  border-radius: 1rem;
+  border-radius: 18;
   height: 198px;
-  cursor: pointer;
   position: relative;
   overflow: hidden;
 `;
 const CoverImage = styled(Animated.createAnimatedComponent(ImageBackground))`
-  // position: center;
-  // top: 0;
-  // left: 0;
   width: 400%;
   height: 400%;
   z-index: -1;
-  // flex: 1;
 `;
 const defaultCovers = [
   "https://p2.music.126.net/0-Ybpa8FrDfRgKYCTJD8Xg==/109951164796696795.jpg",

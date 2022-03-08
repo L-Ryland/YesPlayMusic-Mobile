@@ -1,10 +1,12 @@
 package com.rylandliu.yesplaymusic;
+import expo.modules.updates.UpdatesDevLauncherController;
 import expo.modules.devlauncher.DevLauncherController;
 
 import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
 import androidx.annotation.NonNull;
+
 
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
@@ -16,10 +18,11 @@ import com.facebook.soloader.SoLoader;
 import expo.modules.ApplicationLifecycleDispatcher;
 import expo.modules.ReactNativeHostWrapper;
 
-import com.facebook.react.bridge.JSIModulePackage;
+
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import com.nozbe.watermelondb.WatermelonDBPackage;
 
 public class MainApplication extends Application implements ReactApplication {
   private final ReactNativeHost mReactNativeHost = new ReactNativeHostWrapper(
@@ -27,7 +30,7 @@ public class MainApplication extends Application implements ReactApplication {
     new ReactNativeHost(this) {
     @Override
     public boolean getUseDeveloperSupport() {
-      return BuildConfig.DEBUG;
+      return DevLauncherController.getInstance().getUseDeveloperSupport();
     }
 
     @Override
@@ -43,6 +46,12 @@ public class MainApplication extends Application implements ReactApplication {
     protected String getJSMainModuleName() {
       return "index";
     }
+
+//    @Override
+//    protected JSIModulePackage getJSIModulePackage() {
+//      return new WatermelonDBJSIPackage(); // ⬅️ This!
+//    }
+
   });
 
   @Override
@@ -56,6 +65,9 @@ public class MainApplication extends Application implements ReactApplication {
     SoLoader.init(this, /* native exopackage */ false);
 
     DevLauncherController.initialize(this, getReactNativeHost());
+    if (BuildConfig.DEBUG) {
+      DevLauncherController.getInstance().setUpdatesInterface(UpdatesDevLauncherController.initialize(this));
+    }
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
     ApplicationLifecycleDispatcher.onApplicationCreate(this);
   }

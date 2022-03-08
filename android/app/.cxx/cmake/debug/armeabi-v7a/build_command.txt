@@ -1,21 +1,21 @@
-                Executable : /Users/ryland/Library/Android/sdk/cmake/3.10.2.4988404/bin/cmake
+                Executable : /home/ryland/Library/Android/sdk/cmake/3.10.2.4988404/bin/cmake
 arguments : 
--H/Users/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app
--DCMAKE_FIND_ROOT_PATH=/Users/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/.cxx/cmake/debug/prefab/armeabi-v7a/prefab
+-H/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app
+-DCMAKE_FIND_ROOT_PATH=/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/.cxx/cmake/debug/prefab/armeabi-v7a/prefab
 -DCMAKE_BUILD_TYPE=Debug
--DCMAKE_TOOLCHAIN_FILE=/Users/ryland/Library/Android/sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake
+-DCMAKE_TOOLCHAIN_FILE=/home/ryland/Library/Android/sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake
 -DANDROID_ABI=armeabi-v7a
--DANDROID_NDK=/Users/ryland/Library/Android/sdk/ndk/21.1.6352462
+-DANDROID_NDK=/home/ryland/Library/Android/sdk/ndk/21.1.6352462
 -DANDROID_PLATFORM=android-21
 -DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a
--DCMAKE_ANDROID_NDK=/Users/ryland/Library/Android/sdk/ndk/21.1.6352462
+-DCMAKE_ANDROID_NDK=/home/ryland/Library/Android/sdk/ndk/21.1.6352462
 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
--DCMAKE_LIBRARY_OUTPUT_DIRECTORY=/Users/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/build/intermediates/cmake/debug/obj/armeabi-v7a
--DCMAKE_MAKE_PROGRAM=/Users/ryland/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja
+-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/build/intermediates/cmake/debug/obj/armeabi-v7a
+-DCMAKE_MAKE_PROGRAM=/home/ryland/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja
 -DCMAKE_SYSTEM_NAME=Android
 -DCMAKE_SYSTEM_VERSION=21
--DANDROID_STL=c++_shared
--B/Users/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/.cxx/cmake/debug/armeabi-v7a
+-DANDROID_STL=c++_static
+-B/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/.cxx/cmake/debug/armeabi-v7a
 -GNinja
 jvmArgs : 
 

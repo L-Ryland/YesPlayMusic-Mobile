@@ -1,21 +1,21 @@
 {
   "buildFiles": [
-    "/Users/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/CMakeLists.txt",
-    "/Users/ryland/Library/Android/sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake",
-    "/Users/ryland/Library/Android/sdk/ndk/21.1.6352462/build/cmake/platforms.cmake"
+    "/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/CMakeLists.txt",
+    "/home/ryland/Library/Android/sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake",
+    "/home/ryland/Library/Android/sdk/ndk/21.1.6352462/build/cmake/platforms.cmake"
   ],
   "cleanCommands": [
-    "/Users/ryland/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja -C \"/Users/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/.cxx/cmake/debug/x86\" clean"
+    "/home/ryland/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja -C \"/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/.cxx/cmake/debug/x86\" clean"
   ],
-  "buildTargetsCommand": "/Users/ryland/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja  -C \"/Users/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/.cxx/cmake/debug/x86\" {LIST_OF_TARGETS_TO_BUILD}",
+  "buildTargetsCommand": "/home/ryland/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja  -C \"/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/.cxx/cmake/debug/x86\" {LIST_OF_TARGETS_TO_BUILD}",
   "libraries": {
     "native-lib-Debug-x86": {
       "artifactName": "native-lib",
-      "buildCommand": "/Users/ryland/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja -C \"/Users/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/.cxx/cmake/debug/x86\" native-lib",
+      "buildCommand": "/home/ryland/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja -C \"/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/.cxx/cmake/debug/x86\" native-lib",
       "abi": "x86",
-      "output": "/Users/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/build/intermediates/cmake/debug/obj/x86/libnative-lib.so",
+      "output": "/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/build/intermediates/cmake/debug/obj/x86/libnative-lib.so",
       "runtimeFiles": [
-        "/Users/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/libnode/bin/x86/libnode.so"
+        "/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/libnode/bin/x86/libnode.so"
       ]
     }
   }

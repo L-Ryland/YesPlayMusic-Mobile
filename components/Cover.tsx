@@ -12,8 +12,6 @@ const CoverTitle = styled.Text`
   line-height: 20px;
   display: flex;
   overflow: hidden;
-  numberoflines: "3";
-  ellipsizemode: middle;
   width: 200px;
   margin: auto 20px auto 20px;
 `;

@@ -58,6 +58,7 @@ static void InitializeFlipper(UIApplication *application) {
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
 #if defined(EX_DEV_LAUNCHER_ENABLED)
   EXDevLauncherController *controller = [EXDevLauncherController sharedInstance];
+        controller.updatesInterface = [EXUpdatesDevLauncherController sharedInstance];
   [controller startWithWindow:self.window delegate:(id<EXDevLauncherControllerDelegate>)self launchOptions:launchOptions];
 #else
   [self initializeReactNativeApp:launchOptions];
@@ -88,6 +89,11 @@ static void InitializeFlipper(UIApplication *application) {
 
 // Linking API
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+  #if defined(EX_DEV_LAUNCHER_ENABLED)
+  if ([EXDevLauncherController.sharedInstance onDeepLink:url options:options]) {
+    return true;
+  }
+  #endif
   #if defined(EX_DEV_LAUNCHER_ENABLED)
   if ([EXDevLauncherController.sharedInstance onDeepLink:url options:options]) {
     return true;

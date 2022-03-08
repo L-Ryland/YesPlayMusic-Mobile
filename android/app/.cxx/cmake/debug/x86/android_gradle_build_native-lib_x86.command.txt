@@ -1,7 +1,7 @@
-Executable : /Users/ryland/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja
+Executable : /home/ryland/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja
 arguments : 
 -C
-/Users/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/.cxx/cmake/debug/x86
+/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/.cxx/cmake/debug/x86
 native-lib
 jvmArgs : 
 

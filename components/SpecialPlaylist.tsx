@@ -10,7 +10,6 @@ const Special = styled.ScrollView`
 const Title = styled.Text`
   font-size: 36px;
   font-weight: 700;
-  color: var(--color-text);
 `;
 const Subtitle = styled.Text`
   font-size: 18px;
@@ -19,7 +18,6 @@ const Subtitle = styled.Text`
   animation-duration: 0.8s;
   animation-name: letterSpacing1;
   text-transform: uppercase;
-  color: var(--color-text);
 `;
 export default function SpecialPlaylist({playlist, specialPlaylistInfo}) {
   return (

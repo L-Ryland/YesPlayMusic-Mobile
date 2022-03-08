@@ -157,18 +157,18 @@ export default function LoginScreen() {
   return (
     <View style={styles.centerStyle}>
       <Text>Login Screen</Text>
-      <View style={styles.horizontalStyle}>
+      <View style={[styles.horizontalStyle, { marginBottom: 30 }]}>
         <Image source={require("@/assets/logos/yesplaymusic.png")} />
         <XSymbol />
         <Image source={require("@/assets/logos/netease-music.png")} />
       </View>
-      <LoginMobile />
+      <LoginEmail />
     </View>
   );
 }
 const Image = styled.Image`
-  width: 100px;
-  height: 100px;
+  width: 75px;
+  height: 75px;
 `;
 const XSymbol = styled(X)`
   width: 30px;
@@ -176,14 +176,13 @@ const XSymbol = styled(X)`
   color: rgba(82, 82, 82, 0.28);
 `;
 const LoginBox = styled(View)`
-  cursor: pointer;
   margin-top: 14px;
   margin-bottom: 14px;
   display: flex;
   justify-content: center;
   align-items: center;
   background: #eaeffd;
-  border-radius: 20px;
+  border-radius: 20;
   height: 64px;
   width: 300px;
   padding-left: 22px;
@@ -193,9 +192,7 @@ const LoginBox = styled(View)`
 const InputBox = styled.View`
   display: flex;
   flex-direction: row;
-  // justify-content: flex-end;
   margin-bottom: 16px;
-  color: var(--color-text);
   align-items: center;
   height: 46px;
   background: #eaeffd;
@@ -213,7 +210,6 @@ const ConfirmBox = styled(View)`
   font-size: 20px;
   font-weight: 600;
   background-color: #eaeffd;
-  color: var(--color-primary);
   border-radius: 8px;
   margin-top: 24px;
   padding: 8px;
@@ -229,7 +225,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    marginTop: "20px",
+    marginTop: 20,
   },
   centerStyle: {
     flex: 1,
@@ -238,13 +234,12 @@ const styles = StyleSheet.create({
   },
   inputFrameStyle: {
     backgroundColor: "transparent",
-    marginLeft: "20px",
-    width: "inherit",
-    height: "32px",
+    marginLeft: 20,
+    height: 32,
     borderWidth: 0,
     fontSize: 18,
     fontWeight: "400",
-    paddingLeft: "2px",
+    paddingLeft: 2,
   },
   activeStyle: {
     color: "#eeeeee",
