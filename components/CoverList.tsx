@@ -1,6 +1,6 @@
 import { CoverRowProps, CoverProps } from "@/types";
 import { iteratorSymbol } from "immer/dist/internal";
-import { StyleSheet, TouchableHighlight, ViewProps } from "react-native";
+import { Dimensions, StyleSheet, TouchableHighlight, ViewProps } from "react-native";
 import { SafeAreaView, ListRenderItem } from "react-native";
 import styled from "styled-components/native";
 
@@ -10,12 +10,14 @@ import { View, Text, Cover } from ".";
 
 const FlatList = styled.FlatList`
   display: flex;
+  align-self: center;
+  align-content: center;
 `;
 
 export function CoverList(props: any) {
-  let { items, type, subText, rowNumber, setCallback} = props;
+  let { items, type, subText, verticalStyle, rowNumber, setCallback} = props;
   // console.log(items, subText);
-
+  const { width } = Dimensions.get('window');
   const getImageUrl = (item: CoverProps) => {
     if (item.img1v1Url) {
       let img1v1ID = item.img1v1Url.split("/");
@@ -36,23 +38,30 @@ export function CoverList(props: any) {
   const renderItem = ({item}: any) => {
     // let subText = getSubText(item);
     const universalStyle = {
-      // height: 256,
-      // width: 256,
+      height: 200,
+      width: 256,
       borderRadius: 22,
       margin: 20
     }
     const circleStyle = {
-      // height: 256,
-      // width: 256,
+      height: 256,
+      width: 256,
       borderRadius: 128,
       margin: 20
     };
+    const listStyle = {
+      height: width/3,
+      width: width/3,
+      borderRadius: 22,
+      margin: 20,
+    }
     const itemProps = {
       id: item.id, imageUrl: getImageUrl(item), type, name: item.name,
       isExplicit: Boolean(type === "album" && item.mark === 1056768),
       isPrivacy: Boolean(type === "playlist" && item.privacy === 10),
       subText: subText??undefined,
-      imageStyle: type=="artist"?circleStyle:universalStyle,
+      imageStyle: listStyle,
+      componentWidth: width/2-20,
     }
     // console.log(item, itemProps);
     
@@ -70,6 +79,7 @@ export function CoverList(props: any) {
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
         numColumns={2}
+        horizontal={!verticalStyle}
       />
     </SafeAreaView>
   );

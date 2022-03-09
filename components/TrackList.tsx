@@ -4,16 +4,19 @@ import styled from "styled-components/native";
 import { Text, View, TrackItem } from "@/components";
 
 
-export function TrackList() {
-  const tracks = [
-    { id: "001", title: " Change Season ", artist: "  Tkko" },
-    { id: "002", title: " 带刺的草莓 ", artist: " Mit-F " },
-    { id: "003", title: " 带刺的草莓 ", artist: " Mit-F " },
-    { id: "004", title: " 带刺的草莓 ", artist: " Mit-F " },
-    { id: "005", title: " 带刺的草莓 ", artist: " Mit-F " },
-    { id: "006", title: " 带刺的草莓 ", artist: " Mit-F " },
-    { id: "007", title: " 带刺的草莓 ", artist: " Mit-F " },
-  ];
+export function TrackList({tracks}) {
+  // const tracks = [
+  //   { id: "001", title: " Change Season ", artist: "  Tkko" },
+  //   { id: "002", title: " 带刺的草莓 ", artist: " Mit-F " },
+  //   { id: "003", title: " 带刺的草莓 ", artist: " Mit-F " },
+  //   { id: "004", title: " 带刺的草莓 ", artist: " Mit-F " },
+  //   { id: "005", title: " 带刺的草莓 ", artist: " Mit-F " },
+  //   { id: "006", title: " 带刺的草莓 ", artist: " Mit-F " },
+  //   { id: "007", title: " 带刺的草莓 ", artist: " Mit-F " },
+  // ];
+  console.log(tracks);
+  alert(JSON.stringify(tracks));
+  
   const playTrackItem = () => {}
   const renderTracks = ({ item }) => {
     return <TrackItem {...item} onPress={playTrackItem}/>;
@@ -23,7 +26,7 @@ export function TrackList() {
       <FlatList
         data={tracks}
         renderItem={renderTracks}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, index) => item.id+index}
       />
     </SafeAreaView>
   );

@@ -30,7 +30,7 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
   const fetchData = () => {
     // let response: any;
     // response = await recommendPlaylist({ limit: 10});
-    recommendPlaylist({limit: 30}).then(
+    recommendPlaylist({ limit: 30 }).then(
       (data: any) => {
         setRecommendPlaylists(data.result);
       }
@@ -38,7 +38,7 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
     // setRecommendPlaylists(response.result);
     // response = await newAlbums({ limit: 10, area: "ALL" });
     // console.log(response);
-    newAlbums({ limit: 10, area: 'ALL'}).then(
+    newAlbums({ limit: 10, area: 'ALL' }).then(
       (data: any) => {
         setNewAlbum(data.albums);
       }
@@ -63,7 +63,7 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
         indexs.includes(index)
       );
       console.log("filtered artists", filterArtists);
-      
+
       setTopArtists(filterArtists)
     });
     toplists().then(
@@ -75,9 +75,9 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
     // setToplist(response.list);
     // response = await topPlaylist();
     // console.log(response);
-    
+
   };
-  
+
   useEffect(() => {
     if (mountedRef.current) {
       fetchData();
@@ -88,7 +88,7 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
   }, [mountedRef]);
   // console.log(recommendPlaylists, newAlbum);
   // console.log(data);
-  
+
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>by Apple Music</Text>
@@ -118,7 +118,10 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
       <DailyTracksCard />
       <FMCard />
       <Text style={styles.title}>Recommended Artists</Text>
-      <CoverRow rowNumber={1} type="artist" items={topArtists} />
+      <CoverRow rowNumber={1} type="artist" items={topArtists}
+        navigate={props.navigation.navigate}
+      />
+
       <Text style={styles.title}>Latest Albums</Text>
       {!newAlbum ? (
         <Text>Loading</Text>
@@ -127,7 +130,8 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
           rowNumber={1}
           type="album"
           items={newAlbum}
-          sub-text="artist"
+          subText="artist"
+          navigate={props.navigation.navigate}
         />
       )}
       <Text style={styles.title}>Charts</Text>
@@ -138,7 +142,8 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
           rowNumber={1}
           type="playlist"
           items={toplist}
-          sub-text="updateFrequency"
+          subText="updateFrequency"
+          navigate={props.navigation.navigate}
         />
       )}
     </ScrollView>

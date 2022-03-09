@@ -18,7 +18,7 @@ export type RootStackParamList = {
   Modal: undefined;
   NotFound: undefined;
   Player: undefined;
-  Playlist: {itemProps: any, Cover: any}
+  Playlist: {itemProps: any, likedSongs: any}
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<

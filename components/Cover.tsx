@@ -9,38 +9,39 @@ const CoverTitle = styled.Text`
   color: white;
   font-size: 16px;
   font-weight: 600;
-  line-height: 20px;
-  display: flex;
+  line-height: 20;
   overflow: hidden;
-  width: 200px;
   margin: auto 20px auto 20px;
+  text-align: justify;
+  flex-wrap: wrap;
 `;
 const SubTitle = styled.Text`
   font-size: 13px;
   color: #e8e6e3;
   opacity: 0.68;
-  line-height: 18px;
-  display: flex;
+  line-height: 18;
   overflow: hidden;
   margin: auto 20px auto 20px;
+  text-align: justify;
+  flex-wrap: wrap;
 `;
 export function Cover(props: any) {
   // console.log('@', props);
-  const { imageUrl, subText, name, isPrivacy, isExplicit, imageStyle } = props;
+  const { imageUrl, subText, name, isPrivacy, isExplicit, imageStyle, componentWidth } = props;
   return (
-    <View>
-      <View style={styles.coverContainer}>
+    <View style={{ width: imageStyle.width+imageStyle.margin*2 }}>
+      <View >
         <Image
           source={{
-            uri: imageUrl, 
+            uri: imageUrl,
           }}
-          style={[imageStyle, styles.imageStyles]}
+          style={imageStyle}
         />
         <View >
           <CoverTitle>
             {isExplicit && <Explicit />}
             {isPrivacy && <Lock />}
-            {name??''}
+            {name ?? ''}
           </CoverTitle>
           {subText && <SubTitle>{subText}</SubTitle>}
         </View>
@@ -56,9 +57,5 @@ const styles = StyleSheet.create({
   coverContainer: {
     position: "relative",
   },
-  imageStyles: {
-    width: 200,
-    height: 200,
-    resizeMode: "cover",
-  },
+
 });

@@ -5,7 +5,7 @@ import { StyleSheet } from "react-native";
 import styled from "styled-components/native";
 
 import { Text, ScrollView } from "../components/Themed";
-import { CoverList } from "../components";
+import { CoverList, CoverRow } from "../components";
 import {
   topPlaylist,
   highQualityPlaylist,
@@ -33,14 +33,19 @@ export function ExploreScreen() {
   /**
    * Fetch high quality playlist from api
    */
-  const getHighQualityPlaylist = async () => {
-    let before =
-      playlists.length !== 0 ? playlists[playlists.length - 1].updateTime : 0;
+  const getHighQualityPlaylist = () => {
+    // let before =
+    //   playlists.length !== 0 ? playlists[playlists.length - 1].updateTime : 0;
+    let before = playlists.length;
+    if (playlists.length !== 0) {
+      const {updateTime} = playlists[playlists.length - 1];
+      before = updateTime;
+    }
     highQualityPlaylist({
       limit: 50,
       before,
       cat: activeCategory,
-    }).then(( data: any ) => {
+    }).then((data: any) => {
       setPlaylists(data.playlists);
       setHasMore(data.more);
     });
@@ -50,8 +55,8 @@ export function ExploreScreen() {
   /**
    * Fetch top list from api
    */
-  const getTopLists = async () => {
-    toplists().then(( data: any ) => {
+  const getTopLists = () => {
+    toplists().then((data: any) => {
       setPlaylists(data.list);
     });
     // setToplist(response.list);
@@ -63,39 +68,37 @@ export function ExploreScreen() {
   const getTopPlayList = () => {
     topPlaylist({
       cat: activeCategory,
-    }).then(( data: any ) => {
+    }).then((data: any) => {
       setPlaylists(data.playlists);
       setHasMore(data.more)
     });
   };
   React.useEffect(() => {
-    (async () => {
-      switch (activeCategory) {
-        case "推荐歌单":
-          await getRecommendPlayList();
-          break;
-        case "精品歌单":
-          await getHighQualityPlaylist();
-          break;
-        case "排行榜":
-          await getTopLists();
-          break;
-        default:
-          await getTopPlayList();
-          break;
-      }
-    })();
+    switch (activeCategory) {
+      case "推荐歌单":
+        getRecommendPlayList();
+        break;
+      case "精品歌单":
+        getHighQualityPlaylist();
+        break;
+      case "排行榜":
+        getTopLists();
+        break;
+      default:
+        getTopPlayList();
+        break;
+    }
     return () => {
       mountRef.current = false;
     };
   }, [activeCategory, mountRef]);
-  const upadatePlaylist = (first) => {};
+  const upadatePlaylist = (first) => { };
   const subText =
     activeCategory === "排行榜"
       ? "updateFrequency"
       : activeCategory === "推荐歌单"
-      ? "copywriter"
-      : "none";
+        ? "copywriter"
+        : "none";
   const handleCatogorySwitch = (category) => {
     setActiveCategory(category);
   };
@@ -117,12 +120,13 @@ export function ExploreScreen() {
         ))}
       </ButtonContainer>
       {playlists && (
-        <CoverList
+        <CoverRow
           type="playlist"
           items={playlists}
-          sub-text={subText}
-          show-play-count={activeCategory !== "排行榜" ? true : false}
-          image-size={activeCategory !== "排行榜" ? 512 : 1024}
+          subTtext={subText}
+          showPlayCount={activeCategory !== "排行榜" ? true : false}
+          imageSize={activeCategory !== "排行榜" ? 512 : 1024}
+          verticalStyle={true}
         />
       )}
     </ScrollView>
@@ -147,7 +151,7 @@ const CatagoryButton = styled.Pressable`
 `;
 const styles = StyleSheet.create({
   container: {
-    flex: 2,
+    flex: 1,
     // alignItems: 'center',
     // justifyContent: 'center',
   },
