@@ -13,7 +13,7 @@ import {
   toplists,
 } from "@/api";
 
-export function ExploreScreen() {
+export function ExploreScreen({ navigation, route }) {
   const settings = useAppSelector(selectSettings);
   // console.log(settings.enabledPlaylistCategories);
   const [activeCategory, setActiveCategory] = React.useState("全部");
@@ -127,6 +127,7 @@ export function ExploreScreen() {
           showPlayCount={activeCategory !== "排行榜" ? true : false}
           imageSize={activeCategory !== "排行榜" ? 512 : 1024}
           verticalStyle={true}
+          navigate={navigation.navigate}
         />
       )}
     </ScrollView>
@@ -146,7 +147,7 @@ const CatagoryButton = styled.Pressable`
   align-items: center;
   font-weight: 600;
   font-size: 18px;
-  border-radius: 32;
+  border-radius: '32';
   border: 2px white;
 `;
 const styles = StyleSheet.create({

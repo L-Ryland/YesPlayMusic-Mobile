@@ -1,4 +1,4 @@
-import { StyleSheet, Appearance } from "react-native";
+import { StyleSheet, Appearance, StatusBar } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 
 import EditScreenInfo from "../components/EditScreenInfo";
@@ -62,7 +62,7 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
       const filterArtists = data.list.artists.filter((l, index) =>
         indexs.includes(index)
       );
-      console.log("filtered artists", filterArtists);
+      // console.log("filtered artists", filterArtists);
 
       setTopArtists(filterArtists)
     });
@@ -154,6 +154,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignSelf: "stretch",
+    marginTop: StatusBar.currentHeight
   },
   title: {
     display: "flex",

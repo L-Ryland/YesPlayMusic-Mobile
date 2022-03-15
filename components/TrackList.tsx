@@ -4,7 +4,7 @@ import styled from "styled-components/native";
 import { Text, View, TrackItem } from "@/components";
 
 
-export function TrackList({tracks}) {
+export function TrackList({tracks, navigate}) {
   // const tracks = [
   //   { id: "001", title: " Change Season ", artist: "  Tkko" },
   //   { id: "002", title: " 带刺的草莓 ", artist: " Mit-F " },
@@ -14,12 +14,9 @@ export function TrackList({tracks}) {
   //   { id: "006", title: " 带刺的草莓 ", artist: " Mit-F " },
   //   { id: "007", title: " 带刺的草莓 ", artist: " Mit-F " },
   // ];
-  console.log(tracks);
-  alert(JSON.stringify(tracks));
   
-  const playTrackItem = () => {}
   const renderTracks = ({ item }) => {
-    return <TrackItem {...item} onPress={playTrackItem}/>;
+    return <TrackItem track={item} navigate={navigate}/>;
   };
   return (
     <SafeAreaView>

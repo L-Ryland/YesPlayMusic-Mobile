@@ -24,7 +24,7 @@ const service = axios.create({
 // const source = CancelToken.source();
 service.interceptors.request.use(
   function (config) {
-    console.log(config);
+    // console.log(config);
     if (!config.params) config.params = {};
     // recognize if the target platfrom is iOS
     if (Platform.OS === "ios") {
@@ -60,7 +60,7 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response)=>{
     const res = response.data;
-    console.log(response.data);
+    // console.log(response.data);
     return res;
   },
   (error) => {

@@ -14,6 +14,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 // ...
 import settingsReducer from "./slice/settingsSlice";
 import dataReducer from "./slice/dataSlice";
+import playerReducer from './slice/playerSlice'
 // import saga from "./saga";
 
 const persistSettigsReducer = persistReducer(
@@ -23,6 +24,10 @@ const persistSettigsReducer = persistReducer(
 const dataPersistReducer = persistReducer(
   { key: "data", storage: AsyncStorage },
   dataReducer,
+);
+const playerPersistReducer = persistReducer(
+  { key: "player", storage: AsyncStorage },
+  playerReducer,
 );
 
 export const store = configureStore({
@@ -34,6 +39,7 @@ export const store = configureStore({
     settings: persistSettigsReducer,
     // data: dataReducer,
     data: dataPersistReducer,
+    player: playerPersistReducer,
     [apiSlice.reducerPath]: apiSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>

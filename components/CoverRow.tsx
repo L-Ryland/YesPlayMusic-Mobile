@@ -23,7 +23,7 @@ export function CoverRow(props: CoverRowProps|any) {
       setIsHorizontal(false);
       setNumColumns(2);
     }
-    console.log("isHorizontal", isHorizontal);
+    // console.log("isHorizontal", isHorizontal);
     
   }, [verticalStyle]);
   
@@ -135,6 +135,6 @@ const styles = StyleSheet.create({
   },
   flatListStyle: {
     alignSelf: 'center',
-    alignContent: 'center'
-  }
+    alignContent: 'center',
+  },
 });

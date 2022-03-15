@@ -1,4 +1,3 @@
-import store from '@/store';
 import request from '@/utils/request';
 import { mapTrackPlayableStatus } from '@/utils/common';
 import {
@@ -7,6 +6,7 @@ import {
   cacheLyric,
   getLyricFromCache,
 } from '@/utils/db';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /**
  * 获取音乐 url
@@ -14,11 +14,17 @@ import {
  * !!!未登录状态返回试听片段(返回字段包含被截取的正常歌曲的开始时间和结束时间)
  * @param {string} id - 音乐的 id，例如 id=405998841,33894312
  */
-export function getMP3(id) {
-  let br =
-    store.state.settings?.musicQuality !== undefined
-      ? store.state.settings.musicQuality
-      : 320000;
+export async function getMP3(id) {
+  let br = await AsyncStorage.getItem("persist:settings").then(settings => {
+    const { musicQuality } = settings;
+    br = musicQuality ?? 32000;
+    return br;
+  });
+  // let br =
+  //   store.state.settings?.musicQuality !== undefined
+  //     ? store.state.settings.musicQuality
+  //     : 320000;
+  console.log(id, br);
   return request({
     url: '/song/url',
     method: 'get',

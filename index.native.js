@@ -1,6 +1,10 @@
 import 'expo-dev-client';
 
 import { registerRootComponent } from 'expo';
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+
+import { store, persistor } from './redux/store';
 
 import App from './App';
 import { Database } from '@nozbe/watermelondb'
@@ -10,7 +14,14 @@ import { schema, modelClassArr as modelClasses } from "@/utils/schema";
 // registerRootComponent calls AppRegistry.registerComponent('main', () => App);
 // It also ensures that whether you load the app in Expo Go or in a native build,
 // the environment is set up appropriately
-registerRootComponent(App);
+registerRootComponent(
+ () => (
+	<Provider store={store}>
+		<PersistGate loading={null} persistor={persistor}>
+			<App />
+		</PersistGate>
+	</Provider>
+ ));
 
 const adapter = new SQLiteAdapter({
     dbName: 'yeaplaymusic',

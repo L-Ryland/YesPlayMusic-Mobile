@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, TouchableHighlight, Image, Button, Dimensions } from "react-native";
 import styled from "styled-components/native";
-import { Cover, ScrollView, MusicModal, TrackList, ContextMenu, Text, View } from "@/components";
+import { Cover, ScrollView, MusicModal, TrackList, ContextMenu, Text, View, SVG } from "@/components";
 import { Lock } from "@/components/icons";
 import { Audio } from "expo-av";
 
@@ -10,8 +10,7 @@ import {
   PlaylistProps,
   PlaylistDetailProp,
 } from "@/types";
-import { useGetPlaylistDetailQuery } from "@/redux/slice/apiSlice";
-import { getPlaylistDetail, subscribePlaylist, deletePlaylist } from "@/api";
+import { getPlaylistDetail, subscribePlaylist, deletePlaylist, getMP3 } from "@/api";
 import { Heart, HeartSolid, Plus, Play } from "@/components/icons";
 import dayjs from "dayjs";
 import { useAppSelector } from "@/hooks/useRedux";
@@ -78,11 +77,12 @@ const ButtonBox = styled(View)`
   flex-direction: row;
 `;
 
+// const Play = () => <SVG xml={require('@/assets/icons/play.svg')} height={50} width={50}/>
 export function PlaylistScreen({
   navigation,
   route,
 }: RootStackScreenProps<"Playlist">) {
-  const [playlist, setPlaylist] = React.useState<PlaylistDetailProp>({});
+  const [playlist, setPlaylist] = React.useState<PlaylistDetailProp>();
   const [tracks, setTracks] = React.useState([]);
   const [searchKeyWords, setSearchKeyWords] = React.useState('');
   const [sound, setSound] = React.useState<any>();
@@ -96,7 +96,7 @@ export function PlaylistScreen({
     getPlaylistDetail(id, true).then( (data: any) => {
       // alert(JSON.stringify(data));
       setPlaylist(data.playlist);
-      alert(JSON.stringify(data.playlist.tracks));
+      // alert(JSON.stringify(data.playlist.tracks));
       setTracks(data.playlist.tracks);
     })
    }
@@ -124,6 +124,20 @@ export function PlaylistScreen({
     console.log("playing sound");
     await sound.playAsync();
   }
+  async function playTrack() {
+    const songID = tracks[0].id;
+    console.log("load first song id", songID);
+    const songUrl: string = await getMP3(songID).then(
+      data => data.data[0].url
+    );
+    console.log("song url ", songUrl);
+    
+    const {sound} = await Audio.Sound.createAsync(songUrl);
+    setSound(sound);
+    console.log("Playing sound");
+    await sound.playAsync();
+  }
+  const navigateToPlayer = () => { navigation.navigate('Player') }
   React.useEffect(() => {
     return sound
       ? () => {
@@ -164,58 +178,20 @@ export function PlaylistScreen({
         <HeartSolid {...svgStyle} />
         <Text>UNLIKE</Text>
         <Heart {...svgStyle} />
-        <Plus {...svgStyle} color='white' />
-        <Play {...svgStyle} />
+        <Plus {...svgStyle} />
+        <Text onPress={playTrack}>Play</Text>
+        {/* <Play  /> */}
+        {/* <SvgXml xml={Play}  height="100%" width='100%'/> */}
+        {/* <SvgUri
+          width="100%"
+          height="100%" 
+          uri="https://icons.getbootstrap.com/assets/icons/play-fill.svg"
+        /> */}
+        <Text onPress={navigateToPlayer}>PlayerScreen</Text>
       </ButtonBox>
-      <TrackList tracks={tracks} />
+      <TrackList tracks={tracks} navigate={navigation.navigate} />
     </ScrollView>
   )
-  return (
-    <ScrollView style={styles.container}>
-      <Playlist>
-        {itemProps && (
-          <PlaylistInfo>
-            <TouchableHighlight>
-              <Cover imageUrl={itemProps.imageUrl} type={itemProps.type} imageStyle={itemProps.imageStyle} />
-              {/* <route.params.Cover/> */}
-            </TouchableHighlight>
-            <Info>
-              <Title>
-                {itemProps?.privacy === 10 && <Lock />}
-                {itemProps?.name}
-              </Title>
-              <ArtistInfo>
-                Playlist by{" "}
-                {[
-                  5277771961, 5277965913, 5277969451, 5277778542, 5278068783,
-                ].includes(itemProps.id)
-                  ? "Apple Music"
-                  : playlist?.creator?.nickname}
-              </ArtistInfo>
-              <DateAndCount>
-                Updated At {updateTime} · {playlist?.trackCount} Songs
-              </DateAndCount>
-              <Description ellipsizeMode="tail">
-                {playlist?.description}
-              </Description>
-            </Info>
-          </PlaylistInfo>
-        )}
-        <ButtonBox>
-          <Text>LIKE</Text>
-          <HeartSolid width={16} height={16} />
-          <Text>UNLIKE</Text>
-          <Heart width={16} height={16} />
-          {/* <SvgButton source={{uri: '/assets/icons/heart-solid.svg'}} /> */}
-        </ButtonBox>
-        <TrackList />
-        {/* <MusicModal /> */}
-
-        <ContextMenu />
-        <Button onPress={playSound} title="play sound" />
-      </Playlist>
-    </ScrollView>
-  );
 }
 
 const styles = StyleSheet.create({

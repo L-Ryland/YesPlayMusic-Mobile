@@ -1,28 +1,32 @@
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { Provider } from "react-redux";
-import { store, persistor } from "./redux/store";
 import useCachedResources from "./hooks/useCachedResources";
 import useColorScheme from "./hooks/useColorScheme";
+import { useAppSelector } from "@/hooks/useRedux";
 import Navigation from "./navigation";
-import { PersistGate } from "redux-persist/integration/react";
+import { selectPlayer } from "./redux/slice/playerSlice";
+import { Tracker } from "./components/Tracker";
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
+  const { playing } = useAppSelector(selectPlayer);
+  console.log('root component playing status', playing);
+
 
   if (!isLoadingComplete) {
     return null;
   } else {
     return (
       <SafeAreaProvider>
-        <Provider store={store}>
-          <PersistGate loading={null} persistor={persistor}>
-            <StatusBar />
-            <Navigation colorScheme={colorScheme} />
-          </PersistGate>
-        </Provider>
+        <StatusBar />
+        {!playing?<Tracker/>:null}
+        <Navigation colorScheme={colorScheme} />
       </SafeAreaProvider>
     );
   }
 }
+function useAppselector(): {} {
+  throw new Error("Function not implemented.");
+}
+

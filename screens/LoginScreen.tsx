@@ -182,7 +182,7 @@ const LoginBox = styled(View)`
   justify-content: center;
   align-items: center;
   background: #eaeffd;
-  border-radius: 20;
+  border-radius: '20';
   height: 64px;
   width: 300px;
   padding-left: 22px;

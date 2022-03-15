@@ -9,7 +9,7 @@ const CoverTitle = styled.Text`
   color: white;
   font-size: 16px;
   font-weight: 600;
-  line-height: 20;
+  line-height: '20';
   overflow: hidden;
   margin: auto 20px auto 20px;
   text-align: justify;
@@ -19,7 +19,7 @@ const SubTitle = styled.Text`
   font-size: 13px;
   color: #e8e6e3;
   opacity: 0.68;
-  line-height: 18;
+  line-height: '18';
   overflow: hidden;
   margin: auto 20px auto 20px;
   text-align: justify;

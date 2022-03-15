@@ -105,7 +105,7 @@ function BottomTabNavigator() {
         options={({ navigation }: RootTabScreenProps<"Home">) => ({
           title: "Home Demo",
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerShown: true,
+          headerShown: false,
         })}
       />
       <BottomTab.Screen

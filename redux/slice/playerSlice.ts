@@ -1,52 +1,48 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from '../store'
 
-type userType = {};
-type likedSongPlayListIDType = Number;
-type lastRefreshCookieDateType = Number;
-type loginModeType = String | null
+
 
 // Define a type for the slice state
 interface GeneralState {
-  user: userType,
-  likedSongPlaylistID: likedSongPlayListIDType,
-  lastRefreshCookieDate: lastRefreshCookieDateType,
-  loginMode: loginModeType,
+  playing: boolean,
+  trackTimestamp: AudioTimestamp,
+  hasLyrics: boolean,
 }
 
 // Define the initial state using that type
 const initialState: GeneralState = {
-  user: {},
-  likedSongPlaylistID: 0,
-  lastRefreshCookieDate: 0,
-  loginMode: null, 
+  playing: false,
+  trackTimestamp: {
+    contextTime: 0,
+    performanceTime: 0,
+  },
+  hasLyrics: false,
 }
 
 export const playerSlice = createSlice({
-  name: 'data',
+  name: 'player',
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
-    setUser: (state, action: PayloadAction<userType>) => {
-      state.user = action.payload;
+    setPlayingStatus: (state, action: PayloadAction<boolean>) => {
+      state.playing = action.payload;
     },
-    setLikedSongPlaylist: (state, action: PayloadAction<likedSongPlayListIDType>) => {
-      state.likedSongPlaylistID = action.payload;
+    setTrackTimeStamp: (state, action: PayloadAction<AudioTimestamp>) => {
+      state.trackTimestamp = action.payload;
     },
-    setLastRefreshCookieDate: (state, action: PayloadAction<lastRefreshCookieDateType>) => {
-      state.lastRefreshCookieDate = action.payload;
-    },
-    setLoginMode: (state, action: PayloadAction<loginModeType>) => {
-      state.loginMode = action.payload;
-    },
+    setHasLyrics: (state, action: PayloadAction<boolean>) => {
+      state.hasLyrics = action.payload;
+    }
+
   },
 })
 
-export const { 
-  setUser, setLikedSongPlaylist, setLastRefreshCookieDate, setLoginMode
+export const {
+  setPlayingStatus, setTrackTimeStamp
 } = playerSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type
-export const selectData = (state: RootState) => state.data
+export const selectPlayer = (state: RootState) => state.player;
 
 export default playerSlice.reducer

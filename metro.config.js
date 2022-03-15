@@ -2,21 +2,26 @@
 const { getDefaultConfig } = require("expo/metro-config");
 
 const defaultConfig = getDefaultConfig(__dirname);
-const {assetExts, sourceExts, blacklistRE} = defaultConfig.resolver;
+const { resolver, transformer } = defaultConfig;
+const {assetExts, sourceExts, blacklistRE} = resolver;
 // module.exports = getDefaultConfig(__dirname);
-
+const newAssetExts = assetExts.filter((ext) => ext !== "svg");
 const blacklist = require("metro-config/src/defaults/exclusionList");
 
 // module.exports = getDefaultConfig(__dirname);
 module.exports = {
+  transformer: {
+    ...transformer,
+    babelTransformerPath: require.resolve("react-native-svg-transformer"),
+  },
   resolver: {
     blacklistRE: blacklist([
       /\/nodejs-assets\/.*/,
       /\/android\/.*/,
       /\/ios\/.*/,
     ]),
-    assetExts: [...assetExts, 'db'],
-    sourceExts,
+    assetExts: [...newAssetExts, 'db'],
+    sourceExts: [...sourceExts, 'svg'],
   },
 };
 // module.exports = (async () => {
