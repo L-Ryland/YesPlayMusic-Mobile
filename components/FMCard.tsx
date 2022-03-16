@@ -9,7 +9,7 @@ export function FMCard() {
 }
 const FMBox = styled.View`
 padding: 16px;
-border-radius: '18';
+border-radius: 18;
 display: flex;
 height: 198px;
 `;

@@ -32,7 +32,7 @@ const Container = styled.View`
   width: 50%;
   display: flex;
   align-items: center;
-  border-radius: '15';
+  border-radius: 15;
   z-index: 2;
 `;
 
@@ -40,7 +40,7 @@ const Container = styled.View`
 // animation: move 38s infinite;
 // animation-direction: alternate;
 const DailyRecommendCard = styled.View`
-  border-radius: '18';
+  border-radius: 18;
   height: 198px;
   position: relative;
   overflow: hidden;

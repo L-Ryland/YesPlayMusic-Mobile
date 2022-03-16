@@ -20,7 +20,7 @@ export default function App() {
     return (
       <SafeAreaProvider>
         <StatusBar />
-        {!playing?<Tracker/>:null}
+        {/* {!playing?<Tracker/>:null} */}
         <Navigation colorScheme={colorScheme} />
       </SafeAreaProvider>
     );

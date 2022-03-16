@@ -44,15 +44,11 @@ const ProgressBar = styled.View`
 
 const PlayButton = ({ playerStatus, ...otherProps }) => {
   const { playing } = playerStatus;
-  return (
-    <Svg height="50" width="50" viewBox="0 0 100 100" {...otherProps}>
-      <Circle cx="50" cy="50" r="45" stroke="white" strokeWidth="2.5" fill="white" />
-      {playing
-        ? <Pause height='40' width='40' color='black' x='31' y='32' />
-        : <Play height='40' width='40' color='black' x='32' y='32' />
-      }
-    </Svg>
-  )
+  if (playing) {
+    return <Pause/>
+  } else {
+    return <Play/>
+  }
 }
 
 
@@ -69,8 +65,8 @@ const LyricsBox = styled(View)`
   width: '${contentWidth}';
   height: '500';
   background: purple;
-  borderwidth: '10';
-  position: 'absolute';
+  border-radius: 10;
+  position: absolute;
   margin-top: '${height * 0.9}'
 `
 export function PlayerScreen({ navigation, route }) {
@@ -92,8 +88,8 @@ export function PlayerScreen({ navigation, route }) {
   const CoverPage = styled.Image.attrs(() => ({
     source: { uri: picUrl },
   }))`
-    width: ${width * 0.8}px;
-    height: ${width * 0.8}px;
+    width: ${width * 0.8};
+    height: ${width * 0.8};
     resize-mode: center;
   `
   const CoverText = styled(View).attrs(() => ({
@@ -136,20 +132,20 @@ export function PlayerScreen({ navigation, route }) {
   const ControlBox = styled(View).attrs(() => ({
     children: [
       <TouchableHighlight key='shuffle'>
-        <Shuffle height='30' width='35' />
+        <Shuffle height='30' width='35' color='white' />
         {/* <Icon icon="bi:shuffle" color="white" height="35" /> */}
       </TouchableHighlight>,
       <TouchableHighlight key='prevTrack'>
-        <Previous height='30' width='35' />
+        <Previous height='30' width='35' color='white' />
       </TouchableHighlight>,
       <TouchableHighlight key='play' onPress={handlePlay}>
-        <PlayButton playerStatus={playerStatus} />
+        <PlayButton playerStatus={playerStatus} /> 
       </TouchableHighlight>,
       <TouchableHighlight key='nextTrack'>
-        <Next height='30' width='35' />
+        <Next height='30' width='35' color='white' />
       </TouchableHighlight>,
       <TouchableHighlight key='loop'>
-        <Repeat height='30' width='35' />
+        <Repeat height='30' width='35' color='white' />
         {/* <Icon icon="simple-line-icons:loop" color="white" height="35" /> */}
       </TouchableHighlight>,
     ]
@@ -158,26 +154,26 @@ export function PlayerScreen({ navigation, route }) {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 0px;
+    padding: 0;
     position: relative;
     width: ${width * 0.8};
-    height: 50px;
+    height: 50;
 `;
 
   return (
     <View style={styles.container}>
       <Player>
-        <HeaderBar>
+        {/* <HeaderBar>
           <Text>aaa</Text>
           <Text>bbb</Text>
-        </HeaderBar>
+        </HeaderBar> */}
         <CoverPage />
         <CoverText />
-        <SliderBox />
+        {/* <SliderBox /> */}
         <ControlBox />
-        <LyricsBox>
+        {/* <LyricsBox>
           <Text>Locate Helper</Text>
-        </LyricsBox>
+        </LyricsBox> */}
       </Player>
     </View>
   )
