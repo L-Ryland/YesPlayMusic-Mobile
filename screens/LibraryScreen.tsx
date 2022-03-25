@@ -1,3 +1,4 @@
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppSelector } from "@/hooks/useRedux";
 import { selectData } from "@/redux/slice/dataSlice";
 import { StyleSheet } from "react-native";
@@ -12,9 +13,9 @@ export const LibraryScreen = () => {
     return <Login />;
   }
   return (
-    <View>
+    <SafeAreaView>
       <Text style={styles.title}> Library </Text>
-    </View>
+    </SafeAreaView>
   );
 };
 

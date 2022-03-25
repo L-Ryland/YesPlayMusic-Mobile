@@ -1,0 +1,3 @@
+/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/.cxx/cmake/release/x86/CMakeFiles/rebuild_cache.dir
+/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/.cxx/cmake/release/x86/CMakeFiles/edit_cache.dir
+/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/.cxx/cmake/release/x86/CMakeFiles/native-lib.dir

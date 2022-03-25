@@ -4,14 +4,12 @@ import useCachedResources from "./hooks/useCachedResources";
 import useColorScheme from "./hooks/useColorScheme";
 import { useAppSelector } from "@/hooks/useRedux";
 import Navigation from "./navigation";
-import { selectPlayer } from "./redux/slice/playerSlice";
-import { Tracker } from "./components/Tracker";
+import { Platform } from "expo-modules-core";
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
-  const { playing } = useAppSelector(selectPlayer);
-  console.log('root component playing status', playing);
+  console.log("Platform", Platform.OS);
 
 
   if (!isLoadingComplete) {
@@ -20,7 +18,6 @@ export default function App() {
     return (
       <SafeAreaProvider>
         <StatusBar />
-        {/* {!playing?<Tracker/>:null} */}
         <Navigation colorScheme={colorScheme} />
       </SafeAreaProvider>
     );

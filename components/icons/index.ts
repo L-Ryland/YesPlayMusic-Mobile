@@ -12,4 +12,5 @@ export * from './Previous'
 export * from './Repeat'
 export * from './Repeat_1'
 export * from './Shuffle'
+export * from './Mobile'
 

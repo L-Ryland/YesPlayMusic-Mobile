@@ -1,14 +1,15 @@
-import React from "react";
-import { Dimensions, StyleSheet, TouchableHighlight } from "react-native";
+import React, { useState } from "react";
+import { Dimensions, StyleSheet, TouchableHighlight, Image } from "react-native";
 import styled from "styled-components/native";
 import Slider from '@react-native-community/slider'
-import Svg, { Circle, Rect } from 'react-native-svg';
-import { Icon } from "@iconify/react";
-import { View, Text } from '@/components'
+import { View, Text, useThemeColor, useSvgStyle } from '@/components'
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { selectPlayer, setPlayingStatus } from "@/redux/slice/playerSlice";
-import { Play, Pause, Next, Previous, Shuffle, Repeat, Repeat_1 } from "@/components/icons";
+import { Play, Pause, Next, Previous, Shuffle, Repeat, Repeat_1, Heart, HeartSolid } from "@/components/icons";
+import dayjs, { duration } from "dayjs";
+import Duration from "dayjs/plugin/duration";
 
+dayjs.extend(Duration)
 const { width, height } = Dimensions.get('window');
 const contentWidth = width * 0.8;
 const Player = styled(View)`
@@ -42,14 +43,7 @@ const ProgressBar = styled.View`
   width: 100%;
 `;
 
-const PlayButton = ({ playerStatus, ...otherProps }) => {
-  const { playing } = playerStatus;
-  if (playing) {
-    return <Pause/>
-  } else {
-    return <Play/>
-  }
-}
+
 
 
 function LeftControlButton() {
@@ -67,35 +61,37 @@ const LyricsBox = styled(View)`
   background: purple;
   border-radius: 10;
   position: absolute;
-  margin-top: '${height * 0.9}'
+  margin-top: '${height * 0.9}';
 `
 export function PlayerScreen({ navigation, route }) {
   const dispatch = useAppDispatch();
+  const progress = {
+    duration: 0,
+    position: 0
+  };
+  const [trackTitle, setTrackTitle] = React.useState<string>();
+  const [trackArtist, setTrackArtist] = React.useState<string>();
+  const [trackArtwork, setTrackArtwork] = React.useState<string>();
   console.log("player screen", navigation, route);
   const { al: { name: songTitle, picUrl }, ar } = route.params.track;
   console.log('player picurl', picUrl, "screen width", width,);
   const artists = ar.length == 1 ? ar[0].name : ar.reduce((prev, curr) => prev.name + ", " + curr.name);
   const playerStatus = useAppSelector(selectPlayer);
+  const { TrackPlayer } = playerStatus;
+  const svgStyle = useSvgStyle({});
   console.log("player status", playerStatus);
 
-  const handlePlay = () => {
-    const { playing } = playerStatus;
-    dispatch(setPlayingStatus(!playing));
 
-    // sound control
-  }
 
-  const CoverPage = styled.Image.attrs(() => ({
-    source: { uri: picUrl },
-  }))`
-    width: ${width * 0.8};
-    height: ${width * 0.8};
+  const CoverPage = styled.Image`
+    width: ${contentWidth};
+    height: ${contentWidth};
     resize-mode: center;
   `
   const CoverText = styled(View).attrs(() => ({
     children: [
-      <Text style={{ fontSize: 40 }} key="title">{songTitle}</Text>,
-      <Text style={{ fontSize: 20 }} key="artists">{artists}</Text>
+      <Text style={{ fontSize: 28 }} key="title">{trackTitle}</Text>,
+      <Text style={{ fontSize: 22 }} key="artists">{trackArtist}</Text>
     ]
   }))`
    align-content: flex-start;
@@ -103,49 +99,40 @@ export function PlayerScreen({ navigation, route }) {
   `;
   const TimeStampRow = styled(View).attrs(() => ({
     children: [
-      <Text key='startPoint' style={{ alignSelf: 'auto' }}>start</Text>,
-      <Text key='endPoint' style={{ alignSelf: 'auto' }}>end</Text>
+      <Text key='startPoint' style={{ alignSelf: 'auto' }}>{dayjs.duration(progress.position * 1000).format('m:ss')}</Text>,
+      <Text key='endPoint' style={{ alignSelf: 'auto' }}>{dayjs.duration(progress.duration * 1000).format('m:ss')}</Text>
     ]
   }))`
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: flex-start;
-    padding: 0px;
-    position: absolute;
+    padding: 0;
     width: ${width * 0.8};
+    height: 50;
   `
-  const SliderBox = styled(View).attrs(() => ({
-    children: [
-      <Slider
-        key='slider'
-        style={{ width: width * 0.8, height: 30 }}
-        minimumValue={0}
-        maximumValue={1}
-        minimumTrackTintColor="#FFFFFF"
-        maximumTrackTintColor="#000000"
-      />,
-      <TimeStampRow key="timestampRow" />
-    ]
-  }))``
-
+  const PlayButton = ({ playerStatus, svgStyle, ...otherProps }) => {
+    const { playing } = playerStatus;
+    return playing
+      ? <Pause {...svgStyle} height={50} width={50} />
+      : <Play {...svgStyle} height={50} width={50} />
+  }
   const ControlBox = styled(View).attrs(() => ({
     children: [
       <TouchableHighlight key='shuffle'>
-        <Shuffle height='30' width='35' color='white' />
-        {/* <Icon icon="bi:shuffle" color="white" height="35" /> */}
+        <Shuffle {...svgStyle} />
       </TouchableHighlight>,
-      <TouchableHighlight key='prevTrack'>
-        <Previous height='30' width='35' color='white' />
+      <TouchableHighlight key='prevTrack' >
+        <Previous {...svgStyle} />
       </TouchableHighlight>,
-      <TouchableHighlight key='play' onPress={handlePlay}>
-        <PlayButton playerStatus={playerStatus} /> 
+      <TouchableHighlight key='play'>
+        <PlayButton playerStatus={playerStatus} svgStyle={svgStyle} />
       </TouchableHighlight>,
       <TouchableHighlight key='nextTrack'>
-        <Next height='30' width='35' color='white' />
+        <Next {...svgStyle} />
       </TouchableHighlight>,
       <TouchableHighlight key='loop'>
-        <Repeat height='30' width='35' color='white' />
+        <Repeat {...svgStyle} />
         {/* <Icon icon="simple-line-icons:loop" color="white" height="35" /> */}
       </TouchableHighlight>,
     ]
@@ -156,8 +143,7 @@ export function PlayerScreen({ navigation, route }) {
     align-items: center;
     padding: 0;
     position: relative;
-    width: ${width * 0.8};
-    height: 50;
+    height: 50px;
 `;
 
   return (
@@ -167,11 +153,25 @@ export function PlayerScreen({ navigation, route }) {
           <Text>aaa</Text>
           <Text>bbb</Text>
         </HeaderBar> */}
-        <CoverPage />
-        <CoverText />
-        {/* <SliderBox /> */}
-        <ControlBox />
-        {/* <LyricsBox>
+        {/* <CoverPage source={{uri: trackArtwork}} /> */}
+        <Image style={styles.coverPage} source={{ uri: trackArtwork }} />
+        <View style={styles.titleView}>
+          <CoverText />
+          <Heart {...svgStyle} color='pink' />
+        </View>
+        <Slider
+          key='slider'
+          style={{ width: 0.9*width, height: 30 }}
+          value={progress.position}
+          minimumValue={0}
+          maximumValue={progress.duration}
+          thumbTintColor="#335eea"
+          minimumTrackTintColor="#335eea"
+          maximumTrackTintColor="#000000"
+        />
+        <TimeStampRow key="timestampRow" />
+        <ControlBox style={styles.containerWidth} />
+        {/* <LyricsBox>/
           <Text>Locate Helper</Text>
         </LyricsBox> */}
       </Player>
@@ -186,4 +186,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 20,
   },
+  containerWidth: {
+    width: contentWidth,
+  },
+  titleView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: contentWidth,
+    lineHeight: contentWidth,
+  },
+  coverPage: {
+    width: contentWidth,
+    height: contentWidth,
+    resizeMode: 'center',
+  }
 })

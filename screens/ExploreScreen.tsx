@@ -12,6 +12,7 @@ import {
   recommendPlaylist,
   toplists,
 } from "@/api";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export function ExploreScreen({ navigation, route }) {
   const settings = useAppSelector(selectSettings);
@@ -38,7 +39,7 @@ export function ExploreScreen({ navigation, route }) {
     //   playlists.length !== 0 ? playlists[playlists.length - 1].updateTime : 0;
     let before = playlists.length;
     if (playlists.length !== 0) {
-      const {updateTime} = playlists[playlists.length - 1];
+      const { updateTime } = playlists[playlists.length - 1];
       before = updateTime;
     }
     highQualityPlaylist({
@@ -104,33 +105,35 @@ export function ExploreScreen({ navigation, route }) {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      {/* <Text style={styles.title}>Explore</Text>
+    <SafeAreaView style={styles.container}>
+      <ScrollView>
+        {/* <Text style={styles.title}>Explore</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <EditScreenInfo path="/screens/Explore.tsx" /> */}
-      <Text style={styles.title}>Explore</Text>
-      <ButtonContainer horizontal={true} style={{ flex: 1 }}>
-        {settings.enabledPlaylistCategories.map((category, index) => (
-          <CatagoryButton
-            key={index}
-            onPress={() => handleCatogorySwitch(category)}
-          >
-            <Text>{category}</Text>
-          </CatagoryButton>
-        ))}
-      </ButtonContainer>
-      {playlists && (
-        <CoverRow
-          type="playlist"
-          items={playlists}
-          subTtext={subText}
-          showPlayCount={activeCategory !== "排行榜" ? true : false}
-          imageSize={activeCategory !== "排行榜" ? 512 : 1024}
-          verticalStyle={true}
-          navigate={navigation.navigate}
-        />
-      )}
-    </ScrollView>
+        <Text style={styles.title}>Explore</Text>
+        <ButtonContainer horizontal={true} style={{ flex: 1 }}>
+          {settings.enabledPlaylistCategories.map((category, index) => (
+            <CatagoryButton
+              key={index}
+              onPress={() => handleCatogorySwitch(category)}
+            >
+              <Text>{category}</Text>
+            </CatagoryButton>
+          ))}
+        </ButtonContainer>
+        {playlists && (
+          <CoverRow
+            type="playlist"
+            items={playlists}
+            subTtext={subText}
+            showPlayCount={activeCategory !== "排行榜" ? true : false}
+            imageSize={activeCategory !== "排行榜" ? 512 : 1024}
+            verticalStyle={true}
+            navigate={navigation.navigate}
+          />
+        )}
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -147,7 +150,7 @@ const CatagoryButton = styled.Pressable`
   align-items: center;
   font-weight: 600;
   font-size: 18px;
-  border-radius: '32';
+  border-radius: 32;
   border: 2px white;
 `;
 const styles = StyleSheet.create({

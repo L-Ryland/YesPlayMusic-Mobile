@@ -7,6 +7,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import { store, persistor } from './redux/store';
 
 import App from './App';
+import TrackPlayer from 'react-native-track-player';
 import { Database } from '@nozbe/watermelondb'
 import SQLiteAdapter from '@nozbe/watermelondb/adapters/sqlite';
 import { schema, modelClassArr as modelClasses } from "@/utils/schema";
@@ -22,6 +23,7 @@ registerRootComponent(
 		</PersistGate>
 	</Provider>
  ));
+TrackPlayer.registerPlaybackService(() => require('./trackserver'));
 
 const adapter = new SQLiteAdapter({
     dbName: 'yeaplaymusic',

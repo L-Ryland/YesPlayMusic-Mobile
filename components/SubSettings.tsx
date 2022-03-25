@@ -2,7 +2,7 @@ import type { SettingsData } from "react-native-settings-screen";
 import { SettingsStackScreenProps } from "../types";
 import { SettingsScreen as SettingsPage } from "./Themed";
 import {
-  apreanceProp,
+  appreanceProp,
   langProp,
   lyricFontSizeProp,
   lyricsBackgroundProp,
@@ -19,6 +19,7 @@ import {
 import { Text } from "./Themed";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
 import type { OptionType } from "../types";
+import { connect } from "react-redux";
 
 interface LangOptionType extends OptionType {
   option: langProp;
@@ -31,7 +32,7 @@ const languageOptions: LangOptionType[] = [
 ];
 
 interface AppearnceOptionType extends OptionType {
-  option: apreanceProp;
+  option: appreanceProp;
 }
 const appearanceOptions: AppearnceOptionType[] = [
   { option: "auto", name: "Auto" },
@@ -170,4 +171,5 @@ export function SubSettings({
     <SettingsPage data={currentOptions} />
   );
 }
+
 let currentOptions:SettingsData;

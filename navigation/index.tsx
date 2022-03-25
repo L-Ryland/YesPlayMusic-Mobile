@@ -35,6 +35,7 @@ import {
   RootTabScreenProps,
 } from "../types";
 import LinkingConfiguration from "./LinkingConfiguration";
+import { Tracker } from "@/components/Tracker";
 
 export default function Navigation({
   colorScheme,
@@ -75,9 +76,10 @@ function RootNavigator() {
       </RootStack.Group>
       <RootStack.Group screenOptions={{ presentation: "modal" }}>
         <RootStack.Screen name="Player" component={PlayerScreen} />
+        <RootStack.Screen name="Playlist" component={PlaylistScreen} />
       </RootStack.Group>
       <RootStack.Group screenOptions={{ presentation: "modal" }}>
-        <RootStack.Screen name="Playlist" component={PlaylistScreen} />
+        <RootStack.Screen name="Tracker" component={Tracker} />
       </RootStack.Group>
     </RootStack.Navigator>
   );
@@ -93,55 +95,58 @@ function BottomTabNavigator() {
   const colorScheme = useColorScheme();
 
   return (
-    <BottomTab.Navigator
-      initialRouteName="Home"
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme].tint,
-      }}
-    >
-      <BottomTab.Screen
-        name="Home"
-        component={HomeScreen}
-        options={({ navigation }: RootTabScreenProps<"Home">) => ({
-          title: "Home Demo",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerShown: false,
-        })}
-      />
-      <BottomTab.Screen
-        name="Library"
-        component={LibraryScreen}
-        options={{
-          title: "Library",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerShown: true,
+    <>
+      <Tracker />
+      <BottomTab.Navigator
+        initialRouteName="Home"
+        screenOptions={{
+          tabBarActiveTintColor: Colors[colorScheme].tint,
         }}
-      />
-      <BottomTab.Screen
-        name="Explore"
-        component={ExploreScreen}
-        options={{
-          title: "Explore",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerShown: true,
-        }}
-      />
-      <BottomTab.Screen
-        name="Settings"
-        component={SettingsNavigator}
-        options={{
-          title: "Settings",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerShown: true,
-        }}
-      />
-    </BottomTab.Navigator>
+      >
+        <BottomTab.Screen
+          name="Home"
+          component={HomeScreen}
+          options={({ navigation }: RootTabScreenProps<"Home">) => ({
+            title: "Home Demo",
+            tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+            headerShown: false,
+          })}
+        />
+        <BottomTab.Screen
+          name="Library"
+          component={LibraryScreen}
+          options={{
+            title: "Library",
+            tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+            headerShown: false,
+          }}
+        />
+        <BottomTab.Screen
+          name="Explore"
+          component={ExploreScreen}
+          options={{
+            title: "Explore",
+            tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+            headerShown: false,
+          }}
+        />
+        <BottomTab.Screen
+          name="Settings"
+          component={SettingsNavigator}
+          options={{
+            title: "Settings",
+            tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+            headerShown: true,
+          }}
+        />
+      </BottomTab.Navigator>
+    </>
   );
 }
 
 function SettingsNavigator() {
   const SettingsStack = createNativeStackNavigator<SettingsStackParamList>();
-  
+
   return (
     <SettingsStack.Navigator initialRouteName="SettingsScreen">
       <SettingsStack.Group>

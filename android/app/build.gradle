@@ -135,6 +135,8 @@ android {
     defaultConfig {
         applicationId 'com.rylandliu.yesplaymusic'
         minSdkVersion rootProject.ext.minSdkVersion
+        //debug for > Task :watermelondb:compileReleaseLibraryResources FAILED
+//        multiDexEnabled true
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0.0"
@@ -229,7 +231,7 @@ dependencies {
             implementation 'com.facebook.fresco:animated-webp:2.0.0'
         }
     }
-    
+
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'

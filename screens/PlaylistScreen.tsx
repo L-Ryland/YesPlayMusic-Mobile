@@ -1,31 +1,27 @@
 import React from "react";
-import { StyleSheet, TouchableHighlight, Image, Button, Dimensions } from "react-native";
+import { StyleSheet, TouchableHighlight, Dimensions } from "react-native";
 import styled from "styled-components/native";
-import { Cover, ScrollView, MusicModal, TrackList, ContextMenu, Text, View, SVG } from "@/components";
-import { Lock } from "@/components/icons";
+import { Cover, ScrollView, TrackList, Text, View, useSvgStyle } from "@/components";
 import { Audio } from "expo-av";
 
 import {
   RootStackScreenProps,
-  PlaylistProps,
   PlaylistDetailProp,
 } from "@/types";
 import { getPlaylistDetail, subscribePlaylist, deletePlaylist, getMP3 } from "@/api";
-import { Heart, HeartSolid, Plus, Play } from "@/components/icons";
+import { Heart, HeartSolid, Plus, Play, Lock } from "@/components/icons";
 import dayjs from "dayjs";
-import { useAppSelector } from "@/hooks/useRedux";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { selectSettings } from "@/redux/slice/settingsSlice";
+import { cacheTrackSource } from "@/utils/db";
 import { selectData } from "@/redux/slice/dataSlice";
+import { selectPlayer, setTracklist } from "@/redux/slice/playerSlice";
 
 const { width } = Dimensions.get('window');
 const coverStyle = {
   width: width / 3,
   height: width / 3,
   margin: 20
-}
-const svgStyle = {
-  height: 36,
-  width: 36,
-  color: 'white'
 }
 const Playlist = styled(View)`
   margin-top: 32px;
@@ -50,7 +46,6 @@ const Title = styled(Text)`
   font-size: 36px;
   font-weight: 700;
   margin-bottom: 18px;
-  color: white;
 `;
 const ArtistTitle = styled(Text)`
   font-size: 18px;
@@ -71,13 +66,8 @@ const Description = styled(Text)`
   margin-top: 24px;
   overflow: hidden;
 `;
-const ButtonBox = styled(View)`
-  margin-top: 32px;
-  display: flex;
-  flex-direction: row;
-`;
 
-// const Play = () => <SVG xml={require('@/assets/icons/play.svg')} height={50} width={50}/>
+
 export function PlaylistScreen({
   navigation,
   route,
@@ -85,67 +75,68 @@ export function PlaylistScreen({
   const [playlist, setPlaylist] = React.useState<PlaylistDetailProp>();
   const [tracks, setTracks] = React.useState([]);
   const [searchKeyWords, setSearchKeyWords] = React.useState('');
-  const [sound, setSound] = React.useState<any>();
   const data = useAppSelector(selectData);
-  console.log(route.params);
+  const player = useAppSelector(selectPlayer);
+  const dispatch = useAppDispatch();
+  const svgStyle = useSvgStyle({});
+  console.log("playlist route param: ", route.params);
+  const { automaticallyCacheSongs } = useAppSelector(selectSettings)
 
   const { itemProps } = route.params;
   // console.log(itemProps);
 
-  const loadData = (id, next = undefined ) => { 
-    getPlaylistDetail(id, true).then( (data: any) => {
+  const loadData = (id, next = undefined) => {
+    getPlaylistDetail(id, true).then(async (data: any) => {
       // alert(JSON.stringify(data));
       setPlaylist(data.playlist);
       // alert(JSON.stringify(data.playlist.tracks));
+
       setTracks(data.playlist.tracks);
+      console.log("playlist", data.playlist, data.playlist.tracks);
+      dispatch(setTracklist(data.playlist.tracks));
     })
-   }
+  }
   React.useEffect(() => {
-    const { likedSongs, itemProps: {id} } = route.params;
+    const { likedSongs, itemProps: { id } } = route.params;
     if (likedSongs) {
       loadData(data.likedSongPlaylistID);
     } else {
       loadData(id);
     }
-    return () => {};
+    return () => { };
   }, []);
   let updateTime;
   if (playlist) {
     console.log(playlist);
     updateTime = dayjs(playlist.updateTime).format(`MMM DD, YYYY`);
   }
-  // const Audio = styled.Image``;
-  async function playSound() {
-    console.log("Loading sound");
-    const { sound } = await Audio.Sound.createAsync(
-      require("../assets/audio/MitiS Anna Yvette - Open Window (Original Mix).mp3")
-    );
-    setSound(sound);
-    console.log("playing sound");
-    await sound.playAsync();
+  const playTrack = async () => {
+    const { TrackPlayer, list } = player;
+    if (TrackPlayer) {
+      await TrackPlayer.add(list);
+      TrackPlayer.play();
+    }
+
   }
-  async function playTrack() {
-    const songID = tracks[0].id;
-    console.log("load first song id", songID);
-    const songUrl: string = await getMP3(songID).then(
-      data => data.data[0].url
-    );
-    console.log("song url ", songUrl);
-    
-    const {sound} = await Audio.Sound.createAsync(songUrl);
-    setSound(sound);
-    console.log("Playing sound");
-    await sound.playAsync();
-  }
-  const navigateToPlayer = () => { navigation.navigate('Player') }
-  React.useEffect(() => {
-    return sound
-      ? () => {
-        console.log("Unloading sound");
-        sound.unloadAsync();
-      }
-      : undefined;
-  }, []);
+
+  const ButtonBox = styled(View).attrs(() => ({
+    children: [
+      (<View key='likebox' style={{ flexDirection: 'row' }}>
+        <HeartSolid {...svgStyle} />
+        <Heart {...svgStyle} />
+        <Plus {...svgStyle} />
+      </View>),
+      <TouchableHighlight onPress={playTrack} style={{ alignSelf: 'flex-end' }} key="playbox">
+        <Play {...svgStyle} height={50} width={50} />
+      </TouchableHighlight>
+
+    ]
+  }))`
+    margin-top: 32px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  `;
   return (
     <ScrollView style={styles.container}>
       <PlaylistInfo style={{ flex: 2 }}>
@@ -173,22 +164,7 @@ export function PlaylistScreen({
           </DateAndCount>
         </Info>
       </PlaylistInfo>
-      <ButtonBox>
-        <Text>LIKE</Text>
-        <HeartSolid {...svgStyle} />
-        <Text>UNLIKE</Text>
-        <Heart {...svgStyle} />
-        <Plus {...svgStyle} />
-        <Text onPress={playTrack}>Play</Text>
-        {/* <Play  /> */}
-        {/* <SvgXml xml={Play}  height="100%" width='100%'/> */}
-        {/* <SvgUri
-          width="100%"
-          height="100%" 
-          uri="https://icons.getbootstrap.com/assets/icons/play-fill.svg"
-        /> */}
-        <Text onPress={navigateToPlayer}>PlayerScreen</Text>
-      </ButtonBox>
+      <ButtonBox />
       <TrackList tracks={tracks} navigate={navigation.navigate} />
     </ScrollView>
   )

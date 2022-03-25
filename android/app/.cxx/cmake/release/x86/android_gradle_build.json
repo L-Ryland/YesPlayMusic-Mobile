@@ -1,0 +1,45 @@
+{
+  "stringTable": {
+    "0": "/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/.cxx/cmake/release/x86",
+    "1": "--target=i686-none-linux-android21 --gcc-toolchain=/home/ryland/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/ryland/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -Dnative_lib_EXPORTS -I../../../../libnode/include/node -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -O2 -DNDEBUG -fPIC"
+  },
+  "buildFiles": [
+    "/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/CMakeLists.txt",
+    "/home/ryland/Library/Android/sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake",
+    "/home/ryland/Library/Android/sdk/ndk/21.1.6352462/build/cmake/platforms.cmake"
+  ],
+  "cleanCommands": [
+    "/home/ryland/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja -C \"/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/.cxx/cmake/release/x86\" clean"
+  ],
+  "buildTargetsCommand": "/home/ryland/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja  -C \"/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/.cxx/cmake/release/x86\" {LIST_OF_TARGETS_TO_BUILD}",
+  "libraries": {
+    "native-lib-Release-x86": {
+      "buildCommand": "/home/ryland/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja -C \"/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/.cxx/cmake/release/x86\" native-lib",
+      "buildType": "release",
+      "toolchain": "183617067",
+      "abi": "x86",
+      "artifactName": "native-lib",
+      "files": [
+        {
+          "src": "/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/src/main/cpp/native-lib.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        }
+      ],
+      "headers": [],
+      "output": "/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/build/intermediates/cmake/release/obj/x86/libnative-lib.so",
+      "runtimeFiles": [
+        "/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/libnode/bin/x86/libnode.so"
+      ]
+    }
+  },
+  "toolchains": {
+    "183617067": {
+      "cppCompilerExecutable": "/home/ryland/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++"
+    }
+  },
+  "cFileExtensions": [],
+  "cppFileExtensions": [
+    "cpp"
+  ]
+}

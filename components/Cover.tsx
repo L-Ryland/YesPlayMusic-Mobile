@@ -5,8 +5,7 @@ import styled from "styled-components/native";
 import { View, Text } from "./Themed";
 import { Explicit, Lock } from "./icons";
 
-const CoverTitle = styled.Text`
-  color: white;
+const CoverTitle = styled(Text)`
   font-size: 16px;
   font-weight: 600;
   line-height: 20;
@@ -15,7 +14,7 @@ const CoverTitle = styled.Text`
   text-align: justify;
   flex-wrap: wrap;
 `;
-const SubTitle = styled.Text`
+const SubTitle = styled(Text)`
   font-size: 13px;
   color: #e8e6e3;
   opacity: 0.68;

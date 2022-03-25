@@ -13,13 +13,12 @@ import {
   TextInput as DefaultTextInput,
 } from "react-native";
 import { SettingsScreen as DefaultSettingsScreen } from "react-native-settings-screen";
-import { SvgXml } from "react-native-svg";
 
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 
 export function useThemeColor(
-  props: { light?: string; dark?: string },
+  props: { light?: string; dark?: string;} ,
   colorName: keyof typeof Colors.light & keyof typeof Colors.dark
 ) {
   const theme = useColorScheme();
@@ -29,6 +28,19 @@ export function useThemeColor(
     return colorFromProps;
   } else {
     return Colors[theme][colorName];
+  }
+}
+
+export function useSvgStyle(
+  {height=35, width=35}
+) {
+  const theme = useColorScheme();
+  const svgColor = Colors[theme]['tint'];
+  console.log('current svgColor', svgColor);
+  
+  return {
+    height, width,
+    color: svgColor,
   }
 }
 
@@ -134,16 +146,3 @@ export const TextInput = React.forwardRef((props: ThemeProps & DefaultTextInput[
 
   return <DefaultTextInput style={[{backgroundColor}, {color}, style]} ref={ref} {...otherProps} />;
 })
-
-export const SVG = (props) => { 
-  const { xml, lightColor, darkColor, ...otherProps } = props;
-  const color = useThemeColor(
-    { light: lightColor, dark: darkColor },
-    "text"
-  );
-  return <SvgXml xml={xml} color={color} {...otherProps} />
-  // return React.createElement(
-  //   SvgXml,
-  //   {color, xml, height, width}
-  // )
- }

@@ -1,2 +1,2 @@
 ninja: Entering directory `/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/.cxx/cmake/debug/arm64-v8a'
-ninja: no work to do.
+[1/1] Linking CXX shared library ../../../../build/intermediates/cmake/debug/obj/arm64-v8a/libnative-lib.so

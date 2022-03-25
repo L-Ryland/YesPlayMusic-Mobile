@@ -18,6 +18,7 @@ export type RootStackParamList = {
   Modal: undefined;
   NotFound: undefined;
   Player: undefined;
+  Tracker: undefined;
   Playlist: {itemProps: any, likedSongs: any}
 };
 

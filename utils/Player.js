@@ -10,6 +10,7 @@ import store from '@/store';
 import { isAccountLoggedIn } from '@/utils/auth';
 import { trackUpdateNowPlaying, trackScrobble } from '@/api/lastfm';
 import { isCreateTray } from '@/utils/platform';
+import { AsyncStorage } from '@react-native-community/async-storage';
 
 // const electron =
 //   process.env.IS_ELECTRON === true ? window.require('electron') : null;
@@ -188,7 +189,8 @@ export default class {
   }
 
   _init() {
-    this._loadSelfFromLocalStorage();
+    // this._loadSelfFromLocalStorage();
+    this._loadSelfFromAsyncStorage()
     Howler.autoUnlock = false;
     Howler.usingWebAudio = true;
     Howler.volume(this.volume);
@@ -342,6 +344,7 @@ export default class {
       return source;
     });
   }
+  //获取音乐
   _getAudioSourceFromNetease(track) {
     if (isAccountLoggedIn()) {
       return getMP3(track.id).then(result => {
@@ -437,6 +440,19 @@ export default class {
     for (const [key, value] of Object.entries(player)) {
       this[key] = value;
     }
+  }
+  _loadSelfFromAsyncStorage() {
+    AsyncStorage.getItem('persist:player').then(
+      data => {
+        const player = JSON.parse(data);
+        for (const [key, value] of Object.entries(player)) {
+          this[key] = value;
+        }
+      },
+      error => {
+        console.error("Player init error", error);
+      }
+    )
   }
   _initMediaSession() {
     if ('mediaSession' in navigator) {

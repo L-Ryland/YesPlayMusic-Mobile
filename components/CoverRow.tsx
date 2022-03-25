@@ -5,7 +5,7 @@ import { Dimensions, StyleSheet, TouchableHighlight, ViewProps } from "react-nat
 import { SafeAreaView, ListRenderItem } from "react-native";
 import styled from "styled-components/native";
 
-import { ScrollView, Text, Cover } from ".";
+import { ScrollView, Cover } from '@/components';
 
 
 

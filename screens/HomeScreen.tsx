@@ -1,9 +1,9 @@
 import { StyleSheet, Appearance, StatusBar } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useEffect, useRef, useState } from "react";
 
-import EditScreenInfo from "../components/EditScreenInfo";
 import { Text, View, ScrollView } from "../components/Themed";
-import { CoverRow, DailyTracksCard, FMCard } from "../components";
+import { CoverRow, DailyTracksCard, FMCard, Tracker } from "../components";
 import { RootTabScreenProps } from "../types";
 import { byAppleMusic } from "../utils/staticData.js";
 import { useRecommendPlaylistQuery } from "@/redux/slice/apiSlice";
@@ -25,7 +25,6 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
   const [data, setData] = useState(undefined);
   const { currentData, isLoading } = useRecommendPlaylistQuery(undefined);
   // const recommendPlaylist = currentData?.result;
-  const mountedRef = React.useRef(true);
   const settings = useAppSelector(selectSettings);
   const fetchData = () => {
     // let response: any;
@@ -79,74 +78,73 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
   };
 
   useEffect(() => {
-    if (mountedRef.current) {
-      fetchData();
-    }
-    return () => {
-      mountedRef.current = false;
-    };
-  }, [mountedRef]);
+    fetchData();
+    return () => { };
+  }, []);
   // console.log(recommendPlaylists, newAlbum);
   // console.log(data);
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>by Apple Music</Text>
-      <CoverRow
-        rowNumber={1}
-        type="playlist"
-        items={byAppleMusic}
-        subText="by AppleMusic"
-        imageSize={1024}
-        navigate={props.navigation.navigate}
-      />
-      <Text style={styles.title} adjustsFontSizeToFit={true}>
-        Recommended PlayLists
-      </Text>
-      {!recommendPlaylists ? (
-        <Text>Loading</Text>
-      ) : (
+    <SafeAreaView style={styles.container}>
+      <ScrollView >
+        <Text style={styles.title}>by Apple Music</Text>
         <CoverRow
-          rowNumber={2}
+          rowNumber={1}
           type="playlist"
-          items={recommendPlaylists}
-          subText="copywriter"
+          items={byAppleMusic}
+          subText="by AppleMusic"
+          imageSize={1024}
           navigate={props.navigation.navigate}
         />
-      )}
-      <Text style={styles.title}>For You</Text>
-      <DailyTracksCard />
-      <FMCard />
-      <Text style={styles.title}>Recommended Artists</Text>
-      <CoverRow rowNumber={1} type="artist" items={topArtists}
-        navigate={props.navigation.navigate}
-      />
+        <Text style={styles.title} adjustsFontSizeToFit={true}>
+          Recommended PlayLists
+        </Text>
+        {!recommendPlaylists ? (
+          <Text>Loading</Text>
+        ) : (
+          <CoverRow
+            rowNumber={2}
+            type="playlist"
+            items={recommendPlaylists}
+            subText="copywriter"
+            navigate={props.navigation.navigate}
+          />
+        )}
+        <Text style={styles.title}>For You</Text>
+        <DailyTracksCard />
+        <FMCard />
+        <Text style={styles.title}>Recommended Artists</Text>
+        <CoverRow rowNumber={1} type="artist" items={topArtists}
+          navigate={props.navigation.navigate}
+        />
 
-      <Text style={styles.title}>Latest Albums</Text>
-      {!newAlbum ? (
-        <Text>Loading</Text>
-      ) : (
-        <CoverRow
-          rowNumber={1}
-          type="album"
-          items={newAlbum}
-          subText="artist"
-          navigate={props.navigation.navigate}
-        />
-      )}
-      <Text style={styles.title}>Charts</Text>
-      {!toplist ? (
-        <Text>Loading</Text>
-      ) : (
-        <CoverRow
-          rowNumber={1}
-          type="playlist"
-          items={toplist}
-          subText="updateFrequency"
-          navigate={props.navigation.navigate}
-        />
-      )}
-    </ScrollView>
+        <Text style={styles.title}>Latest Albums</Text>
+        {!newAlbum ? (
+          <Text>Loading</Text>
+        ) : (
+          <CoverRow
+            rowNumber={1}
+            type="album"
+            items={newAlbum}
+            subText="artist"
+            navigate={props.navigation.navigate}
+          />
+        )}
+        <Text style={styles.title}>Charts</Text>
+        {!toplist ? (
+          <Text>Loading</Text>
+        ) : (
+          <CoverRow
+            rowNumber={1}
+            type="playlist"
+            items={toplist}
+            subText="updateFrequency"
+            navigate={props.navigation.navigate}
+          />
+        )}
+      </ScrollView>
+      <Tracker />
+    </SafeAreaView>
   );
 }
 
@@ -154,7 +152,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignSelf: "stretch",
-    marginTop: StatusBar.currentHeight
   },
   title: {
     display: "flex",

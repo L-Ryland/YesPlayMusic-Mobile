@@ -1,0 +1,7 @@
+Executable : /home/ryland/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja
+arguments : 
+-C
+/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/.cxx/cmake/release/arm64-v8a
+native-lib
+jvmArgs : 
+

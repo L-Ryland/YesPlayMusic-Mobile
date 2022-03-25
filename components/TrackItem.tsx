@@ -67,8 +67,8 @@ export function TrackItem({ track, navigate }) {
       <TrackView>
         <AlbumImage />
         <SongInfo>
-          <Title style={{ color: "white" }}>{name}</Title>
-          <SubTitle style={{ color: "white" }}>{artists}</SubTitle>
+          <Title>{name}</Title>
+          <SubTitle>{artists}</SubTitle>
         </SongInfo>
       </TrackView>
     </TouchableHighlight>
