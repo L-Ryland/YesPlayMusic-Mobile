@@ -1,17 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   TouchableHighlight,
   StyleSheet,
-  TextInput as DefaultTextInput,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import PhoneInput from "react-native-phone-number-input";
 import styled, { ThemeContext } from "styled-components/native";
-import { View, Text, TextInput, Button } from "@/components";
-import { X, Mail, Lock } from "@/components/icons";
-import countryCodes from "@/countries-emoji.json";
+import QRCode from 'react-native-qrcode-svg';
 
-function EmailBox({ onChangeText, placeholder }) {
+import md5 from "crypto-js/md5";
+import { View, Text, TextInput, Button } from "@/components";
+import { X, Mail, Lock, Mobile } from "@/components/icons";
+import countryCodes from "@/countries-emoji.json";
+import { useNavigation } from "@react-navigation/core";
+import { loginQrCodeCheck, loginQrCodeCreate, loginQrCodeKey, loginWithEmail, loginWithPhone } from "@/api";
+import { setCookies } from "@/utils/auth";
+import { useAppDispatch } from "@/hooks/useRedux";
+import { setLoginMode } from "@/redux/slice/dataSlice";
+
+const AuthenticationMode = React.createContext("qr");
+
+function EmailBox({ onChangeText, placeholder, onEndEditing }) {
   const [activeColor, setActiveColor] = React.useState("black");
   return (
     <InputBox>
@@ -21,6 +30,7 @@ function EmailBox({ onChangeText, placeholder }) {
         onChangeText={onChangeText}
         onFocus={() => setActiveColor("#2f95dc")}
         onBlur={() => setActiveColor("black")}
+        onEndEditing={onEndEditing}
         // onChangeText={handleChange}
         autoCompleteType="email"
         textContentType="emailAddress"
@@ -33,16 +43,11 @@ function EmailBox({ onChangeText, placeholder }) {
 function MobileNumBox({ onChangeText, placeholder }) {
   const [activeColor, setActiveColor] = React.useState("black");
   const [selectedCallingCode, setSelectedCallingCode] = React.useState(86);
-  const [value, setValue] = React.useState("");
-  const [formattedValue, setFormattedValue] = React.useState("");
-  const [valid, setValid] = React.useState(false);
-  const [showMessage, setShowMessage] = React.useState(false);
-  const phoneInput = React.useRef<PhoneInput>(null);
-  console.log("country codes", Object.keys(countryCodes));
-  
+  // console.log("country codes", Object.keys(countryCodes));
+
   return (
     <InputBox>
-      <Mail height={20} width={20} color="black" />
+      <Mobile height={20} width={20} color={activeColor} />
       {/* <PhoneInput
         ref={phoneInput}
         defaultValue={value}
@@ -61,15 +66,17 @@ function MobileNumBox({ onChangeText, placeholder }) {
       <Picker
         selectedValue={selectedCallingCode}
         onValueChange={(itemValue, itemIndex) => setSelectedCallingCode(itemValue)}
-        style={styles.inputFrameStyle}
+        mode='dialog' //android
+        style={[styles.inputFrameStyle, {maxWidth: 60, marginLeft: 40}]}
       >
-        {Object.keys(countryCodes).map((code) => 
-          <Picker.Item key={code} label={"+"+countryCodes[code].callingCode} value={countryCodes[code].callingCode} />
+        {Object.keys(countryCodes).map((code) =>
+          <Picker.Item key={code} label={"+" + countryCodes[code].callingCode} value={countryCodes[code].callingCode} />
         )}
       </Picker>
       <TextInput
         onFocus={() => setActiveColor("#2f95dc")}
         onBlur={() => setActiveColor("black")}
+        onChangeText={(value)=>onChangeText(selectedCallingCode.toString(), value.trim())}
         style={styles.inputFrameStyle}
       />
     </InputBox>
@@ -93,77 +100,238 @@ function PasswordBox({ onChangeText, placeholder }) {
     </InputBox>
   );
 }
-const LoginEmail: React.FC = () => {
+const QrContainer = styled(View)`  
+  background-color: #eaeffd;
+  padding: 24px 24px 21px 24px;
+  border-radius: 20;
+  margin-bottom: 12;
+`
+const LoginEmail = (props) => {
   const login = {
     email: "Email",
     password: "Password",
     loginText: "Click to log in",
     login: "Login",
   };
+  const { setState } = props;
+  const [emailTip, setEmailTip] = useState<string>('');
+  const [errorMsg, setErrorMsg] = useState<string>('');
   const [email, setEmail] = React.useState<string>();
   const [password, setPassword] = React.useState<string>();
+  const emailLogin = () => {
+    // alert(email);
+    if (email && password) {
+      loginWithEmail({
+        email, password: 'fake password', md5_password: md5(password).toString(),
+      }).then(
+        data => {props.handleLoginResponse(data)}
+      ).catch(
+        error => {
+          console.error("email login failed", error );
+          
+          setErrorMsg('Login Failed')
+        }
+      )
 
+    }
+  }
+  const validateEmail = () => {
+    const emailReg = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (email && emailReg.test(email)) {
+      setEmailTip('');
+      return true;
+    }
+    setEmail(undefined); setEmailTip('Email address format incorrect, please check.')
+  }
   return (
     <View>
       <EmailBox
-        onChangeText={(email: string) => setEmail(email)}
+        onChangeText={(email: string) => setEmail(email.trim())}
+        onEndEditing={validateEmail}
         placeholder={login.email}
       />
+      <Text style={{ color: 'red' }}>{emailTip}</Text>
       <PasswordBox
         onChangeText={(password: string) => setPassword(password)}
         placeholder={login.password}
       />
-      <TouchableHighlight>
+      <TouchableHighlight onPress={emailLogin} >
         <ConfirmBox>
           <Title style={{ color: "red" }}>{login.login}</Title>
         </ConfirmBox>
       </TouchableHighlight>
+      <Text style={{color: 'red'}}>{errorMsg}</Text>
+      <View style={styles.loginOption}>
+        <LoginOptionText onPress={() => setState('mobile')}>Login with Mobile</LoginOptionText>
+        <Text> | </Text>
+        <LoginOptionText onPress={() => setState('qr')}>Login wight QR</LoginOptionText>
+      </View>
     </View>
   );
 };
-const LoginMobile: React.FC = () => {
+const LoginMobile = (props) => {
   const login = {
     mobile: "Mobile",
     password: "Password",
     loginText: "Click to log in",
     login: "Login",
   };
-  const [mobile, setMobile] = React.useState<number>();
+  const [phone, setPhone] = React.useState<string>();
   const [password, setPassword] = React.useState<string>();
-  const handleEmailText = () => {};
-  const handlePasswordText = () => {};
+  const [errorMsg, setErrorMsg] = useState<string>('');
+  const { setState } = props;
+  const mobileLogin = () => {
+    // alert(email);
+    if (phone && password) {
+      loginWithPhone({
+        phone, password: 'fake password', md5_password: md5(password).toString(),
+      }).then(
+        data => {()=>props.handleLoginResponse(data)}
+      ).catch(
+        error => setErrorMsg('Login Failed')
+      )
+
+    }
+  }
 
   return (
     <View>
       <MobileNumBox
-        onChangeText={(mobile: number) => setMobile(mobile)}
+        onChangeText={(callingCode: string, number: string)=>setPhone(callingCode+number)}
         placeholder={login.mobile}
       />
       <PasswordBox
         onChangeText={(password: string) => setPassword(password)}
         placeholder={login.password}
       />
-      <TouchableHighlight>
+      <TouchableHighlight onPress={mobileLogin}>
         <ConfirmBox>
           <Title style={{ color: "red" }}>{login.login}</Title>
         </ConfirmBox>
       </TouchableHighlight>
+      <Text style={{color: 'red'}}>{errorMsg}</Text>
+      <View style={styles.loginOption}>
+        <LoginOptionText onPress={() => setState('email')}>Login with Email</LoginOptionText>
+        <Text> | </Text>
+        <LoginOptionText onPress={() => setState('qr')}>Login wight QR</LoginOptionText>
+      </View>
     </View>
   );
 };
-export default function LoginScreen() {
-  const handleLogin = () => {};
+const LoginQR = (props) => {
+  const { setState } = props;
+  const [qrInformation, setQrInformation] = React.useState<string>("打开网易云音乐APP扫码登录");
+  const [qrKey, setQrKey] = React.useState<string>();
+  const [qrUrl, setQrUrl] = React.useState<string>();
+  const qrStyle = {
+    size: 192,
+    margin: 0,
+    color: '#335eea',
+  }
+  const loadQrCode = async () => {
+    const key = await loginQrCodeKey().then(
+      result => result.data.unikey
+    );
+    setQrKey(key);
+    const qrUrl = await loginQrCodeCreate({ key }).then(
+      result => result.data.qrurl
+    );
+    setQrUrl(qrUrl);
+  }
+  const checkQrCodeLogin = () => {
+    if (!qrKey) {
+      return;
+    }
+    loginQrCodeCheck(qrKey).then(
+      (result: any) => {
+
+        switch (result.code) {
+          case 800:
+            loadQrCode();
+            setQrInformation('二维码已失效，请重新扫码');
+            break;
+          case 802:
+            setQrInformation('扫描成功，请在手机上确认登录');
+            break;
+          case 801:
+            setQrInformation('打开网易云音乐APP扫码登录');
+            break;
+          default:
+            setQrInformation('Error encountered, please click to refresh')
+            break;
+        }
+      }
+    )
+  }
+  React.useEffect(() => {
+    loadQrCode();
+    const timer = setInterval(() => {
+      checkQrCodeLogin();
+    }, 1000);
+    return () => { clearInterval(timer) }
+  }, [])
 
   return (
-    <View style={styles.centerStyle}>
-      <Text>Login Screen</Text>
-      <View style={[styles.horizontalStyle, { marginBottom: 30 }]}>
-        <Image source={require("@/assets/logos/yesplaymusic.png")} />
-        <XSymbol />
-        <Image source={require("@/assets/logos/netease-music.png")} />
+    <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+      <TouchableHighlight onPress={loadQrCode}>
+        <QrContainer>
+          {qrUrl && <QRCode value={qrUrl} {...qrStyle} />}
+        </QrContainer>
+      </TouchableHighlight>
+      <Text style={{ marginTop: 30 }}>QRCODE{qrInformation}</Text>
+      <View style={styles.loginOption}>
+        <LoginOptionText onPress={() => setState('email')}>Login with Email</LoginOptionText>
+        <Text> | </Text>
+        <LoginOptionText onPress={() => setState('mobile')} >Login wight Mobile</LoginOptionText>
       </View>
-      <LoginEmail />
     </View>
+  );
+}
+export default function LoginScreen() {
+  const dispatch = useAppDispatch();
+  const [authentication, setAuthentication] = React.useState<'qr' | 'mobile' | 'email'>('qr');
+  const handleLoginResponse = (data) => { 
+    console.log(data);
+    if (!data) {
+      return;
+    }
+    if (data.code === 200) {
+      setCookies(data.cookie);
+      dispatch(setLoginMode('account'))
+      this.updateData({ key: 'loginMode', value: 'account' });
+      this.$store.dispatch('fetchUserProfile').then(() => {
+        this.$store.dispatch('fetchLikedPlaylist').then(() => {
+          this.$router.push({ path: '/library' });
+        });
+      });
+    } else {
+      this.processing = false;
+      nativeAlert(data.msg ?? data.message ?? '账号或密码错误，请检查');
+    }
+   };
+  return (
+    <AuthenticationMode.Provider value={authentication}>
+      <View style={styles.centerStyle}>
+        <Text>Login Screen</Text>
+        <View style={[styles.horizontalStyle, { marginBottom: 30 }]}>
+          <Image source={require("@/assets/logos/yesplaymusic.png")} />
+          <XSymbol />
+          <Image source={require("@/assets/logos/netease-music.png")} />
+        </View>
+        <AuthenticationMode.Consumer>
+          {(value: string) => {
+            switch (value) {
+              case "mobile":
+                return <LoginMobile setState={setAuthentication} handleLoginResponse={handleLoginResponse} />;
+              case "email":
+                return <LoginEmail setState={setAuthentication} handleLoginResponse={handleLoginResponse} />;
+              default:
+                return <LoginQR setState={setAuthentication} handleLoginResponse={handleLoginResponse}/>;
+            }
+          }}
+        </AuthenticationMode.Consumer>
+      </View>
+    </AuthenticationMode.Provider>
   );
 }
 const Image = styled.Image`
@@ -189,7 +357,7 @@ const LoginBox = styled(View)`
   box-sizing: border-box;
 `;
 
-const InputBox = styled.View`
+const InputBox = styled(View)`
   display: flex;
   flex-direction: row;
   margin-bottom: 16px;
@@ -220,6 +388,10 @@ const Title = styled(Text)`
   font-size: 24px;
   font-weight: 600;
 `;
+const LoginOptionText = styled(Text)`
+  margin-left: 10;
+  margin-right: 10;
+`
 const styles = StyleSheet.create({
   horizontalStyle: {
     flexDirection: "row",
@@ -244,4 +416,11 @@ const styles = StyleSheet.create({
   activeStyle: {
     color: "#eeeeee",
   },
+  loginOption: {
+    flexDirection: 'row',
+    marginTop: 30,
+    justifyContent: 'center',
+  },
+
 });
+

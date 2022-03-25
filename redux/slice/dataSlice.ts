@@ -1,4 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { userAccount, userPlayHistory } from '@/api/';
+import { isAccountLoggedIn } from '@/utils/auth';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from '../store'
 
 type userType = {};
@@ -19,7 +21,7 @@ const initialState: GeneralState = {
   user: {},
   likedSongPlaylistID: 0,
   lastRefreshCookieDate: 0,
-  loginMode: null, 
+  loginMode: null,
 }
 
 export const dataSlice = createSlice({
@@ -40,9 +42,57 @@ export const dataSlice = createSlice({
       state.loginMode = action.payload;
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(fetchUserProfile.fulfilled, (state, {payload}) => { 
+      state.user = payload;
+    })
+  }
 })
 
-export const { 
+export const fetchUserProfile = createAsyncThunk(
+  'data/fetchUserProfile',
+  async (param, thunkAPI) => {
+    if (!isAccountLoggedIn()) return;
+    return userAccount().then(
+      (result: any) => result.profile
+    )
+  }
+);
+/**
+ *
+ * @param {*} user
+ * @param {*} thunkAPI
+ * @return {*} 
+ */
+export const fetchPlayHistory = createAsyncThunk(
+  'data/fetchPlayHistory',
+  
+  async (user: any, thunkAPI) => {
+    if (!isAccountLoggedIn()) return;
+    return Promise.all([
+      userPlayHistory({ uid: user?.userId, type: 0 }),
+      userPlayHistory({ uid: user?.userId, type: 1 }),
+    ]).then(result => {
+      const data = {};
+      const dataType = { 0: 'allData', 1: 'weekData' };
+      if (result[0] && result[1]) {
+        for (let i = 0; i < result.length; i++) {
+          const songData = result[i][dataType[i]].map(item => {
+            const song = item.song;
+            song.playCount = item.playCount;
+            return song;
+          });
+          data[[dataType[i]]] = songData;
+        }
+        commit('updateLikedXXX', {
+          name: 'playHistory',
+          data: data,
+        });
+      }
+    });
+  },
+) 
+export const {
   setUser, setLikedSongPlaylist, setLastRefreshCookieDate, setLoginMode
 } = dataSlice.actions
 
