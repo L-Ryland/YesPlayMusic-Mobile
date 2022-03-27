@@ -48,6 +48,7 @@ build/
 local.properties
 *.iml
 *.hprof
+*.apk
 
 # node.js
 #
@@ -73,3 +74,6 @@ web-build/
 dist/
 
 # @end expo-cli
+
+# android
+android/app/release/
