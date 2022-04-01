@@ -1,21 +1,57 @@
 import { StyleSheet, Switch } from "react-native";
 import type { SettingsData } from "react-native-settings-screen";
-import { Text, View, SettingsScreen as SettingsPage, Image} from './Themed';
+import { Text, View, SettingsScreen as SettingsPage, Image } from './Themed';
 
-import {  SettingsStackScreenProps } from "../types";
+import { SettingsStackScreenProps } from "../types";
 import { selectSettings } from "../redux/slice/settingsSlice";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { logOutThunk, selectData, updateData } from "@/redux/slice/dataSlice";
+import { isLooseLoggedIn } from "@/utils/auth";
 
 
 
 
-export function MainSettings ({navigation, route}:SettingsStackScreenProps<'SettingsScreen'>) {
-  
+export function MainSettings({ navigation, route }: SettingsStackScreenProps<'SettingsScreen'>) {
+
   // Navigate to Sub-Settings Menu
-  const switchSubSettings = (param:String) => {
-    navigation.navigate('SubSettingsScreen', {requestSubSettings: param});
+  const switchSubSettings = (param: String) => {
+    navigation.navigate('SubSettingsScreen', { requestSubSettings: param });
   };
-  console.log(route.params);
+  const dispatch = useAppDispatch();
+  const {user} = useAppSelector(selectData)
 
+  console.log(route.params);
+  const handleLogout = () => {
+    dispatch(logOutThunk())
+  }
+  const renderUser = () => {
+    console.log("is loose logged in? ", isLooseLoggedIn());
+    if (isLooseLoggedIn() && user ) {
+      return (
+        <View style={styles.userContainer}>
+          <Image
+            source={{ uri: user.avatarUrl}}
+            style={styles.userImage}
+          />
+          <View style={{ flex: 1 }}>
+            <Text style={styles.userTitle}>{user.nickname}</Text>
+            <Text style={styles.userSubtitle}>{user.signature}</Text>
+          </View>
+        </View>
+      )
+    }
+    return (
+      <View style={styles.userContainer}>
+        <Image
+          source={require("../assets/images/favicon.png")}
+          style={styles.userImage}
+        />
+        <View style={{ flex: 1 }}>
+          <Text style={styles.userTitle} onPress={()=>navigation.navigate('Library')}>Please Login To Continue</Text>
+        </View>
+      </View>
+    )
+  }
   const settingsOptions: SettingsData = [
     { type: "CUSTOM_VIEW", key: "hero", render: renderUser },
     {
@@ -30,22 +66,22 @@ export function MainSettings ({navigation, route}:SettingsStackScreenProps<'Sett
               🇬🇧 English
             </Text>
           ),
-          onPress: ()=>switchSubSettings('Language'),
+          onPress: () => switchSubSettings('lang'),
         },
         {
           title: "Appearance",
           showDisclosureIndicator: true,
-          onPress: ()=>switchSubSettings('Appearance'),
+          onPress: () => switchSubSettings('appearance'),
         },
         {
           title: "Music Preference",
           showDisclosureIndicator: true,
-          onPress: ()=>switchSubSettings('MusicPreference'),
+          onPress: () => switchSubSettings('musicLanguage'),
         },
         {
           title: "Stream Quality",
           showDisclosureIndicator: true,
-          onPress: ()=>switchSubSettings('StreamQuality'),
+          onPress: () => switchSubSettings('musicQuality'),
         },
       ],
     },
@@ -55,18 +91,18 @@ export function MainSettings ({navigation, route}:SettingsStackScreenProps<'Sett
       rows: [
         {
           title: "Show Lyrics Translation",
-          renderAccessory: () => <Switch value onValueChange={() => {}} />,
+          renderAccessory: () => <Switch value onValueChange={() => { }} />,
         },
         {
           title: "Show Lyrics Background",
           showDisclosureIndicator: true,
-          onPress: ()=>switchSubSettings('LyricsBg'),
+          onPress: () => switchSubSettings('lyricsBackground'),
 
         },
         {
           title: "Lyrics Font Size",
           showDisclosureIndicator: true,
-          onPress: ()=>switchSubSettings('LyricsFsize'),
+          onPress: () => switchSubSettings('lyricFontSize'),
         },
       ],
     },
@@ -80,7 +116,7 @@ export function MainSettings ({navigation, route}:SettingsStackScreenProps<'Sett
         },
         {
           title: "Playlists From Apple Muisic",
-          renderAccessory: () => <Switch value onValueChange={() => {}} />,
+          renderAccessory: () => <Switch value onValueChange={() => { }} />,
         },
       ],
     },
@@ -94,6 +130,7 @@ export function MainSettings ({navigation, route}:SettingsStackScreenProps<'Sett
             color: "red",
             alignSelf: "center"
           },
+          onPress: handleLogout,
         },
       ],
     },
@@ -116,22 +153,10 @@ export function MainSettings ({navigation, route}:SettingsStackScreenProps<'Sett
   ];
   return (
     // <View>
-      <SettingsPage data={settingsOptions}/>
-      // <Text>Test</Text>
-   ); 
+    <SettingsPage data={settingsOptions} />
+    // <Text>Test</Text>
+  );
 }
-const renderUser = () => (
-  <View style={styles.userContainer}>
-    <Image
-      source={require("../assets/images/favicon.png")}
-      style={styles.userImage}
-    />
-    <View style={{ flex: 1 }}>
-      <Text style={styles.userTitle}>Jan Söndermann</Text>
-      <Text style={styles.userSubtitle}>jan+git@primlo.com</Text>
-    </View>
-  </View>
-);
 
 
 

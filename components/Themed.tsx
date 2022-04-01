@@ -13,6 +13,7 @@ import {
   TextInput as DefaultTextInput,
 } from "react-native";
 import { SettingsScreen as DefaultSettingsScreen } from "react-native-settings-screen";
+import styled from "styled-components/native";
 
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
@@ -116,6 +117,17 @@ export function Button(props: ThemeProps & DefaultButton["props"]) {
   return <DefaultButton {...props} />;
 }
 
+export const Title: React.FC = styled(Text).attrs(() => ({
+  adjustsFontSizeToFit: true
+}))`
+  display: flex;
+  justifyContent: space-between;
+  alignItems: flex-end;
+  margin-bottom: 20;
+  fontSize: 40;
+  fontWeight: 700;
+  padding: 0px 0px 8px 8px;
+`
 
 // export function TextInput(props: ThemeProps & React.LegacyRef<DefaultTextInput> & DefaultTextInput["props"]) {
 // export function TextInput(props: any) {

@@ -43,7 +43,7 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> = Composit
 
 export type SettingsStackParamList = {
   SettingsScreen: undefined,
-  SubSettingsScreen: {requestSubSettings: String}| undefined,
+  SubSettingsScreen: {requestSubSettings: string}| undefined,
   LanguageSettings: undefined, 
   AppearanceSettings: undefined, 
   MusicPreference: undefined,
@@ -53,6 +53,7 @@ export type SettingsStackParamList = {
   LyricsFontSize: undefined,
   ConnectToLastfm: undefined,
   ShowAppleMusic: undefined
+  Library: undefined;
 };
 
 export type SettingsStackScreenProps<Screen extends keyof SettingsStackParamList> = NativeStackScreenProps<

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   TouchableHighlight,
   StyleSheet,
@@ -14,9 +14,9 @@ import { X, Mail, Lock, Mobile } from "@/components/icons";
 import countryCodes from "@/countries-emoji.json";
 import { useNavigation } from "@react-navigation/core";
 import { loginQrCodeCheck, loginQrCodeCreate, loginQrCodeKey, loginWithEmail, loginWithPhone } from "@/api";
-import { setCookies } from "@/utils/auth";
+import { isAccountLoggedIn, setCookies } from "@/utils/auth";
 import { useAppDispatch } from "@/hooks/useRedux";
-import { setLoginMode } from "@/redux/slice/dataSlice";
+import { fetchLikedPlaylist, fetchUserProfile, setLoginMode, updateData } from "@/redux/slice/dataSlice";
 
 const AuthenticationMode = React.createContext("qr");
 
@@ -104,7 +104,7 @@ const QrContainer = styled(View)`
   background-color: #eaeffd;
   padding: 24px 24px 21px 24px;
   border-radius: 20;
-  margin-bottom: 12;
+  margin-bottom: 12px;
 `
 const LoginEmail = (props) => {
   const login = {
@@ -114,8 +114,8 @@ const LoginEmail = (props) => {
     login: "Login",
   };
   const { setState } = props;
-  const [emailTip, setEmailTip] = useState<string>('');
-  const [errorMsg, setErrorMsg] = useState<string>('');
+  const [emailTip, setEmailTip] = React.useState<string>('');
+  const [errorMsg, setErrorMsg] = React.useState<string>('');
   const [email, setEmail] = React.useState<string>();
   const [password, setPassword] = React.useState<string>();
   const emailLogin = () => {
@@ -178,7 +178,7 @@ const LoginMobile = (props) => {
   };
   const [phone, setPhone] = React.useState<string>();
   const [password, setPassword] = React.useState<string>();
-  const [errorMsg, setErrorMsg] = useState<string>('');
+  const [errorMsg, setErrorMsg] = React.useState<string>('');
   const { setState } = props;
   const mobileLogin = () => {
     // alert(email);
@@ -284,6 +284,7 @@ const LoginQR = (props) => {
         <Text> | </Text>
         <LoginOptionText onPress={() => setState('mobile')} >Login wight Mobile</LoginOptionText>
       </View>
+      <Button title="test" onPress={()=>isAccountLoggedIn()} />
     </View>
   );
 }
@@ -291,22 +292,30 @@ export default function LoginScreen() {
   const dispatch = useAppDispatch();
   const [authentication, setAuthentication] = React.useState<'qr' | 'mobile' | 'email'>('qr');
   const handleLoginResponse = (data) => { 
-    console.log(data);
     if (!data) {
       return;
     }
+    console.log("data code", data.code);
+    
     if (data.code === 200) {
       setCookies(data.cookie);
-      dispatch(setLoginMode('account'))
-      this.updateData({ key: 'loginMode', value: 'account' });
-      this.$store.dispatch('fetchUserProfile').then(() => {
-        this.$store.dispatch('fetchLikedPlaylist').then(() => {
-          this.$router.push({ path: '/library' });
-        });
-      });
+      
+      
+      dispatch(updateData({key: 'loginMode', value: 'account'}));
+      console.log("fetching user pofile");
+      
+      dispatch(fetchUserProfile()).then(
+        ({ payload }) => {
+          console.log('paylaod', payload)
+          dispatch(fetchLikedPlaylist(payload))}
+      )
+      // this.$store.dispatch('fetchUserProfile').then(() => {
+      //   this.$store.dispatch('fetchLikedPlaylist').then(() => {
+      //     this.$router.push({ path: '/library' });
+      //   });
+      // });
     } else {
-      this.processing = false;
-      nativeAlert(data.msg ?? data.message ?? '账号或密码错误，请检查');
+      alert(data.msg ?? data.message ?? '账号或密码错误，请检查');
     }
    };
   return (

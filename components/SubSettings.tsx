@@ -8,18 +8,13 @@ import {
   lyricsBackgroundProp,
   musicLangProp,
   musicQualityProp,
-  selectSettings,
-  switchLang, 
-  switchAppearance, 
-  switchMusicLang,
-  switchMusicQuality,
-  switchLyricsBackGround,
-  switchLyricsFontSize
+  switchLang,
+  updateSettings
 } from "../redux/slice/settingsSlice";
 import { Text } from "./Themed";
-import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
 import type { OptionType } from "../types";
 import { connect } from "react-redux";
+import { ActionCreatorWithPayload } from "@reduxjs/toolkit";
 
 interface LangOptionType extends OptionType {
   option: langProp;
@@ -80,60 +75,60 @@ const lyricsFsizeOptions: LyricsFsizeOptionType[] = [
   { option: "xlarge", name: "36px" },
 ];
 
-export function SubSettings({
+export function SubSettingsView({
+  settings,
+  dispatch,
   navigation,
   route,
-}: SettingsStackScreenProps<"SubSettingsScreen">) {
-  const { lang, appearance, musicLanguage, musicQuality, lyricsBackground, lyricFontSize } = useAppSelector(selectSettings);
-  const dispatch = useAppDispatch();
+}) {
+  const { lang, appearance, musicLanguage, musicQuality, lyricsBackground, lyricFontSize } = settings;
+  // const dispatch = useAppDispatch();
+  // const { navigation, route } = props
+  console.log("subsetting received props ", settings, navigation, route, dispatch);
+  
   const { params } = route;
 
   // select methods as parameters passedd to settingsData Array. 
-  function selectGeneral(optionName?: String) {
+  function selectGeneral(optionName?: string) {
 
     let optionsName: OptionType[] = [];
-    let currentAction, currentState;
-    switch (optionName) {
-      case "Language":
+    let currentAction: ActionCreatorWithPayload<any, string> = updateSettings, currentState;
+    let optionKey = optionName;
+    switch (optionKey) {
+      case "lang":
         optionsName = languageOptions;
-        currentAction = switchLang;
         currentState = lang;
         break;
-      case "Appearance": 
+      case "appearance":
         optionsName = appearanceOptions;
-        currentAction = switchAppearance;
         currentState = appearance;
         break;
-      case "MusicPreference": 
+      case "musicLanguage":
         optionsName = musicLangOptions;
-        currentAction = switchMusicLang;
         currentState = musicLanguage;
         break;
-      case "StreamQuality": 
+      case "musicQuality":
         optionsName = musicQualityOptions;
-        currentAction = switchMusicQuality;
         currentState = musicQuality;
         break;
-      case "LyricsBg": 
+      case "lyricsBackground":
         optionsName = lyricsBgOptions;
-        currentAction = switchLyricsBackGround;
         currentState = lyricsBackground;
         break;
-      case "LyricsFsize": 
+      case "lyricFontSize":
         optionsName = lyricsFsizeOptions;
-        currentAction = switchLyricsFontSize;
         currentState = lyricFontSize;
         break;
-      
+
       default:
         break;
     }
-    
-    return { optionsName, currentAction, currentState};
+
+    return { optionsName, currentState, optionKey };
   }
-  const {optionsName, currentAction, currentState} = selectGeneral(params?.requestSubSettings);
-  if (optionsName.length > 0 && currentAction && currentState) {
-     currentOptions = [
+  const { optionsName, currentState, optionKey } = selectGeneral(params?.requestSubSettings);
+  if (optionsName.length > 0 && currentState) {
+    currentOptions = [
       {
         type: "SECTION",
         key: "test",
@@ -149,27 +144,54 @@ export function SubSettings({
                   </Text>
                 ),
                 onPress: () => {
-                  dispatch(currentAction(optionName.option as never))
-                },
-              };
-            }
-            return {
-              title: optionName.name,
-              showDisclosureIndicator: false,
-              onPress: () => {
-                  dispatch(currentAction(optionName.option as never))
-              },
+                  // dispatch(currentAction(optionName.option as never));
+                  if (optionKey) {
+                    if (optionKey == 'lang') {
+                      dispatch(switchLang(optionName.option)).then();
+                      return;
+                    }
+                    dispatch(updateSettings({
+                      key: optionKey,
+                      value: optionName.option
+                    }))
+                  }
+
+              }
             };
           }
+            return {
+          title: optionName.name,
+          showDisclosureIndicator: false,
+          onPress: () => {
+            if (optionKey) {
+              if (optionKey == 'lang') {
+                dispatch(switchLang(optionName.option)).then();
+                return;
+              }
+              dispatch(updateSettings({
+                key: optionKey,
+                value: optionName.option
+              }))
+            }
+            // dispatch(currentAction(optionName.option as never))
+          },
+        };
+      }
         ),
       },
     ];
-  }
-  
-  return (
-    // <View>
-    <SettingsPage data={currentOptions} />
-  );
 }
 
-let currentOptions:SettingsData;
+return (
+  // <View>
+  <SettingsPage data={currentOptions} />
+);
+}
+
+function mapStateToProps(state, { navigation, route }: SettingsStackScreenProps<"SubSettingsScreen">) {
+  const { settings } = state;
+  return { settings, navigation, route }
+}
+
+export const SubSettings = connect(mapStateToProps)(SubSettingsView)
+let currentOptions: SettingsData;

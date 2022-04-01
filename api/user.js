@@ -41,6 +41,7 @@ export function userAccount() {
  * @param {number} params.uid
  * @param {number} params.limit
  * @param {number=} params.offset
+ * @param {number} params.timestamp 
  */
 export function userPlaylist(params) {
   return request({

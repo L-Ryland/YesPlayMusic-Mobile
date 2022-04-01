@@ -31,6 +31,7 @@ export function loginWithPhone(params) {
  * @param {string=} params.md5_password
  */
 export function loginWithEmail(params) {
+  console.log(params);
   return request({
     url: '/login',
     method: 'post',

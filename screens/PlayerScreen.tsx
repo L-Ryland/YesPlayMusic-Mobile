@@ -77,7 +77,6 @@ export function PlayerScreen({ navigation, route }) {
   console.log('player picurl', picUrl, "screen width", width,);
   const artists = ar.length == 1 ? ar[0].name : ar.reduce((prev, curr) => prev.name + ", " + curr.name);
   const playerStatus = useAppSelector(selectPlayer);
-  const { TrackPlayer } = playerStatus;
   const svgStyle = useSvgStyle({});
   console.log("player status", playerStatus);
 

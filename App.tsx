@@ -2,15 +2,20 @@ import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import useCachedResources from "./hooks/useCachedResources";
 import useColorScheme from "./hooks/useColorScheme";
-import { useAppSelector } from "@/hooks/useRedux";
 import Navigation from "./navigation";
-import { Platform } from "expo-modules-core";
+import React from "react";
+import { connect } from "react-redux";
 
-export default function App() {
+function App(props) {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
-  console.log("Platform", Platform.OS);
+  console.log("app props", props);
+  
+  React.useEffect(() => {
 
+    require('@/locale/')
+    return () => {}
+  }, [props.lang])
 
   if (!isLoadingComplete) {
     return null;
@@ -23,7 +28,10 @@ export default function App() {
     );
   }
 }
-function useAppselector(): {} {
-  throw new Error("Function not implemented.");
+function mapStateToProps(state, ownProps) {
+  const { lang } = state.settings;
+  return { lang, ...ownProps }
 }
+
+export default connect(mapStateToProps)(App)
 

@@ -1,5 +1,4 @@
-import { apiSlice } from "./slice/apiSlice";
-import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 import {
   persistStore,
   persistReducer,
@@ -40,14 +39,17 @@ export const store = configureStore({
     // data: dataReducer,
     data: dataPersistReducer,
     player: playerPersistReducer,
-    [apiSlice.reducerPath]: apiSlice.reducer,
+    // [apiSlice.reducerPath]: apiSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
+      // redux-persist integration
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-      },
-    }).concat(apiSlice.middleware),
+      },  
+    }),
+    // apiSlice
+    // .concat(apiSlice.middleware),
   devTools: process.env.NODE_ENV !== "production",
 });
 

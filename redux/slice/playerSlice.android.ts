@@ -38,6 +38,7 @@ async function init() {
   });
   return TrackPlayer;
 }
+init();
 
 // Define a type for the slice state
 interface GeneralState {
@@ -64,9 +65,7 @@ interface GeneralState {
   personalFMNextTrack: { id: number, [key: string]: any };
   trackTimestamp: AudioTimestamp,
   hasLyrics: boolean,
-  TrackPlayer: typeof TrackPlayer | undefined,
-  State: typeof State | undefined,
-  Event,
+  // TrackPlayer: typeof TrackPlayer | undefined,
 }
 
 // Define the initial state using that type
@@ -97,9 +96,7 @@ const initialState: GeneralState = {
     performanceTime: 0,
   },
   hasLyrics: false,
-  TrackPlayer: undefined,
-  State: undefined,
-  Event: undefined
+  // TrackPlayer: undefined,
 }
 
 
@@ -129,12 +126,9 @@ export const playerSlice = createSlice({
       state.list = list;
       state.shuffledList = shuffle(list);
     });
-    builder.addDefaultCase((state, _) => {
-      init();
-      state.TrackPlayer = TrackPlayer;
-      state.State = State;
-      state.Event = Event;
-    })
+    // builder.addDefaultCase((state, _) => {
+    //   state.TrackPlayer = TrackPlayer;
+    // })
   }
 })
 

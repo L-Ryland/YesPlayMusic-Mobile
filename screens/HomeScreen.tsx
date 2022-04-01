@@ -2,11 +2,11 @@ import { StyleSheet, Appearance, StatusBar } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useEffect, useRef, useState } from "react";
 
-import { Text, View, ScrollView } from "../components/Themed";
+import { Text, View, ScrollView, Title } from "../components/Themed";
 import { CoverRow, DailyTracksCard, FMCard, Tracker } from "../components";
 import { RootTabScreenProps } from "../types";
 import { byAppleMusic } from "../utils/staticData.js";
-import { useRecommendPlaylistQuery } from "@/redux/slice/apiSlice";
+// import { useRecommendPlaylistQuery } from "@/redux/slice/apiSlice";
 import {
   recommendPlaylist,
   newAlbums,
@@ -23,7 +23,7 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
   const [topArtists, setTopArtists] = useState(undefined);
   const [toplist, setToplist] = useState(undefined);
   const [data, setData] = useState(undefined);
-  const { currentData, isLoading } = useRecommendPlaylistQuery(undefined);
+  // const { currentData, isLoading } = useRecommendPlaylistQuery(undefined);
   // const recommendPlaylist = currentData?.result;
   const settings = useAppSelector(selectSettings);
   const fetchData = () => {
@@ -87,7 +87,7 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView >
-        <Text style={styles.title}>by Apple Music</Text>
+        <Title>by Apple Music</Title>
         <CoverRow
           rowNumber={1}
           type="playlist"
@@ -96,9 +96,9 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
           imageSize={1024}
           navigate={props.navigation.navigate}
         />
-        <Text style={styles.title} adjustsFontSizeToFit={true}>
+        <Title>
           Recommended PlayLists
-        </Text>
+        </Title>
         {!recommendPlaylists ? (
           <Text>Loading</Text>
         ) : (
@@ -110,7 +110,7 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
             navigate={props.navigation.navigate}
           />
         )}
-        <Text style={styles.title}>For You</Text>
+        <Title>For You</Title>
         <DailyTracksCard />
         <FMCard />
         <Text style={styles.title}>Recommended Artists</Text>
@@ -118,7 +118,7 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
           navigate={props.navigation.navigate}
         />
 
-        <Text style={styles.title}>Latest Albums</Text>
+        <Title>Latest Albums</Title>
         {!newAlbum ? (
           <Text>Loading</Text>
         ) : (
@@ -130,7 +130,7 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
             navigate={props.navigation.navigate}
           />
         )}
-        <Text style={styles.title}>Charts</Text>
+        <Title>Charts</Title>
         {!toplist ? (
           <Text>Loading</Text>
         ) : (

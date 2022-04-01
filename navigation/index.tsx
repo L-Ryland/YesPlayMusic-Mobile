@@ -77,8 +77,6 @@ function RootNavigator() {
       <RootStack.Group screenOptions={{ presentation: "modal" }}>
         <RootStack.Screen name="Player" component={PlayerScreen} />
         <RootStack.Screen name="Playlist" component={PlaylistScreen} />
-      </RootStack.Group>
-      <RootStack.Group screenOptions={{ presentation: "modal" }}>
         <RootStack.Screen name="Tracker" component={Tracker} />
       </RootStack.Group>
     </RootStack.Navigator>
