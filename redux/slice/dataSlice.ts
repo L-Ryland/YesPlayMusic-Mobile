@@ -1,4 +1,4 @@
-import { userAccount, userPlayHistory, userPlaylist, logout, likedAlbums, likedArtists } from '@/api/';
+import { userAccount, userPlayHistory, userPlaylist, logout, likedAlbums, likedArtists, cloudDisk, likedMVs, userLikedSongsIDs, getPlaylistDetail, getTrackDetail } from '@/api/';
 import { doLogout, isAccountLoggedIn, isLooseLoggedIn } from '@/utils/auth';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { build } from '@reduxjs/toolkit/dist/query/core/buildMiddleware/cacheLifecycle';
@@ -77,7 +77,7 @@ export const fetchUserProfile = createAsyncThunk(
   'data/fetchUserProfile',
   async (param, { dispatch, fulfillWithValue }) => {
     console.log("isAccount logged in", isAccountLoggedIn());
-    
+
     if (!isAccountLoggedIn()) return;
     return userAccount().then(
       (result: any) => {
@@ -130,115 +130,109 @@ export const fetchPlayHistory = createAsyncThunk(
 );
 
 /**
- * if there is account loggined in, update user playlists and user likedSongPlaylistID
+ * if there is account loggined in, update user 
+ * liked playlist, 
+ * liked albums,
+ * liked artists, 
+ * like mvs and data from cloud disk
  *
  * @param {*} params
  * @param {*} thunkAPI
  * @return {*} 
  */
-export const fetchLikedPlaylist = createAsyncThunk(
-  'data/fetchLikedPlaylist',
+export const fetchLikedThings = createAsyncThunk(
+  'data/fetchLikedThings',
   // ({ state, commit }) => {
   async (userId: number, thunkAPI) => {
     console.log("is loose logged in? ", isLooseLoggedIn());
-    
+
     if (!isLooseLoggedIn()) return;
     if (isAccountLoggedIn() && userId) {
-      return userPlaylist({
+      let result;
+      // fetch liked songs, update `songs` into `state.data`
+      result = await userLikedSongsIDs(userId);
+      if (result.ids) {
+        thunkAPI.dispatch(updatedLikedItems({
+          name: 'songs',
+          data: result.ids,
+        }))
+      }
+
+      // update `playlist` and `likedSongPlaylistID` into `state.data`
+      result = await userPlaylist({
         uid: userId,
         limit: 2000, // 最多只加载2000个歌单（等有用户反馈问题再修）
         timestamp: new Date().getTime(),
-      }).then((result: any) => {
+      })
+      if (result.playlist) {
+        let likedSongPlaylistID: number = result.playlist[0].id;
+        console.log("likedSongPlaylistID", likedSongPlaylistID, result.playlist[0].id);
         
-        if (result.playlist) {
-          thunkAPI.dispatch(updatedLikedItems({
-            name: 'playlists',
-            data: result.playlist,
-          })),
-            // 更新用户”喜欢的歌曲“歌单ID
-            thunkAPI.dispatch(updateData({
-              key: 'likedSongPlaylistID',
-              value: result.playlist[0].id,
-            }))
+        thunkAPI.dispatch(updatedLikedItems({
+          name: 'playlists',
+          data: result.playlist,
+        })),
+          // 更新用户”喜欢的歌曲“歌单ID
+          thunkAPI.dispatch(updateData({
+            key: 'likedSongPlaylistID',
+            value: likedSongPlaylistID,
+          }))
+        // fetch liked songs with details, update `songsWithDetails` into `state.data`
+        result = await getPlaylistDetail(likedSongPlaylistID, true);
+        let trackIds = result.playlist.trackIds;
+        if (trackIds.length == 0) {
+          result = new Promise<void>(resolve => resolve())
         }
-      });
-    } else {
-      // TODO:搜索ID登录的用户
-    }
-  },
-)
-
-/**
- * if there is account loggined in, fetch liked albums
- *
- * @param {*} params
- * @param {*} thunkAPI
- * @return {*} 
- */
-export const fetchLikedAlbums = createAsyncThunk(
-  'data/fetchLikedAlbums', 
-  async (params:any, thunkAPI) => {
-    
-  }
-)
-
-
-/**
- * if there is account loggined in, fetch liked artists
- *
- * @param {*} params
- * @param {*} thunkAPI
- * @return {*} 
- */
- export const fetchLikedArtists = createAsyncThunk(
-  'data/fetchLikedAlbums', 
-  async (params, thunkAPI) => {
-    if (!isAccountLoggedIn()) thunkAPI.rejectWithValue('account not logged in');
-    return likedAlbums({ limit: 2000 }).then(result => {
+        result = await getTrackDetail(
+          trackIds
+            .slice(0, 12)
+            .map(t => t.id)
+            .join(',')
+        )
+        
+        if (result.songs) {
+          thunkAPI.dispatch(updatedLikedItems({
+            name: 'songsWithDetails',
+            data: result.songs,
+          }))
+        }
+      }
+      // update `albums` into `state.data`
+      result = await likedAlbums({ limit: 2000 });
       if (result.data) {
         thunkAPI.dispatch(updatedLikedItems({
           name: 'albums',
           data: result.data,
         }))
       }
-    });
-  }
-)
-
-/**
- * if there is account loggined in, fetch liked mvs
- *
- * @param {*} params
- * @param {*} thunkAPI
- * @return {*} 
- */
- export const fetchLikedMVs = createAsyncThunk(
-  'data/fetchLikedAlbums', 
-  async (params:any, thunkAPI) => {
-    if (!isAccountLoggedIn()) thunkAPI.rejectWithValue('account not logged in');
-    return likedArtists({ limit: 2000 }).then(result => {
+      // update `artists` into `state.data`
+      result = await likedArtists({ limit: 2000 });
       if (result.data) {
-        // commit('updateLikedXXX', {
-        //   name: 'artists',
-        //   data: result.data,
-        // });
-      }
-    }); 
-  }
-)
+        thunkAPI.dispatch(updatedLikedItems({
+          name: 'artists',
+          data: result.data,
 
-/**
- * if there is account loggined in, fetch data from cloud disk
- *
- * @param {*} params
- * @param {*} thunkAPI
- * @return {*} 
- */
- export const fetchCloudDisk = createAsyncThunk(
-  'data/fetchLikedAlbums', 
-  async (params:any, thunkAPI) => {
-    
-  }
+        }))
+      }
+      // update `mvs` into `state.data`
+      result = await likedMVs({ limit: 1000 });
+      if (result.data) {
+        thunkAPI.dispatch(updatedLikedItems({
+          name: 'mvs',
+          data: result.data,
+
+        }))
+      }
+      // update `cloudDisk` into `state.data`
+      result = await cloudDisk({ limit: 1000 });
+      thunkAPI.dispatch(updatedLikedItems({
+        name: 'cloudDisk',
+        data: result.data,
+      }))
+    } else {
+      // TODO:搜索ID登录的用户
+    }
+  },
 )
 
 

@@ -85,7 +85,7 @@ export function SubSettingsView({
   // const dispatch = useAppDispatch();
   // const { navigation, route } = props
   console.log("subsetting received props ", settings, navigation, route, dispatch);
-  
+
   const { params } = route;
 
   // select methods as parameters passedd to settingsData Array. 
@@ -156,36 +156,36 @@ export function SubSettingsView({
                     }))
                   }
 
-              }
+                }
+              };
+            }
+            return {
+              title: optionName.name,
+              showDisclosureIndicator: false,
+              onPress: () => {
+                if (optionKey) {
+                  if (optionKey == 'lang') {
+                    dispatch(switchLang(optionName.option)).then();
+                    return;
+                  }
+                  dispatch(updateSettings({
+                    key: optionKey,
+                    value: optionName.option
+                  }))
+                }
+                // dispatch(currentAction(optionName.option as never))
+              },
             };
           }
-            return {
-          title: optionName.name,
-          showDisclosureIndicator: false,
-          onPress: () => {
-            if (optionKey) {
-              if (optionKey == 'lang') {
-                dispatch(switchLang(optionName.option)).then();
-                return;
-              }
-              dispatch(updateSettings({
-                key: optionKey,
-                value: optionName.option
-              }))
-            }
-            // dispatch(currentAction(optionName.option as never))
-          },
-        };
-      }
         ),
       },
     ];
-}
+  }
 
-return (
-  // <View>
-  <SettingsPage data={currentOptions} />
-);
+  return (
+    // <View>
+    <SettingsPage data={currentOptions} />
+  );
 }
 
 function mapStateToProps(state, { navigation, route }: SettingsStackScreenProps<"SubSettingsScreen">) {

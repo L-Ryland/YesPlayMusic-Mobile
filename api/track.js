@@ -51,23 +51,25 @@ export function getTrackDetail(ids) {
     }).then(data => {
       data.songs.map(song => {
         const privileges = data.privileges.find(t => t.id === song.id);
-        cacheTrackDetail(song, privileges);
+        new Promise(()=>{cacheTrackDetail(song, privileges)})
       });
       data.songs = mapTrackPlayableStatus(data.songs, data.privileges);
       return data;
     });
   };
   fetchLatest();
-
   let idsInArray = [String(ids)];
   if (typeof ids === 'string') {
     idsInArray = ids.split(',');
   }
+  console.log("getTrackDetail ids", ids, idsInArray);
 
   return getTrackDetailFromCache(idsInArray).then(result => {
+    console.log("getTrackDetail result", result);
     if (result) {
       result.songs = mapTrackPlayableStatus(result.songs, result.privileges);
     }
+    console.log("result and fetchLatest", result, fetchLatest());
     return result ?? fetchLatest();
   });
 }

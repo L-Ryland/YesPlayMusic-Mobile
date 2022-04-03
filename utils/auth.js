@@ -56,11 +56,6 @@ export function isLoggedIn() {
 // 账号登录
 export const isAccountLoggedIn = () => {
   const data = getData();
-  console.log(data, "data");
-  console.log("    data.loginMode.search(/account/)",
-    data.loginMode.search(/account/)
-   );
-
   return (
     getCookie("MUSIC_U") !== undefined &&
     // data.loginMode === "account"

@@ -16,7 +16,7 @@ import { useNavigation } from "@react-navigation/core";
 import { loginQrCodeCheck, loginQrCodeCreate, loginQrCodeKey, loginWithEmail, loginWithPhone } from "@/api";
 import { isAccountLoggedIn, setCookies } from "@/utils/auth";
 import { useAppDispatch } from "@/hooks/useRedux";
-import { fetchLikedPlaylist, fetchUserProfile, setLoginMode, updateData } from "@/redux/slice/dataSlice";
+import { fetchLikedThings, fetchUserProfile, setLoginMode, updateData } from "@/redux/slice/dataSlice";
 
 const AuthenticationMode = React.createContext("qr");
 
@@ -307,7 +307,7 @@ export default function LoginScreen() {
       dispatch(fetchUserProfile()).then(
         ({ payload }) => {
           console.log('paylaod', payload)
-          dispatch(fetchLikedPlaylist(payload))}
+          dispatch(fetchLikedThings(payload))}
       )
       // this.$store.dispatch('fetchUserProfile').then(() => {
       //   this.$store.dispatch('fetchLikedPlaylist').then(() => {

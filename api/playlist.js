@@ -50,15 +50,15 @@ export function getPlaylistDetail(id, noCache = false) {
     params,
   }).then((data) => {
     if (data.playlist) {
-    console.log("getPlayListDetail", data);
+    // console.log("getPlayListDetail", data);
       data.playlist.tracks = mapTrackPlayableStatus(
         data.playlist.tracks,
         // data.privileges || []
         data.privileges
       );
-      console.log(data.playlist.tracks);
+      // console.log(data.playlist.tracks);
     }
-    console.log("getPlayListDetail", data);
+    // console.log("getPlayListDetail", data);
     return data;
   });
 }

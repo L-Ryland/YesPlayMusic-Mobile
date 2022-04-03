@@ -7,7 +7,7 @@ export const schema = appSchema({
       tableSchema({
         name: 'trackDetails',
         columns: [
-          { name: 'track_id', type: 'string', isIndexed: true },
+          { name: 'track_id', type: 'number', isIndexed: true },
           { name: 'detail', type: 'string', isOptional: true },
           { name: 'privileges', type: 'string', isOptional: true },
           { name: 'updated_at', type: 'number', isIndexed: true },
@@ -62,8 +62,8 @@ export const schema = appSchema({
     static table = 'trackDetails';
   
     @field('track_id') trackId
-    @field('detail') detail
-    @field('privileges') privileges
+    @json('detail', sanitizedJSON) detail
+    @json('privileges', sanitizedJSON) privileges
     @readonly @date('updated_at') updatedAt
   }
   export class TrackSources extends Model {
