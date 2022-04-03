@@ -2,7 +2,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { fetchLikedThings, fetchUserProfile, selectData } from "@/redux/slice/dataSlice";
 import { StyleSheet, Button, Dimensions, ImageBackground } from "react-native";
-import { Title } from "@/components/Themed";
+import { Title, useSvgStyle } from "@/components/Themed";
+import { Play } from "@/components/icons";
 
 import i18n, { t } from 'i18n-js';
 
@@ -11,12 +12,14 @@ import { Text, View } from "../components/Themed";
 import Login from "./LoginScreen";
 import styled from "styled-components/native";
 import { database } from "@/index";
+import { Row } from "react-native-settings-screen/dist/lib/Row";
 
 const { width } = Dimensions.get('window')
 export const LibraryScreen = () => {
   const data = useAppSelector(selectData);
   const { user, liked } = data;
   const dispatch = useAppDispatch();
+  const svgStyle = useSvgStyle({});
   const handleThunkTest = () => {
     dispatch(fetchUserProfile()).then(
       (action) => {
@@ -45,7 +48,7 @@ export const LibraryScreen = () => {
       </RowView>
       <Button title='userProfile' onPress={handleThunkTest} />
       <Button title='delete test database' onPress={handleDatabase} />
-      <RowView>
+      <RowView >
         <ImageBackground
           source={{ uri: user.backgroundUrl }}
           resizeMode='cover'
@@ -53,9 +56,16 @@ export const LibraryScreen = () => {
           imageStyle={styles.backgroundStyle}
           blurRadius={10}
         >
-          
-          <Text>{t('library.likedSongs')}</Text>
-          <Text>{t('common.songs')}</Text>
+          <Text style={{ fontSize: 32, flex:1 }}>{t('library.likedSongs')}</Text>
+          <RowView style={{ backgroundColor: 'transparent', flex:1,justifyContent: 'center'}}>
+            <RowView style={{ backgroundColor: 'transparent', flex: 1, margin: 5 }}>
+              <Text style={{ fontSize: 18 }}>{t('common.songs')}</Text>
+            </RowView>
+            <RowView style={{ backgroundColor: 'transparent', flex: 1, margin: 5 }}>
+              <Play {...svgStyle} color='black' />
+            </RowView>
+          </RowView>
+
         </ImageBackground>
         <View style={{ flex: 1 }}>
 
@@ -66,7 +76,7 @@ export const LibraryScreen = () => {
   );
 };
 
-const RowView: React.FC = styled(View)`
+const RowView = styled(View)`
   flex-direction: row;
 `
 const styles = StyleSheet.create({
