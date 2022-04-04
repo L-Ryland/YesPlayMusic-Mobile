@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, TouchableHighlight, Dimensions } from "react-native";
 import styled from "styled-components/native";
 import { Cover, ScrollView, TrackList, Text, View, useSvgStyle } from "@/components";
-import { Audio } from "expo-av";
+
 
 import {
   RootStackScreenProps,
@@ -13,7 +13,6 @@ import { Heart, HeartSolid, Plus, Play, Lock } from "@/components/icons";
 import dayjs from "dayjs";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { selectSettings } from "@/redux/slice/settingsSlice";
-import { cacheTrackSource } from "@/utils/db";
 import { selectData } from "@/redux/slice/dataSlice";
 import { selectPlayer, setTracklist } from "@/redux/slice/playerSlice";
 
@@ -97,12 +96,7 @@ export function PlaylistScreen({
     })
   }
   React.useEffect(() => {
-    const { likedSongs, itemProps: { id } } = route.params;
-    if (likedSongs) {
-      loadData(data.likedSongPlaylistID);
-    } else {
-      loadData(id);
-    }
+
     return () => { };
   }, []);
   let updateTime;
@@ -111,6 +105,12 @@ export function PlaylistScreen({
     updateTime = dayjs(playlist.updateTime).format(`MMM DD, YYYY`);
   }
   const playTrack = async () => {
+    const { likedSongs, itemProps: { id } } = route.params;
+    if (likedSongs) {
+      loadData(data.likedSongPlaylistID);
+    } else {
+      loadData(id);
+    }
     const { TrackPlayer, list } = player;
     if (TrackPlayer) {
       await TrackPlayer.add(list);

@@ -35,10 +35,10 @@ export function useThemeColor(
 }
 
 export function useSvgStyle(
-  { height = 35, width = 35 }
+  { height = 35, width = 35, active = false }
 ) {
   const theme = useColorScheme();
-  const svgColor = Colors[theme]['tint'];
+  const svgColor = active?Colors[theme]['tint']:Colors[theme]['text'];
   console.log('current svgColor', svgColor);
 
   return {
@@ -119,9 +119,9 @@ export function SettingsScreen(props: SettingsScreenProps) {
 //   return <DefaultButton {...props} />;
 // }
 export const Button: React.FC<ThemeProps & TouchableHighlight["props"]> = (props) => {
-  const { lightColor,  darkColor, onPress, children, ...otherProps } = props;
+  const { lightColor, darkColor, onPress, children, ...otherProps } = props;
   const buttonColor = useThemeColor(
-    {light: lightColor, dark: darkColor},
+    { light: lightColor, dark: darkColor },
     'buttonColor'
   )
   const styles = StyleSheet.create({
@@ -193,7 +193,9 @@ export const CoverSubTitle: React.FC = styled(Text)`
 
 //   return <DefaultTextInput style={[{backgroundColor}, {color}, style]} ref={ref} {...otherProps} />;
 // }
-export const TextInput: React.FC = React.forwardRef((props: ThemeProps & DefaultTextInput["props"], ref: React.Ref<DefaultTextInput> | undefined) => {
+export const TextInput: React.FC<ThemeProps & DefaultTextInput["props"]> 
+= React.forwardRef((props: ThemeProps & DefaultTextInput["props"], ref: React.Ref<DefaultTextInput> | undefined) => {
+
   const { style, lightColor, darkColor, ...otherProps } = props;
 
   const backgroundColor = useThemeColor(

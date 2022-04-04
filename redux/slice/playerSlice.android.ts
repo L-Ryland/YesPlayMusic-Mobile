@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from '../store'
 
-import shuffle from "lodash/shuffle";
+import shuffleFunc from "lodash/shuffle";
 
 import TrackPlayer, { Capability, State, Event } from "react-native-track-player";
 import { getMP3 } from '@/api';
@@ -38,8 +38,14 @@ async function init() {
   });
   return TrackPlayer;
 }
-init();
-
+// interface PayLoadInject<T> {
+//   key: keyof T;
+//   value: T[keyof T];
+// }
+interface PayLoadInject<T extends GeneralState {
+  key: keyof T ;
+  value:  T extends [infer R]? R: undefined;
+};
 // Define a type for the slice state
 interface GeneralState {
   playing: boolean;
@@ -118,24 +124,29 @@ export const playerSlice = createSlice({
     setHasLyrics: (state, action: PayloadAction<boolean>) => {
       state.hasLyrics = action.payload;
     },
+    updatePlayerStatus: (state, { payload }: PayloadAction<PayLoadInject<GeneralState>>) => {
+      const { key , value } = payload;
+      state[key] = value;
+      (<typeof value>state[key]) = value;
+    },
 
   },
   extraReducers: (builder) => {
     builder.addCase(setTracklist.fulfilled, (state, { payload }) => {
       const list = payload;
       state.list = list;
-      state.shuffledList = shuffle(list);
+      state.shuffledList = shuffleFunc(list);
     });
-    // builder.addDefaultCase((state, _) => {
-    //   state.TrackPlayer = TrackPlayer;
-    // })
+    builder.addDefaultCase((state, _) => {
+      init();
+    })
   }
 })
 
 
 export const setTracklist = createAsyncThunk(
   'player/setPlaylist',
-  async (tracks: Array<any>, thunkAPI) => {
+  async (tracks: any[], thunkAPI) => {
     console.log("currentstate", thunkAPI.getState());
     // generate directly played playlist
     const newTracks = await Promise.all(tracks.map(async (track) => {
@@ -169,7 +180,7 @@ export const setTracklist = createAsyncThunk(
   }
 )
 export const {
-  setPlayingStatus, setTrackTimeStamp
+  setPlayingStatus, setTrackTimeStamp, updatePlayerStatus
 } = playerSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type

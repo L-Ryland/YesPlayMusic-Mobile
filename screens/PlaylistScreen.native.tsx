@@ -110,27 +110,29 @@ export function PlaylistScreen({
     updateTime = dayjs(playlist.updateTime).format(`MMM DD, YYYY`);
   }
   const playTrack = async () => {
-    const { list } = player;
-    if (TrackPlayer) {
-      await TrackPlayer.add(list);
-      TrackPlayer.play();
+    console.log("playTrack button clicked");
+    
+    const currentQueue = await TrackPlayer.getQueue();
+    console.log("playTrack currentQueue before clean", currentQueue);
+    if (currentQueue) {
+      await TrackPlayer.reset();
+      console.log("playTrack currentQueue", await TrackPlayer.getQueue());
+
     }
+    const { likedSongs, itemProps: { id } } = route.params;
+    const { list } = player;
+    if (likedSongs) {
+      loadData(data.likedSongPlaylistID);
+    } else {
+      loadData(id);
+    }
+    await TrackPlayer.add(list);
+
+    TrackPlayer.play();
 
   }
 
-  const ButtonBox = styled(View).attrs(() => ({
-    children: [
-      (<View key='likebox' style={{ flexDirection: 'row' }}>
-        <HeartSolid {...svgStyle} />
-        <Heart {...svgStyle} />
-        <Plus {...svgStyle} />
-      </View>),
-      <TouchableHighlight onPress={playTrack} style={{ alignSelf: 'flex-end' }} key="playbox">
-        <Play {...svgStyle} height={50} width={50} />
-      </TouchableHighlight>
-
-    ]
-  }))`
+  const ButtonBox = styled(View)`
     margin-top: 32px;
     display: flex;
     flex-direction: row;
@@ -163,7 +165,16 @@ export function PlaylistScreen({
           </DateAndCount>
         </Info>
       </PlaylistInfo>
-      <ButtonBox />
+      <ButtonBox>
+      <View  style={{ flexDirection: 'row' }}>
+        <HeartSolid {...svgStyle} />
+        <Heart {...svgStyle} />
+        <Plus {...svgStyle} />
+      </View>
+      <TouchableHighlight onPress={()=>playTrack()} style={{ alignSelf: 'flex-end' }} >
+        <Play {...svgStyle} height={50} width={50} />
+      </TouchableHighlight>
+      </ButtonBox>
       <TrackList tracks={tracks} navigate={navigation.navigate} />
     </ScrollView>
   )

@@ -72,6 +72,7 @@ export function PlayerScreen({ navigation, route }) {
   const [trackTitle, setTrackTitle] = React.useState<string>();
   const [trackArtist, setTrackArtist] = React.useState<string>();
   const [trackArtwork, setTrackArtwork] = React.useState<string>();
+  const shuffleState = React.useRef<any>(null);
   console.log("player screen", navigation, route);
   const { al: { name: songTitle, picUrl }, ar } = route.params.track;
   console.log('player picurl', picUrl, "screen width", width,);
@@ -80,7 +81,10 @@ export function PlayerScreen({ navigation, route }) {
   const svgStyle = useSvgStyle({});
   console.log("player status", playerStatus);
 
-
+  const handleShuffle = async () => {
+    console.log(shuffleState);
+    
+  }
 
   const CoverPage = styled.Image`
     width: ${contentWidth};
@@ -118,7 +122,7 @@ export function PlayerScreen({ navigation, route }) {
   }
   const ControlBox = styled(View).attrs(() => ({
     children: [
-      <TouchableHighlight key='shuffle'>
+      <TouchableHighlight key='shuffle' onPress={handleShuffle}>
         <Shuffle {...svgStyle} />
       </TouchableHighlight>,
       <TouchableHighlight key='prevTrack' >
