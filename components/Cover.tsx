@@ -2,28 +2,28 @@ import { CoverProps } from "@/types";
 import { StyleSheet, Pressable, Image } from "react-native";
 import styled from "styled-components/native";
 
-import { View, Text } from "./Themed";
+import { View, Text, CoverTitle, CoverSubTitle } from "./Themed";
 import { Explicit, Lock } from "./icons";
 
-const CoverTitle = styled(Text)`
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 20;
-  overflow: hidden;
-  margin: auto 20px auto 20px;
-  text-align: justify;
-  flex-wrap: wrap;
-`;
-const SubTitle = styled(Text)`
-  font-size: 13px;
-  color: #e8e6e3;
-  opacity: 0.68;
-  line-height: 18;
-  overflow: hidden;
-  margin: auto 20px auto 20px;
-  text-align: justify;
-  flex-wrap: wrap;
-`;
+// const CoverTitle = styled(Text)`
+//   font-size: 16px;
+//   font-weight: 600;
+//   line-height: 20;
+//   overflow: hidden;
+//   margin: auto 20px auto 20px;
+//   text-align: justify;
+//   flex-wrap: wrap;
+// `;
+// const CoverSubTitle = styled(Text)`
+//   font-size: 13px;
+//   color: #e8e6e3;
+//   opacity: 0.68;
+//   line-height: 18;
+//   overflow: hidden;
+//   margin: auto 20px auto 20px;
+//   text-align: justify;
+//   flex-wrap: wrap;
+// `;
 export function Cover(props: any) {
   // console.log('@', props);
   const { imageUrl, subText, name, isPrivacy, isExplicit, imageStyle, componentWidth } = props;
@@ -42,7 +42,7 @@ export function Cover(props: any) {
             {isPrivacy && <Lock />}
             {name ?? ''}
           </CoverTitle>
-          {subText && <SubTitle>{subText}</SubTitle>}
+          {subText && <CoverSubTitle>{subText}</CoverSubTitle>}
         </View>
       </View>
     </View>

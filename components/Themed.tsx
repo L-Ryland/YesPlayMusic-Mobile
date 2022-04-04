@@ -11,15 +11,17 @@ import {
   Image as DefaultImage,
   Button as DefaultButton,
   TextInput as DefaultTextInput,
+  TouchableHighlight,
+  StyleSheet
 } from "react-native";
-import { SettingsScreen as DefaultSettingsScreen } from "react-native-settings-screen";
+import { Props, SettingsScreen as DefaultSettingsScreen } from "react-native-settings-screen";
 import styled from "styled-components/native";
 
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 
 export function useThemeColor(
-  props: { light?: string; dark?: string;} ,
+  props: { light?: string; dark?: string; },
   colorName: keyof typeof Colors.light & keyof typeof Colors.dark
 ) {
   const theme = useColorScheme();
@@ -33,12 +35,12 @@ export function useThemeColor(
 }
 
 export function useSvgStyle(
-  {height=35, width=35}
+  { height = 35, width = 35 }
 ) {
   const theme = useColorScheme();
   const svgColor = Colors[theme]['tint'];
   console.log('current svgColor', svgColor);
-  
+
   return {
     height, width,
     color: svgColor,
@@ -111,10 +113,39 @@ export function SettingsScreen(props: SettingsScreenProps) {
     "background"
   );
 
-  return <DefaultSettingsScreen data={data} style={{backgroundColor}} {...otherProps} />;
+  return <DefaultSettingsScreen data={data} style={{ backgroundColor }} {...otherProps} />;
 }
-export function Button(props: ThemeProps & DefaultButton["props"]) {
-  return <DefaultButton {...props} />;
+// export function Button(props: ThemeProps & DefaultButton["props"]) {
+//   return <DefaultButton {...props} />;
+// }
+export const Button: React.FC = (props: any) => {
+  const { lightColor,  darkColor, onPress, children, ...otherProps } = props;
+  const buttonColor = useThemeColor(
+    {light: lightColor, dark: darkColor},
+    'buttonColor'
+  )
+  const styles = StyleSheet.create({
+    middleButton: {
+      backgroundColor: buttonColor,
+      margin: 10,
+      paddingTop: 6,
+      paddingRight: 10,
+      paddingLeft: 10,
+      paddingBottom: 6,
+      alignContent: 'center',
+      borderRadius: 10
+    },
+    middleTitle: {
+      fontSize: 16
+    },
+  })
+  return (
+    <TouchableHighlight onPress={onPress}>
+      <View style={styles.middleButton}>
+        <Text style={styles.middleTitle}>{children}</Text>
+      </View>
+    </TouchableHighlight>
+  );
 }
 
 export const Title: React.FC = styled(Text).attrs(() => ({
@@ -128,7 +159,25 @@ export const Title: React.FC = styled(Text).attrs(() => ({
   fontWeight: 700;
   padding: 0px 0px 8px 8px;
 `
-
+export const CoverTitle: React.FC = styled(Text)`
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20;
+  overflow: hidden;
+  margin: auto 20px auto 20px;
+  text-align: justify;
+  flex-wrap: wrap;
+`;
+export const CoverSubTitle: React.FC = styled(Text)`
+  font-size: 13px;
+  color: #e8e6e3;
+  opacity: 0.68;
+  line-height: 18;s
+  overflow: hidden;
+  margin: auto 20px auto 20px;
+  text-align: justify;
+  flex-wrap: wrap;
+`;
 // export function TextInput(props: ThemeProps & React.LegacyRef<DefaultTextInput> & DefaultTextInput["props"]) {
 // export function TextInput(props: any) {
 //   let { style, lightColor, darkColor, ref, ...otherProps } = props;
@@ -144,7 +193,7 @@ export const Title: React.FC = styled(Text).attrs(() => ({
 
 //   return <DefaultTextInput style={[{backgroundColor}, {color}, style]} ref={ref} {...otherProps} />;
 // }
-export const TextInput = React.forwardRef((props: ThemeProps & DefaultTextInput["props"], ref: React.Ref<DefaultTextInput>|undefined)=>{
+export const TextInput: React.FC = React.forwardRef((props: ThemeProps & DefaultTextInput["props"], ref: React.Ref<DefaultTextInput> | undefined) => {
   const { style, lightColor, darkColor, ...otherProps } = props;
 
   const backgroundColor = useThemeColor(
@@ -156,5 +205,5 @@ export const TextInput = React.forwardRef((props: ThemeProps & DefaultTextInput[
     "text"
   );
 
-  return <DefaultTextInput style={[{backgroundColor}, {color}, style]} ref={ref} {...otherProps} />;
+  return <DefaultTextInput style={[{ backgroundColor }, { color }, style]} ref={ref} {...otherProps} />;
 })
