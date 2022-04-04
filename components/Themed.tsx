@@ -118,7 +118,7 @@ export function SettingsScreen(props: SettingsScreenProps) {
 // export function Button(props: ThemeProps & DefaultButton["props"]) {
 //   return <DefaultButton {...props} />;
 // }
-export const Button: React.FC = (props: any) => {
+export const Button: React.FC<ThemeProps & TouchableHighlight["props"]> = (props) => {
   const { lightColor,  darkColor, onPress, children, ...otherProps } = props;
   const buttonColor = useThemeColor(
     {light: lightColor, dark: darkColor},
@@ -172,7 +172,7 @@ export const CoverSubTitle: React.FC = styled(Text)`
   font-size: 13px;
   color: #e8e6e3;
   opacity: 0.68;
-  line-height: 18;s
+  line-height: 18;
   overflow: hidden;
   margin: auto 20px auto 20px;
   text-align: justify;

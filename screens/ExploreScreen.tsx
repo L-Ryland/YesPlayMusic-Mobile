@@ -4,7 +4,7 @@ import { selectSettings } from "@/redux/slice/settingsSlice";
 import { StyleSheet } from "react-native";
 import styled from "styled-components/native";
 
-import { Text, ScrollView } from "../components/Themed";
+import { Text, ScrollView, Button } from "../components/Themed";
 import { CoverList, CoverRow } from "../components";
 import {
   topPlaylist,
@@ -113,12 +113,12 @@ export function ExploreScreen({ navigation, route }) {
         <Text style={styles.title}>Explore</Text>
         <ButtonContainer horizontal={true} style={{ flex: 1 }}>
           {settings.enabledPlaylistCategories.map((category, index) => (
-            <CatagoryButton
+            <Button
               key={index}
               onPress={() => handleCatogorySwitch(category)}
             >
-              <Text>{category}</Text>
-            </CatagoryButton>
+              {category}
+            </Button>
           ))}
         </ButtonContainer>
         {playlists && (

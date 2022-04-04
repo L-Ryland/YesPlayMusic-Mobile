@@ -28,7 +28,7 @@ export function Cover(props: any) {
   // console.log('@', props);
   const { imageUrl, subText, name, isPrivacy, isExplicit, imageStyle, componentWidth } = props;
   return (
-    <View style={{ width: imageStyle.width+imageStyle.margin*2 }}>
+    <View style={{ width: imageStyle.width + 20 }}>
       <View >
         <Image
           source={{

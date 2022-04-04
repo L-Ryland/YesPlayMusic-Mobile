@@ -58,10 +58,10 @@ export function CoverRow(props: CoverRowProps|any) {
       margin: 20
     };
     const listStyle = {
-      height: width/3,
-      width: width/3,
+      height: width/2-30,
+      width: width/2-30,
       borderRadius: 22,
-      margin: 25,
+      marginLeft: 20,
     }
     const itemProps = {
       id: item.id, imageUrl: getImageUrl(item), type, name: item.name,
@@ -94,7 +94,7 @@ export function CoverRow(props: CoverRowProps|any) {
         keyExtractor={(item, index) => '#'+index.toString()}
         horizontal={isHorizontal}
         numColumns={numColumns}
-        style={isHorizontal?null:styles.flatListStyle}
+        // style={isHorizontal?null:styles.flatListStyle}
       />
       </ScrollView>
     </SafeAreaView>
