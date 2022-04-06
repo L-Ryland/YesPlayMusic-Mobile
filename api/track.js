@@ -41,21 +41,27 @@ export async function getMP3(id) {
  * @param {string} ids - 音乐 id, 例如 ids=405998841,33894312
  */
 export function getTrackDetail(ids) {
-  const fetchLatest = () => {
-    return request({
+  console.log("getTrackDetail entrance");
+  const fetchLatest = async () => {
+    console.log("getTrackDetail fathchLatest");
+    const data = await request({
       url: '/song/detail',
       method: 'get',
       params: {
         ids,
       },
     }).then(data => {
+      console.log("getTrackDetail Song", data);
       data.songs.map(song => {
         const privileges = data.privileges.find(t => t.id === song.id);
+        console.log("getTrackDetail cacheTrackDetail");
         new Promise(()=>{cacheTrackDetail(song, privileges)})
       });
+      console.log("getTrackDetail mapTrackPlayableDetail");
       data.songs = mapTrackPlayableStatus(data.songs, data.privileges);
       return data;
-    });
+    })
+    return data;
   };
   fetchLatest();
   let idsInArray = [String(ids)];

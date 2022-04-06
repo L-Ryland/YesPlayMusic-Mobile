@@ -1,7 +1,6 @@
 import { userAccount, userPlayHistory, userPlaylist, logout, likedAlbums, likedArtists, cloudDisk, likedMVs, userLikedSongsIDs, getPlaylistDetail, getTrackDetail } from '@/api/';
 import { doLogout, isAccountLoggedIn, isLooseLoggedIn } from '@/utils/auth';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { build } from '@reduxjs/toolkit/dist/query/core/buildMiddleware/cacheLifecycle';
 import type { RootState } from '../store'
 
 type likedSongPlayListIDType = Number;
@@ -13,9 +12,9 @@ interface LikedItemInject {
   name: string,
   data: {}
 }
-interface PayLoadInject {
-  key: string,
-  value: any
+interface PayLoadInject<T> {
+  key: keyof T,
+  value: T[keyof T],
 }
 
 // Define a type for the slice state
@@ -54,7 +53,7 @@ export const dataSlice = createSlice({
       const { name, data } = payload;
       state.liked[name] = data;
     },
-    updateData: (state, { payload }: PayloadAction<PayLoadInject>) => {
+    updateData: (state, { payload }: PayloadAction<PayLoadInject<GeneralState>>) => {
       const { key, value } = payload;
       state[key] = value;
     },
@@ -75,7 +74,7 @@ export const dataSlice = createSlice({
  */
 export const fetchUserProfile = createAsyncThunk(
   'data/fetchUserProfile',
-  async (param, { dispatch, fulfillWithValue }) => {
+  async (param, { dispatch }) => {
     console.log("isAccount logged in", isAccountLoggedIn());
 
     if (!isAccountLoggedIn()) return;
@@ -86,6 +85,8 @@ export const fetchUserProfile = createAsyncThunk(
         dispatch(updateData({
           key: 'user', value: result.profile,
         }));
+        console.log("payload expect", result.profile.userId);
+
         return result.profile.userId
       }
     )
@@ -146,7 +147,10 @@ export const fetchLikedThings = createAsyncThunk(
   async (userId: number, thunkAPI) => {
     console.log("is loose logged in? ", isLooseLoggedIn());
 
-    if (!isLooseLoggedIn()) return;
+    if (!isLooseLoggedIn()) {
+      await thunkAPI.dispatch(logOutThunk());
+      thunkAPI.rejectWithValue('not logged in');
+    }
     if (isAccountLoggedIn() && userId) {
       let result;
       // fetch liked songs, update `songs` into `state.data`
@@ -166,31 +170,38 @@ export const fetchLikedThings = createAsyncThunk(
       })
       if (result.playlist) {
         let likedSongPlaylistID: number = result.playlist[0].id;
-        console.log("likedSongPlaylistID", likedSongPlaylistID, result.playlist[0].id);
-        
+        console.log("likedSongPlaylistID", likedSongPlaylistID, result);
+
         thunkAPI.dispatch(updatedLikedItems({
           name: 'playlists',
           data: result.playlist,
-        })),
-          // 更新用户”喜欢的歌曲“歌单ID
-          thunkAPI.dispatch(updateData({
-            key: 'likedSongPlaylistID',
-            value: likedSongPlaylistID,
-          }))
+        }));
+        // 更新用户”喜欢的歌曲“歌单ID
+        thunkAPI.dispatch(updateData({
+          key: 'likedSongPlaylistID',
+          value: likedSongPlaylistID,
+        }));
         // fetch liked songs with details, update `songsWithDetails` into `state.data`
         result = await getPlaylistDetail(likedSongPlaylistID, true);
+        console.log("dataSlice ResultPlaylistDetail", result);
         let trackIds = result.playlist.trackIds;
+        console.log("dataSlice ResultPlaylistTrackIds", trackIds);
         if (trackIds.length == 0) {
           result = new Promise<void>(resolve => resolve())
-        }
-        result = await getTrackDetail(
-          trackIds
-            .slice(0, 12)
-            .map(t => t.id)
-            .join(',')
-        )
+        };
+        trackIds = trackIds
+          .slice(0, 12)
+          .map(t => t.id)
+          .join(',')
+
+        console.log("poccessed trackIds", trackIds);
         
+        result = await getTrackDetail(trackIds)
+
+        console.log("dataSlice ResultSongs", result);
         if (result.songs) {
+          console.log("dataSlice ResultSongs", result.songs);
+
           thunkAPI.dispatch(updatedLikedItems({
             name: 'songsWithDetails',
             data: result.songs,
@@ -232,6 +243,7 @@ export const fetchLikedThings = createAsyncThunk(
     } else {
       // TODO:搜索ID登录的用户
     }
+    return true;
   },
 )
 

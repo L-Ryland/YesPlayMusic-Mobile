@@ -12,11 +12,12 @@ import md5 from "crypto-js/md5";
 import { View, Text, TextInput, Button } from "@/components";
 import { X, Mail, Lock, Mobile } from "@/components/icons";
 import countryCodes from "@/countries-emoji.json";
-import { useNavigation } from "@react-navigation/core";
+import { NavigationProp, useNavigation } from "@react-navigation/core";
 import { loginQrCodeCheck, loginQrCodeCreate, loginQrCodeKey, loginWithEmail, loginWithPhone } from "@/api";
 import { isAccountLoggedIn, setCookies } from "@/utils/auth";
-import { useAppDispatch } from "@/hooks/useRedux";
-import { fetchLikedThings, fetchUserProfile, setLoginMode, updateData } from "@/redux/slice/dataSlice";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { fetchLikedThings, fetchUserProfile, selectData, setLoginMode, updateData } from "@/redux/slice/dataSlice";
+import { RootStackParamList, RootTabParamList } from "@/types";
 
 const AuthenticationMode = React.createContext("qr");
 
@@ -290,6 +291,7 @@ const LoginQR = (props) => {
 }
 export default function LoginScreen() {
   const dispatch = useAppDispatch();
+  const navigation = useNavigation<NavigationProp<RootTabParamList>>();
   const [authentication, setAuthentication] = React.useState<'qr' | 'mobile' | 'email'>('qr');
   const handleLoginResponse = (data) => { 
     if (!data) {
@@ -301,13 +303,17 @@ export default function LoginScreen() {
       setCookies(data.cookie);
       
       
-      dispatch(updateData({key: 'loginMode', value: 'account'}));
-      console.log("fetching user pofile");
+      console.log("fetching user pofile",);
       
       dispatch(fetchUserProfile()).then(
         ({ payload }) => {
-          console.log('paylaod', payload)
-          dispatch(fetchLikedThings(payload))}
+          console.log('paylaod2', payload)
+          dispatch(updateData({key: 'loginMode', value: 'account'}));
+          console.log("currentData");
+          
+          dispatch(fetchLikedThings(payload))
+          // navigation.navigate("Library");
+        }
       )
       // this.$store.dispatch('fetchUserProfile').then(() => {
       //   this.$store.dispatch('fetchLikedPlaylist').then(() => {

@@ -11,12 +11,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const parseData = async () => {
   try {
     const data = await AsyncStorage.getItem("persist:data");
-    return data?JSON.parse(data):null;
+    return data ? JSON.parse(data) : null;
   } catch (error) {
     console.error("data parse error", error);
   }
 }
-let data = {};
+let data;
 (async () => data = await parseData())();
 console.log();
 export function isTrackPlayable(track) {
@@ -54,30 +54,44 @@ export function isTrackPlayable(track) {
   }
   return result;
 }
+type privilegeType = { id: unknown, [key: string]: unknown }
+export function mapTrackPlayableStatus(tracks: any[], privileges: privilegeType[] = []) {
+  console.log("mapTrackPlayableStatus");
+  if (!tracks?.length) {
+    console.log("mapTrackPlaybleStatus no length");
+    return tracks;
+  } else {
 
-export function mapTrackPlayableStatus(tracks, privileges = []) {
-  if (tracks?.length === undefined) return tracks;
-  return tracks.map((t) => {
+    console.log("mapTrackPlayableStatus length", tracks.length);
+  }
+
+  let newTracks = tracks.map((t) => {
+    console.log("mapTraks", t);
     const privilege = privileges.find((item) => item.id === t.id) || {};
     if (t.privilege) {
       Object.assign(t.privilege, privilege);
     } else {
       t.privilege = privilege;
     }
+    console.log("test before playble");
     let result = isTrackPlayable(t);
+    console.log("test after playble", result);
     t.playable = result.playable;
     t.reason = result.reason;
+    console.log("mapTrackPlaybleStatus3", t);
     // console.log(t);
     return t;
   });
+  console.log("mapTrackPlaybleStatus newTracks", newTracks);
+  return newTracks;
 }
 
 export function randomNum(minNum, maxNum) {
   switch (arguments.length) {
     case 1:
-      return parseInt(Math.random() * minNum + 1, 10);
+      return Math.random() * minNum + 1;
     case 2:
-      return parseInt(Math.random() * (maxNum - minNum + 1) + minNum, 10);
+      return Math.random() * (maxNum - minNum + 1) + minNum;
     default:
       return 0;
   }
@@ -96,17 +110,17 @@ export function shuffleAList(list) {
   return newSorts;
 }
 
-export function throttle(fn, time) {
-  let isRun = false;
-  return function () {
-    if (isRun) return;
-    isRun = true;
-    fn.apply(this, arguments);
-    setTimeout(() => {
-      isRun = false;
-    }, time);
-  };
-}
+// export function throttle(fn, time) {
+//   let isRun = false;
+//   return function () {
+//     if (isRun) return;
+//     isRun = true;
+//     fn.apply(this, arguments);
+//     setTimeout(() => {
+//       isRun = false;
+//     }, time);
+//   };
+// }
 
 export function updateHttps(url) {
   if (!url) return "";
@@ -138,17 +152,17 @@ export function dailyTask() {
   }
 }
 
-export function changeAppearance(appearance) {
-  if (appearance === "auto" || appearance === undefined) {
-    appearance = window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
-  }
-  document.body.setAttribute("data-theme", appearance);
-  document
-    .querySelector('meta[name="theme-color"]')
-    .setAttribute("content", appearance === "dark" ? "#222" : "#fff");
-}
+// export function changeAppearance(appearance) {
+//   if (appearance === "auto" || appearance === undefined) {
+//     appearance = window.matchMedia("(prefers-color-scheme: dark)").matches
+//       ? "dark"
+//       : "light";
+//   }
+//   document.body.setAttribute("data-theme", appearance);
+//   document
+//     .querySelector('meta[name="theme-color"]')
+//     .setAttribute("content", appearance === "dark" ? "#222" : "#fff");
+// }
 
 export function splitSoundtrackAlbumTitle(title) {
   let keywords = [
@@ -221,22 +235,22 @@ export function splitAlbumTitle(title) {
   };
 }
 
-export function bytesToSize(bytes) {
-  let marker = 1024; // Change to 1000 if required
-  let decimal = 2; // Change as required
-  let kiloBytes = marker;
-  let megaBytes = marker * marker;
-  let gigaBytes = marker * marker * marker;
+// export function bytesToSize(bytes) {
+//   let marker = 1024; // Change to 1000 if required
+//   let decimal = 2; // Change as required
+//   let kiloBytes = marker;
+//   let megaBytes = marker * marker;
+//   let gigaBytes = marker * marker * marker;
 
-  let lang = store.state.settings.lang;
+//   let lang = store.state.settings.lang;
 
-  if (bytes < kiloBytes) return bytes + (lang === "en" ? " Bytes" : "字节");
-  else if (bytes < megaBytes)
-    return (bytes / kiloBytes).toFixed(decimal) + " KB";
-  else if (bytes < gigaBytes)
-    return (bytes / megaBytes).toFixed(decimal) + " MB";
-  else return (bytes / gigaBytes).toFixed(decimal) + " GB";
-}
+//   if (bytes < kiloBytes) return bytes + (lang === "en" ? " Bytes" : "字节");
+//   else if (bytes < megaBytes)
+//     return (bytes / kiloBytes).toFixed(decimal) + " KB";
+//   else if (bytes < gigaBytes)
+//     return (bytes / megaBytes).toFixed(decimal) + " MB";
+//   else return (bytes / gigaBytes).toFixed(decimal) + " GB";
+// }
 
 export function formatTrackTime(value) {
   if (!value) return "";

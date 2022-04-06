@@ -42,9 +42,10 @@ async function init() {
 //   key: keyof T;
 //   value: T[keyof T];
 // }
-interface PayLoadInject<T extends GeneralState {
-  key: keyof T ;
-  value:  T extends [infer R]? R: undefined;
+type PayLoadInject<T> = {
+  // key: keyof T & string,
+  // value:  T[keyof T],
+  key: keyof T, value: T[keyof T],
 };
 // Define a type for the slice state
 interface GeneralState {
@@ -124,9 +125,9 @@ export const playerSlice = createSlice({
     setHasLyrics: (state, action: PayloadAction<boolean>) => {
       state.hasLyrics = action.payload;
     },
-    updatePlayerStatus: (state, { payload }: PayloadAction<PayLoadInject<GeneralState>>) => {
-      const { key , value } = payload;
-      state[key] = value;
+    updatePlayerStatus: (state, action: PayloadAction<PayLoadInject<GeneralState>>) => {
+      const { key, value } = action.payload;
+      // state[key] = value;
       (<typeof value>state[key]) = value;
     },
 

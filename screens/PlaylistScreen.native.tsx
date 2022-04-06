@@ -95,25 +95,14 @@ export function PlaylistScreen({
       dispatch(setTracklist(data.playlist.tracks));
     })
   }
-  React.useEffect(() => {
-    const { likedSongs, itemProps: { id } } = route.params;
-    if (likedSongs) {
-      loadData(data.likedSongPlaylistID);
-    } else {
-      loadData(id);
-    }
-    return () => { };
-  }, []);
   let updateTime;
   if (playlist) {
     console.log(playlist);
     updateTime = dayjs(playlist.updateTime).format(`MMM DD, YYYY`);
   }
   const playTrack = async () => {
-    console.log("playTrack button clicked");
     
     const currentQueue = await TrackPlayer.getQueue();
-    console.log("playTrack currentQueue before clean", currentQueue);
     if (currentQueue) {
       await TrackPlayer.reset();
       console.log("playTrack currentQueue", await TrackPlayer.getQueue());

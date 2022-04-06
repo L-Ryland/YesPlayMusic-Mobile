@@ -49,14 +49,17 @@ export function getPlaylistDetail(id, noCache = false) {
     method: "get",
     params,
   }).then((data) => {
+    // console.log("getPlaylistDetail data2",  data.privileges,data.playlist.tracks);
     if (data.playlist) {
-    // console.log("getPlayListDetail", data);
-      data.playlist.tracks = mapTrackPlayableStatus(
+    // console.log("getPlayListDetail2", data);
+      let tracks = mapTrackPlayableStatus(
         data.playlist.tracks,
         // data.privileges || []
         data.privileges
       );
       // console.log(data.playlist.tracks);
+      console.log("getPlaylistDetail mapTrackPlayableStatus", tracks);
+      data.playlist.tracks = tracks;
     }
     // console.log("getPlayListDetail", data);
     return data;

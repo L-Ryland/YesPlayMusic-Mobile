@@ -20,7 +20,6 @@ export const LibraryScreen = () => {
   const { user, liked } = data;
   const dispatch = useAppDispatch();
   const svgStyle = useSvgStyle({});
-  const [likedSongs, setLikedSongs] = React.useState<object[]>();
   const handleThunkTest = () => {
     dispatch(fetchUserProfile()).then(
       (action) => {
@@ -37,24 +36,30 @@ export const LibraryScreen = () => {
   }
   if (!data?.loginMode) {
     return <Login />;
-  } else if (user == {}) {
-    return;
+  } else if (user == {} || !liked) {
+    return <></>;
   }
-  console.log("liked", liked);
+  // console.log("liked", liked);
   const DATA = [0, 1, 2, 3, 4, 5]
-
-  const LikedSongs = ({ item }) => (
-    <View style={styles.card2}>
-      <Image
-        style={styles.tinyLogo}
-        source={{ uri: user.backgroundUrl }}
-      />
-      <View style={styles.titleBox}>
-        <Text style={styles.titleBig}>{"aaa"}</Text>
-        <Text style={styles.titleSmail}>{"aaa"}</Text>
+  
+  const LikedSongs = ({ item }) => {
+    console.log("likedSong item", item);
+    
+    const {ar, al: {picUrl: uri}} = item;
+    const artists: string = ar.length == 1 ? ar[0].name : ar.reduce(({ name: prev }, { name: cur }) => prev + ', ' + cur);
+    return (
+      <View style={styles.card2}>
+        <Image
+          style={styles.tinyLogo}
+          source={{ uri }}
+        />
+        <View style={styles.titleBox}>
+          <Text style={styles.titleName}>{item.name}</Text>
+          <Text style={styles.artists}>{artists}</Text>
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
   const LikedPlaylists = ({ item }) => (
     <View style={styles.card3}>
       <Image
@@ -84,14 +89,14 @@ export const LibraryScreen = () => {
             blurRadius={10}
           >
             <Text style={styles.leftTitle}>{t('library.likedSongs')}</Text>
-            <Text style={styles.leftTitleSmail} numberOfLines={2}>{liked.songs.length} {t('common.songs')}</Text>
-            <RowView style={{ backgroundColor: 'transparent', flex:1.5, marginBottom: 20, marginRight: 20, justifyContent: 'flex-end' }}>
+            <Text style={styles.leftTitleSmail} numberOfLines={2}>{liked?.songs?.length} {t('common.songs')}</Text>
+            <RowView style={{ backgroundColor: 'transparent', flex: 1.5, marginBottom: 20, marginRight: 20, justifyContent: 'flex-end' }}>
               <Play {...svgStyle} color='black' height={45} width={45} />
             </RowView>
 
           </ImageBackground>
           <FlatList style={{ flex: 1 }}
-            data={DATA.slice(0, 3)}
+            data={liked?.songsWithDetails?.slice(0, 3)}
             renderItem={LikedSongs}
             keyExtractor={(item, index) => index.toString()}
             initialNumToRender={3} />
@@ -192,11 +197,11 @@ const styles = StyleSheet.create({
     width: 1 / 2 * width - 30,
     height: 1 / 2 * width - 30,
   },
-  titleBig: {
+  titleName: {
     fontSize: 15,
     fontWeight: 'bold'
   },
-  titleSmail: {
+  artists: {
     fontSize: 12,
   },
   leftTitleBig: {

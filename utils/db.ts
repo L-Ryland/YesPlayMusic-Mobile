@@ -143,8 +143,10 @@ export function getTrackSource(id) {
 }
 
 export async function cacheTrackDetail(track, privileges) {
+  console.log("cacheTrackDetail", track, privileges);
+  
   // Note: function passed to `database.write()` MUST be asynchronous
-  await database.write(async () => {
+  await database.write(async writer => {
     let post;
     try {
       const trackId = track.id.toString();
@@ -157,10 +159,10 @@ export async function cacheTrackDetail(track, privileges) {
     } catch (error) {
       // console.error('[db.js][cacheTrackDetail]', typeof error, error);
       post = await database.get<TrackDetails>('trackDetails').create((record) => {
-          setGenerator(() => track.id.toString())
-          record.trackId = track.id;
-          record.detail = track;
-          record.privileges = privileges;
+        setGenerator(() => track.id.toString())
+        record.trackId = track.id;
+        record.detail = track;
+        record.privileges = privileges;
       })
     } finally {
       // Note: Value returned from the wrapped function will be returned to `database.write` caller
@@ -182,11 +184,16 @@ export async function cacheTrackDetail(track, privileges) {
 export async function getTrackDetailFromCache(ids) {
   console.log("db.ts trackDetail", ids);
 
-  const trackDetails = await database.get<TrackDetails>('trackDetails').query(
-    Q.where('track_id', Q.oneOf(ids)),
-  ).fetch();
+  let trackDetails;
+  await database.read(async () => {
+    trackDetails = await database.get<TrackDetails>('trackDetails').query(
+      Q.where('track_id', Q.oneOf(ids)),
+    ).fetch();
+    console.debug(`[debug][db.js] cached track details 👉 ${trackDetails} `);
+    return trackDetails;
+  });
   const result = { songs: <any>[], privileges: <any>[] };
-  
+
   trackDetails.forEach(detailTrack => {
     result.songs.push(detailTrack.detail);
     result.privileges.push(detailTrack.privileges)
@@ -198,19 +205,17 @@ export async function getTrackDetailFromCache(ids) {
 
 }
 
-export function cacheLyric(id, lyrics) {
-  return new Promise(
-    resolve => {
-      database.get('lyrics').create(
-        record => {
-          if (record instanceof Lyrics) {
-            record.lyricsId = id;
-            record.lyrics = lyrics;
-          }
-        }
-      )
-    }
-  )
+export async function cacheLyric(id, lyrics) {
+  await database.write(async writer => {
+    const post = database.get<Lyrics>('lyrics').create(
+      record => {
+        record.lyricsId = id;
+        record.lyrics = lyrics;
+      }
+    )
+    return post;
+  })
+
   // db.lyric.put({
   //   id,
   //   lyrics,
@@ -232,13 +237,15 @@ export function getLyricFromCache(id) {
   // });
 }
 
-export function cacheAlbum(id, album) {
-  database.get('albums').create(record => {
-    if (record instanceof Albums) {
+export async function cacheAlbum(id, album) {
+  await database.write(async () => {
+    const post = await database.get<Albums>('albums').create(record => {
       record.albumId = id;
       record.album = album;
-    }
-  })
+    })
+    console.debug(`[debug][db.js] cached album 👉 ${id} by ${album}`);
+    return post;
+  });
   // db.album.put({
   //   id: Number(id),
   //   album,
