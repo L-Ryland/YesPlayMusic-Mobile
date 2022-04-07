@@ -7,8 +7,10 @@ This is a React Naitve project based on [YesPlayMusic](https://github.com/qier22
 This project is natively implanted with [NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi) with [nodejs-mobile](https://github.com/nodejs-mobile) project. It serves `port:3000` as its server side and listens for request from Netease Music server. Android and iOS client is both supported, but due to environment restriction I have only built an Android version as for now.
 
 ## Screen Shot
-![](https://github.com/L-Ryland/YesPlayMusic-Mobile/blob/master/picture/Explore.jpg)
-![](https://github.com/L-Ryland/YesPlayMusic-Mobile/blob/master/picture/Explore.jpg)
+<div align="center">
+	<img src="./picture/Explore.jpg" alt="Editor" width="500">
+	<img src="./picture/home.jpg" alt="Editor" width="500">
+</div>
 ## Getting Started
 
 ### For Use
