@@ -9,7 +9,7 @@ import styled, { ThemeContext } from "styled-components/native";
 import QRCode from 'react-native-qrcode-svg';
 
 import md5 from "crypto-js/md5";
-import { View, Text, TextInput, Button } from "@/components";
+import { View, Text, TextInput, Button, Image } from "@/components";
 import { X, Mail, Lock, Mobile } from "@/components/icons";
 import countryCodes from "@/countries-emoji.json";
 import { NavigationProp, useNavigation } from "@react-navigation/core";
@@ -349,10 +349,7 @@ export default function LoginScreen() {
     </AuthenticationMode.Provider>
   );
 }
-const Image = styled.Image`
-  width: 75px;
-  height: 75px;
-`;
+
 const XSymbol = styled(X)`
   width: 30px;
   height: 30px;
@@ -365,7 +362,7 @@ const LoginBox = styled(View)`
   justify-content: center;
   align-items: center;
   background: #eaeffd;
-  border-radius: '20';
+  border-radius: 20;
   height: 64px;
   width: 300px;
   padding-left: 22px;
@@ -379,7 +376,7 @@ const InputBox = styled(View)`
   align-items: center;
   height: 46px;
   background: #eaeffd;
-  border-radius: 8px;
+  border-radius: 8;
   width: 300px;
   font-size: 20px;
   font-weight: 600;
@@ -393,7 +390,7 @@ const ConfirmBox = styled(View)`
   font-size: 20px;
   font-weight: 600;
   background-color: #eaeffd;
-  border-radius: 8px;
+  border-radius: 8;
   margin-top: 24px;
   padding: 8px;
   width: 100%;

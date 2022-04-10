@@ -60,14 +60,14 @@ export type SettingsScreenProps = ThemeProps &
   DefaultSettingsScreen["props"] &
   DefaultScrollView["props"];
 
-export function Text(props: TextProps) {
+export function Text<T extends DefaultText["props"] & ThemeProps>(props: T) {
   const { style, lightColor, darkColor, ...otherProps } = props;
   const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
 
   return <DefaultText style={[{ color }, style]} {...otherProps} />;
 }
 
-export function View(props: ViewProps) {
+export function View<T extends ThemeProps & DefaultView["props"]>(props: T) {
   const { style, lightColor, darkColor, ...otherProps } = props;
   const backgroundColor = useThemeColor(
     { light: lightColor, dark: darkColor },
@@ -88,7 +88,7 @@ export function ScrollView(props: ScrollViewProps) {
   );
 }
 
-export function Image(props: ImageProps) {
+export function Image<T extends ImageProps>(props: T) {
   const { style, source, lightColor, darkColor, ...otherProps } = props;
 
   const backgroundColor = useThemeColor(
@@ -105,7 +105,7 @@ export function Image(props: ImageProps) {
   );
 }
 
-export function SettingsScreen(props: SettingsScreenProps) {
+export function SettingsScreen<T extends SettingsScreenProps>(props: T) {
   let { style, data, lightColor, darkColor, ...otherProps } = props;
 
   const backgroundColor = useThemeColor(

@@ -1,6 +1,6 @@
-import { TouchableHighlight } from "react-native";
+import { TouchableHighlight, StyleSheet } from "react-native";
 import styled from "styled-components/native";
-import { View, Text } from "@/components";
+import { View, Text, Image } from "@/components";
 
 interface Artist {
   id: number,
@@ -39,14 +39,25 @@ export function TrackItem({ track, navigate }) {
     padding-bottom: 18px;
     height: ${60};
   `;
-  const AlbumImage = styled.Image.attrs(
-    () => ({ source: { uri: track.al.picUrl } })
-  )`
-    height: ${50};
-    width: ${50};
-    border-radius: 10px;
-    margin: 5px;
-  `;
+  // const AlbumImage = styled.Image.attrs(
+  //   () => ({ source: { uri: track.al.picUrl } })
+  // )`
+  //   height: ${50};
+  //   width: ${50};
+  //   border-radius: 10px;
+  //   margin: 5px;
+  // `;
+  const AlbumImage = () => {
+    const styles = StyleSheet.create({
+      albumImageStyle: {
+        height: 50,
+        width: 50,
+        borderRadius: 10,
+        margin: 5,
+      }
+    })
+    return <Image source={{ uri: track.al.picUrl }} style={styles.albumImageStyle}/>
+  }
   const SongInfo = styled(View)`
   `;
   const Title = styled(Text)`

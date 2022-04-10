@@ -47,7 +47,6 @@
     "expo-web-browser": "~10.1.0",
     "i18n-js": "^3.9.2",
     "js-cookie": "^3.0.1",
-    "nodejs-mobile-react-native": "^0.7.0",
     "patch-package": "^6.4.7",
     "pouchdb-adapter-react-native-sqlite": "^3.0.1",
     "pouchdb-react-native": "^6.4.1",

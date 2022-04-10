@@ -184,6 +184,7 @@ android {
             path file('CMakeLists.txt')
         }
     }
+    ndkVersion '21.1.6352462'
 
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->

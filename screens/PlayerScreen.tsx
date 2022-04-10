@@ -86,11 +86,7 @@ export function PlayerScreen({ navigation, route }) {
     
   }
 
-  const CoverPage = styled.Image`
-    width: ${contentWidth};
-    height: ${contentWidth};
-    resize-mode: center;
-  `
+
   const CoverText = styled(View).attrs(() => ({
     children: [
       <Text style={{ fontSize: 28 }} key="title">{trackTitle}</Text>,

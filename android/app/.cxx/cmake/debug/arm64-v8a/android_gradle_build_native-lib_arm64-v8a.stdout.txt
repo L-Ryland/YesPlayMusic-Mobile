@@ -1,2 +1,3 @@
 ninja: Entering directory `/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/.cxx/cmake/debug/arm64-v8a'
-[1/1] Linking CXX shared library ../../../../build/intermediates/cmake/debug/obj/arm64-v8a/libnative-lib.so
+[1/2] Building CXX object CMakeFiles/native-lib.dir/src/main/cpp/native-lib.cpp.o
+[2/2] Linking CXX shared library ../../../../build/intermediates/cmake/debug/obj/arm64-v8a/libnative-lib.so

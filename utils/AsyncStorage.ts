@@ -23,8 +23,16 @@ class Storage {
         // console.log("key and value", key, value, item);
         if (key) {
           try {
-            if (value && JSON.parse(value) instanceof Object) {
-              value = JSON.parse(value);
+            // if (value && JSON.parse(value) instanceof Object) {
+            //   value = JSON.parse(value);
+            // }
+            function isJSON<T extends string>(param: T) {
+              if (param in `${'{'}${infer S}${'}'}`) {
+                
+              }
+            } param: T extends `${'{'}${infer S}${'}'}`? T : never
+            if (value  && typeof isJSON(value)) {
+              
             }
           }
           catch(error){

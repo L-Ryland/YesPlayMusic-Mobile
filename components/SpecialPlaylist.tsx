@@ -1,17 +1,18 @@
 import React from "react";
 import styled from "styled-components/native";
+import { ScrollView, Text } from "@/components/Themed";
 
-const Special = styled.ScrollView`
+const Special = styled(ScrollView)`
   margin-top: 192px;
   margin-bottom: 128px;
-  border-radius: 1.25em;
+  border-radius: 20;
   text-align: center;
 `;
-const Title = styled.Text`
+const Title = styled(Text)`
   font-size: 36px;
   font-weight: 700;
 `;
-const Subtitle = styled.Text`
+const Subtitle = styled(Text)`
   font-size: 18px;
   letter-spacing: 1px;
   margin: 28px 0 54px 0;

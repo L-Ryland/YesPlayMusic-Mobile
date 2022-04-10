@@ -177,6 +177,7 @@
       "project": {
         "compilerSettingsCacheFolder": "/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/.cxx",
         "cxxFolder": "/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/.cxx",
+        "ideBuildTargetAbi": "x86,armeabi-v7a,armeabi",
         "isBuildOnlyTargetAbiEnabled": true,
         "isCmakeBuildCohabitationEnabled": false,
         "isNativeCompilerSettingsCacheEnabled": false,
@@ -200,10 +201,7 @@
     "objFolder": "/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/build/intermediates/cmake/release/obj",
     "variantName": "release",
     "validAbiList": [
-      "ARMEABI_V7A",
-      "ARM64_V8A",
-      "X86",
-      "X86_64"
+      "X86"
     ],
     "prefabDirectory": "/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/app/.cxx/cmake/release/prefab",
     "prefabPackageDirectoryList": []
