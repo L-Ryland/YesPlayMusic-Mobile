@@ -137,7 +137,7 @@ export function ExploreScreen({ navigation, route }) {
   );
 }
 
-const ButtonContainer = styled.ScrollView`
+const ButtonContainer = styled(ScrollView)`
   display: flex;
   flex-wrap: wrap;
   width: 100%;

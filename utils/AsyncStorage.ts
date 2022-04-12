@@ -8,9 +8,8 @@ class Storage {
     this.init();
   }
 
-  async init()  {
+  async init() {
     console.log("storage iniitiation");
-
     try {
       let keys = await AsyncStorage.getAllKeys();
 
@@ -19,32 +18,25 @@ class Storage {
       items.map((item) => {
         // console.log(item);
 
-        let [key, value] = item;
+        let [key, value]: any = item;
+        // let processedValue: unknown;
+        // let testValue: `${'{'}${string}${'}'}` | `${string}`;
+        // type isJSON<T> = T extends `${'{'}${infer S}${'}'}` ? true : false
         // console.log("key and value", key, value, item);
         if (key) {
-          try {
-            // if (value && JSON.parse(value) instanceof Object) {
-            //   value = JSON.parse(value);
-            // }
-            function isJSON<T extends string>(param: T) {
-              if (param in `${'{'}${infer S}${'}'}`) {
-                
-              }
-            } param: T extends `${'{'}${infer S}${'}'}`? T : never
-            if (value  && typeof isJSON(value)) {
-              
-            }
+          value?.startsWith('{') 
+          if (value?.startsWith('{') && value.endsWith('}')) {
+            value = JSON.parse(value);
           }
-          catch(error){
-          }
-
           this.cache[key] = value ?? '';
         }
-      })
 
+      });
     } catch (error) {
       console.error("Error occurs while getting items in async storage", error)
     }
+    console.log("storage initiated");
+    
   }
 
   getItem(key: string) {

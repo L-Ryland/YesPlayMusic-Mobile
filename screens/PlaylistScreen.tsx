@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, TouchableHighlight, Dimensions } from "react-native";
 import styled from "styled-components/native";
-import { Cover, ScrollView, TrackList, Text, View, useSvgStyle } from "@/components";
+import { Cover, ScrollView, TrackList, Text, View, useSvgStyle, SvgIcon } from "@/components";
 
 
 import {
@@ -122,9 +122,10 @@ export function PlaylistScreen({
   const ButtonBox = styled(View).attrs(() => ({
     children: [
       (<View key='likebox' style={{ flexDirection: 'row' }}>
-        <HeartSolid {...svgStyle} />
-        <Heart {...svgStyle} />
-        <Plus {...svgStyle} />
+        {/* <HeartSolid {...svgStyle} /> */}
+        <SvgIcon name='HeartSolid' {...svgStyle}/>
+        <SvgIcon name="Heart" {...svgStyle}/>
+        <SvgIcon name="Plus" {...svgStyle}/>
       </View>),
       <TouchableHighlight onPress={playTrack} style={{ alignSelf: 'flex-end' }} key="playbox">
         <Play {...svgStyle} height={50} width={50} />

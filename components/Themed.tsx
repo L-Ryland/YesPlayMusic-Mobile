@@ -15,10 +15,12 @@ import {
   StyleSheet
 } from "react-native";
 import { Props, SettingsScreen as DefaultSettingsScreen } from "react-native-settings-screen";
+import { SvgProps } from "react-native-svg";
 import styled from "styled-components/native";
 
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
+import { Explicit, Heart, HeartSolid, Lock, Mail, Mobile, Next, Pause, Play, Plus, Previous, Repeat_1, Shuffle, X } from "./icons";
 
 export function useThemeColor(
   props: { light?: string; dark?: string; },
@@ -209,3 +211,38 @@ export const TextInput: React.FC<ThemeProps & DefaultTextInput["props"]>
 
   return <DefaultTextInput style={[{ backgroundColor }, { color }, style]} ref={ref} {...otherProps} />;
 })
+
+export const SvgIcon: React.FC<SvgProps & {name: string}> = ({name, ...otherProps}) => {
+  switch (name) {
+    case "Explicit":
+      return <Explicit {...otherProps}/>
+    case "Heart": 
+      return <Heart {...otherProps} />
+    case "HeartSolid": 
+      return <HeartSolid {...otherProps}/>
+    case "Lock": 
+      return <Lock {...otherProps}/>
+    case "Mail": 
+      return <Mail {...otherProps}/>
+    case "Mobile": 
+      return <Mobile {...otherProps}/>
+    case "Next": 
+      return <Next {...otherProps}/>
+    case "Pause": 
+      return <Pause {...otherProps}/>
+    case "Play": 
+      return <Play {...otherProps}/>
+    case "Plus": 
+      return <Plus {...otherProps}/>
+    case "Previous": 
+      return <Previous {...otherProps}/>
+    case "Repeat_1": 
+      return <Repeat_1 {...otherProps}/>
+    case "Shuffle": 
+      return <Shuffle {...otherProps}/>
+    case "X": 
+      return <X {...otherProps}/>
+    default: 
+      return <></>
+  }
+}

@@ -177,7 +177,7 @@
       "project": {
         "compilerSettingsCacheFolder": "/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/.cxx",
         "cxxFolder": "/home/ryland/Documents/WorkSpace/YesPlayMusic-Mobile/android/.cxx",
-        "ideBuildTargetAbi": "x86,armeabi-v7a,armeabi",
+        "ideBuildTargetAbi": "x86",
         "isBuildOnlyTargetAbiEnabled": true,
         "isCmakeBuildCohabitationEnabled": false,
         "isNativeCompilerSettingsCacheEnabled": false,

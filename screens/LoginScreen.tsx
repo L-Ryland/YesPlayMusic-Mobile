@@ -329,9 +329,9 @@ export default function LoginScreen() {
       <View style={styles.centerStyle}>
         <Text>Login Screen</Text>
         <View style={[styles.horizontalStyle, { marginBottom: 30 }]}>
-          <Image source={require("@/assets/logos/yesplaymusic.png")} />
+          <Image source={require("@/assets/logos/yesplaymusic.png")} style={styles.imageStyle} />
           <XSymbol />
-          <Image source={require("@/assets/logos/netease-music.png")} />
+          <Image source={require("@/assets/logos/netease-music.png")} style={styles.imageStyle}/>
         </View>
         <AuthenticationMode.Consumer>
           {(value: string) => {
@@ -433,6 +433,11 @@ const styles = StyleSheet.create({
     marginTop: 30,
     justifyContent: 'center',
   },
-
+  imageStyle: {
+    width: 80, 
+    height: 80,
+    marginLeft: 10,
+    marginRight: 10,
+  }
 });
 
