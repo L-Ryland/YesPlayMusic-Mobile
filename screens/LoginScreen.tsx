@@ -4,8 +4,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import PhoneInput from "react-native-phone-number-input";
-import styled, { ThemeContext } from "styled-components/native";
+import styled from "styled-components/native";
 import QRCode from 'react-native-qrcode-svg';
 
 import md5 from "crypto-js/md5";
@@ -13,7 +12,7 @@ import { View, Text, TextInput, Button, Image } from "@/components";
 import { X, Mail, Lock, Mobile } from "@/components/icons";
 import countryCodes from "@/countries-emoji.json";
 import { NavigationProp, useNavigation } from "@react-navigation/core";
-import { loginQrCodeCheck, loginQrCodeCreate, loginQrCodeKey, loginWithEmail, loginWithPhone } from "@/api";
+import { checkLoginQrCodeStatus, fetchLoginQrCodeKey, loginWithEmail, loginWithPhone } from "@/api";
 import { isAccountLoggedIn, setCookies } from "@/utils/auth";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { fetchLikedThings, fetchUserProfile, selectData, setLoginMode, updateData } from "@/redux/slice/dataSlice";
@@ -49,24 +48,9 @@ function MobileNumBox({ onChangeText, placeholder }) {
   return (
     <InputBox>
       <Mobile height={20} width={20} color={activeColor} />
-      {/* <PhoneInput
-        ref={phoneInput}
-        defaultValue={value}
-        defaultCode="CN"
-        layout="second"
-        onChangeText={(text) => {
-          setValue(text);
-        }}
-        onChangeFormattedText={(text) => {
-          setFormattedValue(text);
-        }}
-        withDarkTheme
-        withShadow
-        textInputStyle={styles.inputFrameStyle}
-      /> */}
       <Picker
         selectedValue={selectedCallingCode}
-        onValueChange={(itemValue, itemIndex) => setSelectedCallingCode(itemValue)}
+        onValueChange={(itemValue, _) => setSelectedCallingCode(itemValue)}
         mode='dialog' //android
         style={[styles.inputFrameStyle, {maxWidth: 60, marginLeft: 40}]}
       >
@@ -178,14 +162,20 @@ const LoginMobile = (props) => {
     login: "Login",
   };
   const [phone, setPhone] = React.useState<string>();
+  const [countrycode, setCountrycode] = React.useState<string | number>('');
   const [password, setPassword] = React.useState<string>();
   const [errorMsg, setErrorMsg] = React.useState<string>('');
   const { setState } = props;
+
+  const handlePhoneLogic = (callingCode: string, number: string) => {
+    setCountrycode(callingCode); 
+    setPhone(number)
+  }
   const mobileLogin = () => {
     // alert(email);
     if (phone && password) {
       loginWithPhone({
-        phone, password: 'fake password', md5_password: md5(password).toString(),
+        countrycode, phone, password: 'fake password', md5_password: md5(password).toString(),
       }).then(
         data => {()=>props.handleLoginResponse(data)}
       ).catch(
@@ -198,7 +188,7 @@ const LoginMobile = (props) => {
   return (
     <View>
       <MobileNumBox
-        onChangeText={(callingCode: string, number: string)=>setPhone(callingCode+number)}
+        onChangeText={(callingCode: string, number: string)=>handlePhoneLogic(callingCode, number)}
         placeholder={login.mobile}
       />
       <PasswordBox
@@ -230,20 +220,21 @@ const LoginQR = (props) => {
     color: '#335eea',
   }
   const loadQrCode = async () => {
-    const key = await loginQrCodeKey().then(
-      result => result.data.unikey
+    const key = await fetchLoginQrCodeKey().then(
+      // result => result.data.unikey
+      result => {
+        console.log("login qr create", result);
+        return result.data.unikey
+      }
     );
     setQrKey(key);
-    const qrUrl = await loginQrCodeCreate({ key }).then(
-      result => result.data.qrurl
-    );
-    setQrUrl(qrUrl);
+    setQrUrl(`https://music.163.com/login?codekey=${key}`)
   }
   const checkQrCodeLogin = () => {
     if (!qrKey) {
       return;
     }
-    loginQrCodeCheck(qrKey).then(
+    checkLoginQrCodeStatus({key: qrKey}).then(
       (result: any) => {
 
         switch (result.code) {
@@ -294,10 +285,11 @@ export default function LoginScreen() {
   const navigation = useNavigation<NavigationProp<RootTabParamList>>();
   const [authentication, setAuthentication] = React.useState<'qr' | 'mobile' | 'email'>('qr');
   const handleLoginResponse = (data) => { 
+    
+    console.log("[handleLoginResponse] data code", data.code);
     if (!data) {
       return;
     }
-    console.log("data code", data.code);
     
     if (data.code === 200) {
       setCookies(data.cookie);

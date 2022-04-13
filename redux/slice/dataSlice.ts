@@ -1,29 +1,51 @@
-import { userAccount, userPlayHistory, userPlaylist, logout, likedAlbums, likedArtists, cloudDisk, likedMVs, userLikedSongsIDs, getPlaylistDetail, getTrackDetail } from '@/api/';
-import { doLogout, isAccountLoggedIn, isLooseLoggedIn } from '@/utils/auth';
+import {
+  fetchUserAccount,
+  userPlayHistory,
+  fetchUserPlaylists as fetchUserPlaylistsFromApi,
+  fetchUserAlbums as fetchUserAlbumsFromApi,
+  fetchUserArtists as fetchUserArtistsFromApi,
+  fetchCloudDisk as fetchCloudDiskFromApi,
+  fetchLikedMVs as fetchLikedMVsFromApi,
+  fetchUserLikedTracksIDs as fetchUserLikedTracksIDsFromApi,
+  fetchPlaylist as fetchPlaylistfromApi,
+  fetchTracks as fetchTracksFromApi,
+} from '@/api/'
+import { doLogout, isAccountLoggedIn, isLooseLoggedIn } from '@/utils/auth'
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from '../store'
 
-type likedSongPlayListIDType = Number;
-type lastRefreshCookieDateType = Number;
+type likedSongPlayListIDType = Number
+type lastRefreshCookieDateType = Number
 type loginModeType = String | null
 
-interface UserType { userId?: number, [key: string]: any };
+interface UserType {
+  userId?: number
+  [key: string]: any
+}
 interface LikedItemInject {
-  name: string,
+  name: string
   data: {}
 }
 interface PayLoadInject<T> {
-  key: keyof T,
-  value: T[keyof T],
+  key: keyof T
+  value: T[keyof T]
 }
 
 // Define a type for the slice state
 interface GeneralState {
-  user: UserType,
-  likedSongPlaylistID: likedSongPlayListIDType,
-  lastRefreshCookieDate: lastRefreshCookieDateType,
-  loginMode: loginModeType,
-  liked,
+  user: UserType
+  likedSongPlaylistID: likedSongPlayListIDType
+  lastRefreshCookieDate: lastRefreshCookieDateType
+  loginMode: loginModeType
+  liked: {
+    songs?: number[],
+    playlists?: unknown[],
+    songsWithDetails?: unknown[],
+    albums?: unknown[],
+    artists?: unknown[],
+    mvs?: unknown[],
+    cloudDisk?: unknown[],
+  }
 }
 
 // Define the initial state using that type
@@ -32,7 +54,7 @@ const initialState: GeneralState = {
   likedSongPlaylistID: 0,
   lastRefreshCookieDate: 0,
   loginMode: null,
-  liked: {},
+  liked: {}
 }
 
 export const dataSlice = createSlice({
@@ -40,32 +62,41 @@ export const dataSlice = createSlice({
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
-    setLikedSongPlaylist: (state, action: PayloadAction<likedSongPlayListIDType>) => {
-      state.likedSongPlaylistID = action.payload;
+    setLikedSongPlaylist: (
+      state,
+      action: PayloadAction<likedSongPlayListIDType>,
+    ) => {
+      state.likedSongPlaylistID = action.payload
     },
-    setLastRefreshCookieDate: (state, action: PayloadAction<lastRefreshCookieDateType>) => {
-      state.lastRefreshCookieDate = action.payload;
+    setLastRefreshCookieDate: (
+      state,
+      action: PayloadAction<lastRefreshCookieDateType>,
+    ) => {
+      state.lastRefreshCookieDate = action.payload
     },
     setLoginMode: (state, action: PayloadAction<loginModeType>) => {
-      state.loginMode = action.payload;
+      state.loginMode = action.payload
     },
     updatedLikedItems: (state, { payload }: PayloadAction<LikedItemInject>) => {
-      const { name, data } = payload;
-      state.liked[name] = data;
+      const { name, data } = payload
+      state.liked[name] = data
     },
-    updateData: (state, { payload }: PayloadAction<PayLoadInject<GeneralState>>) => {
+    updateData: (
+      state,
+      { payload }: PayloadAction<PayLoadInject<GeneralState>>,
+    ) => {
       const { key, value } = payload;
-      state[key] = value;
+      (<typeof value>state[key]) = value
     },
-    logOut: (state, { payload }: PayloadAction) => {
+    logOut: (state, _: PayloadAction<void>) => {
       Object.keys(initialState).forEach((key) => {
-        state[key] = initialState[key];
-      });
-    }
+        state[key] = initialState[key]
+      })
+    },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchUserProfile.fulfilled, (state, action) => { })
-  }
+    builder.addCase(fetchUserProfile.fulfilled, (state, action) => {})
+  },
 })
 /**
  * fetch user profile
@@ -75,178 +106,186 @@ export const dataSlice = createSlice({
 export const fetchUserProfile = createAsyncThunk(
   'data/fetchUserProfile',
   async (param, { dispatch }) => {
-    console.log("isAccount logged in", isAccountLoggedIn());
+    console.log('isAccount logged in', isAccountLoggedIn())
 
-    if (!isAccountLoggedIn()) return;
-    return userAccount().then(
-      (result: any) => {
-        console.log("account result", result);
+    if (!isAccountLoggedIn()) return
+    return fetchUserAccount().then((result: any) => {
+      dispatch(
+        updateData({
+          key: 'user',
+          value: result.profile,
+        }),
+      )
+      console.log('payload expect', result.profile.userId)
 
-        dispatch(updateData({
-          key: 'user', value: result.profile,
-        }));
-        console.log("payload expect", result.profile.userId);
-
-        return result.profile.userId
-      }
-    )
-  }
-);
+      return result.profile.userId
+    })
+  },
+)
 /**
  * fetch play history and dispatach data to `liked` state
  * @param {*} user
  * @param {*} thunkAPI
- * @return {*} 
+ * @return {*}
  */
 export const fetchPlayHistory = createAsyncThunk(
   'data/fetchPlayHistory',
 
   async (user: any, thunkAPI) => {
-    if (!isAccountLoggedIn()) return;
+    if (!isAccountLoggedIn()) return
     return Promise.all([
       userPlayHistory({ uid: user?.userId, type: 0 }),
       userPlayHistory({ uid: user?.userId, type: 1 }),
-    ]).then(result => {
-      const data = {};
-      const dataType = { 0: 'allData', 1: 'weekData' };
+    ]).then((result) => {
+      const data = {}
+      const dataType = { 0: 'allData', 1: 'weekData' }
       if (result[0] && result[1]) {
         for (let i = 0; i < result.length; i++) {
-          const songData = result[i][dataType[i]].map(item => {
-            const song = item.song;
-            song.playCount = item.playCount;
-            return song;
-          });
-          data[dataType[i]] = songData;
-          console.log("songData", data);
+          const songData = result[i][dataType[i]].map((item) => {
+            const song = item.song
+            song.playCount = item.playCount
+            return song
+          })
+          data[dataType[i]] = songData
+          console.log('songData', data)
         }
-        thunkAPI.dispatch(updatedLikedItems({
-          name: 'playHistory', data
-        }))
+        thunkAPI.dispatch(
+          updatedLikedItems({
+            name: 'playHistory',
+            data,
+          }),
+        )
         return {
-          name: 'playHistory', data
-        };
+          name: 'playHistory',
+          data,
+        }
       }
-    });
+    })
   },
-);
+)
 
 /**
- * if there is account loggined in, update user 
- * liked playlist, 
+ * if there is account loggined in, update user
+ * liked playlist,
  * liked albums,
- * liked artists, 
+ * liked artists,
  * like mvs and data from cloud disk
  *
  * @param {*} params
  * @param {*} thunkAPI
- * @return {*} 
+ * @return {*}
  */
 export const fetchLikedThings = createAsyncThunk(
   'data/fetchLikedThings',
   // ({ state, commit }) => {
   async (userId: number, thunkAPI) => {
-    console.log("is loose logged in? ", isLooseLoggedIn());
+    console.log('is loose logged in? ', isLooseLoggedIn())
 
     if (!isLooseLoggedIn()) {
-      await thunkAPI.dispatch(logOutThunk());
-      thunkAPI.rejectWithValue('not logged in');
+      await thunkAPI.dispatch(logOutThunk())
+      thunkAPI.rejectWithValue('not logged in')
     }
     if (isAccountLoggedIn() && userId) {
-      let result;
+      let result
       // fetch liked songs, update `songs` into `state.data`
-      result = await userLikedSongsIDs(userId);
+      result = await fetchUserLikedTracksIDsFromApi({uid: userId})
       if (result.ids) {
-        thunkAPI.dispatch(updatedLikedItems({
-          name: 'songs',
-          data: result.ids,
-        }))
+        thunkAPI.dispatch(
+          updatedLikedItems({
+            name: 'songs',
+            data: result.ids,
+          }),
+        )
       }
 
       // update `playlist` and `likedSongPlaylistID` into `state.data`
-      result = await userPlaylist({
+      result = await fetchUserPlaylistsFromApi({
         uid: userId,
         limit: 2000, // 最多只加载2000个歌单（等有用户反馈问题再修）
-        timestamp: new Date().getTime(),
       })
       if (result.playlist) {
-        let likedSongPlaylistID: number = result.playlist[0].id;
-        console.log("likedSongPlaylistID", likedSongPlaylistID, result);
+        let likedSongPlaylistID: number = result.playlist[0].id
+        console.log('likedSongPlaylistID', likedSongPlaylistID, result)
 
-        thunkAPI.dispatch(updatedLikedItems({
-          name: 'playlists',
-          data: result.playlist,
-        }));
+        thunkAPI.dispatch(
+          updatedLikedItems({
+            name: 'playlists',
+            data: result.playlist,
+          }),
+        )
         // 更新用户”喜欢的歌曲“歌单ID
-        thunkAPI.dispatch(updateData({
-          key: 'likedSongPlaylistID',
-          value: likedSongPlaylistID,
-        }));
+        thunkAPI.dispatch(
+          updateData({
+            key: 'likedSongPlaylistID',
+            value: likedSongPlaylistID,
+          }),
+        )
         // fetch liked songs with details, update `songsWithDetails` into `state.data`
-        result = await getPlaylistDetail(likedSongPlaylistID, true);
-        console.log("dataSlice ResultPlaylistDetail", result);
-        let trackIds = result.playlist.trackIds;
-        console.log("dataSlice ResultPlaylistTrackIds", trackIds);
-        if (trackIds.length == 0) {
-          result = new Promise<void>(resolve => resolve())
-        };
-        trackIds = trackIds
-          .slice(0, 12)
-          .map(t => t.id)
-          .join(',')
+        let trackIds = await (await fetchPlaylistfromApi({id: likedSongPlaylistID}, true)).playlist.trackIds;
+        if (!trackIds) {
+          trackIds = []
+        }
 
-        console.log("poccessed trackIds", trackIds);
-        
-        result = await getTrackDetail(trackIds)
+        console.log('poccessed trackIds', trackIds)
 
-        console.log("dataSlice ResultSongs", result);
+        console.log('[dtaSlice.ts] [trackIds]', trackIds )
+        result = await fetchTracksFromApi({ids: trackIds?.slice(0,12).map(t=>t.id)})
+
         if (result.songs) {
-          console.log("dataSlice ResultSongs", result.songs);
-
-          thunkAPI.dispatch(updatedLikedItems({
-            name: 'songsWithDetails',
-            data: result.songs,
-          }))
+          thunkAPI.dispatch(
+            updatedLikedItems({
+              name: 'songsWithDetails',
+              data: result.songs,
+            }),
+          )
         }
       }
       // update `albums` into `state.data`
-      result = await likedAlbums({ limit: 2000 });
+      result = await fetchUserAlbumsFromApi({ limit: 2000 })
+      console.log('[dataSlice.ts] [fetchUserAlbums]', await fetchUserAlbumsFromApi({limit: 2000}));
+      
       if (result.data) {
-        thunkAPI.dispatch(updatedLikedItems({
-          name: 'albums',
-          data: result.data,
-        }))
+        thunkAPI.dispatch(
+          updatedLikedItems({
+            name: 'albums',
+            data: result.data,
+          }),
+        )
       }
       // update `artists` into `state.data`
-      result = await likedArtists({ limit: 2000 });
+      result = await fetchUserArtistsFromApi()
       if (result.data) {
-        thunkAPI.dispatch(updatedLikedItems({
-          name: 'artists',
-          data: result.data,
-
-        }))
+        thunkAPI.dispatch(
+          updatedLikedItems({
+            name: 'artists',
+            data: result.data,
+          }),
+        )
       }
       // update `mvs` into `state.data`
-      result = await likedMVs({ limit: 1000 });
+      result = await fetchLikedMVsFromApi({ limit: 1000 })
       if (result.data) {
-        thunkAPI.dispatch(updatedLikedItems({
-          name: 'mvs',
-          data: result.data,
-
-        }))
+        thunkAPI.dispatch(
+          updatedLikedItems({
+            name: 'mvs',
+            data: result.data,
+          }),
+        )
       }
       // update `cloudDisk` into `state.data`
-      result = await cloudDisk({ limit: 1000 });
-      thunkAPI.dispatch(updatedLikedItems({
-        name: 'cloudDisk',
-        data: result.data,
-      }))
+      result = await fetchCloudDiskFromApi({ limit: 1000 })
+      thunkAPI.dispatch(
+        updatedLikedItems({
+          name: 'cloudDisk',
+          data: result.data,
+        }),
+      )
     } else {
       // TODO:搜索ID登录的用户
     }
-    return true;
+    return true
   },
 )
-
 
 /**
  * log out from server
@@ -257,12 +296,17 @@ export const fetchLikedThings = createAsyncThunk(
 export const logOutThunk = createAsyncThunk(
   'data/logout',
   async (params, { dispatch }) => {
-    doLogout();
+    doLogout()
     dispatch(logOut())
-  }
+  },
 )
 export const {
-  setLikedSongPlaylist, setLastRefreshCookieDate, setLoginMode, updatedLikedItems, updateData, logOut
+  setLikedSongPlaylist,
+  setLastRefreshCookieDate,
+  setLoginMode,
+  updatedLikedItems,
+  updateData,
+  logOut,
 } = dataSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type

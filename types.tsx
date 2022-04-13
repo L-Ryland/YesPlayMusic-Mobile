@@ -104,3 +104,6 @@ export interface PlaylistDetailProp {
   },
   description: string,
 }
+export interface ResponseFormat {
+  code: number
+}

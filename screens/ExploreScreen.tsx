@@ -8,8 +8,8 @@ import { Text, ScrollView, Button } from "../components/Themed";
 import { CoverList, CoverRow } from "../components";
 import {
   topPlaylist,
-  highQualityPlaylist,
-  recommendPlaylist,
+  fetchHighQualityPlaylist,
+  fetchRecommendedPlaylists,
   toplists,
 } from "@/api";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -25,7 +25,7 @@ export function ExploreScreen({ navigation, route }) {
    * Fetch recommend playlist from api
    */
   const getRecommendPlayList = () => {
-    recommendPlaylist({ limit: 30 }).then(
+    fetchRecommendedPlaylists({ limit: 30 }).then(
       (data: any) => {
         setPlaylists(data.result);
       }
@@ -42,7 +42,7 @@ export function ExploreScreen({ navigation, route }) {
       const { updateTime } = playlists[playlists.length - 1];
       before = updateTime;
     }
-    highQualityPlaylist({
+    fetchHighQualityPlaylist({
       limit: 50,
       before,
       cat: activeCategory,
@@ -116,9 +116,8 @@ export function ExploreScreen({ navigation, route }) {
             <Button
               key={index}
               onPress={() => handleCatogorySwitch(category)}
-            >
-              {category}
-            </Button>
+              title={category}
+            />
           ))}
         </ButtonContainer>
         {playlists && (

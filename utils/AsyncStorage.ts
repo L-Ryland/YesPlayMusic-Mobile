@@ -19,10 +19,6 @@ class Storage {
         // console.log(item);
 
         let [key, value]: any = item;
-        // let processedValue: unknown;
-        // let testValue: `${'{'}${string}${'}'}` | `${string}`;
-        // type isJSON<T> = T extends `${'{'}${infer S}${'}'}` ? true : false
-        // console.log("key and value", key, value, item);
         if (key) {
           value?.startsWith('{') 
           if (value?.startsWith('{') && value.endsWith('}')) {

@@ -15,14 +15,18 @@ import { schema, modelClassArr as modelClasses } from "@/utils/schema";
 // registerRootComponent calls AppRegistry.registerComponent('main', () => App);
 // It also ensures that whether you load the app in Expo Go or in a native build,
 // the environment is set up appropriately
-registerRootComponent(
- () => (
+const ProviderApp = () => {
+	return (
 	<Provider store={store}>
 		<PersistGate loading={null} persistor={persistor}>
 			<App />
 		</PersistGate>
 	</Provider>
- ));
+
+	)
+}
+
+registerRootComponent(ProviderApp);
 TrackPlayer.registerPlaybackService(() => require('./trackserver'));
 
 const adapter = new SQLiteAdapter({

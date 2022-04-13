@@ -26,9 +26,9 @@ import { Explicit, Lock } from "./icons";
 // `;
 export function Cover(props: any) {
   // console.log('@', props);
-  const { imageUrl, subText, name, isPrivacy, isExplicit, imageStyle, componentWidth } = props;
+  const { imageUrl, subText, name, isPrivacy, isExplicit, imageStyle, viewStyle, componentWidth } = props;
   return (
-    <View style={{ width: imageStyle.width + 20 }}>
+    <View style={viewStyle}>
       <View >
         <Image
           source={{

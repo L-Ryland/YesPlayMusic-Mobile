@@ -25,6 +25,8 @@ export default {
     albums: '专辑',
     artists: '艺人',
     mvs: 'MV',
+    cloudDisk: '云盘',
+    topListen: '听歌排行',
     newPlayList: '新建歌单',
     userProfileMenu: {
       settings: '设置',

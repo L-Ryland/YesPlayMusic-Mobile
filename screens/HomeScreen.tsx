@@ -8,7 +8,7 @@ import { RootTabScreenProps } from "../types";
 import { byAppleMusic } from "../utils/staticData.js";
 // import { useRecommendPlaylistQuery } from "@/redux/slice/apiSlice";
 import {
-  recommendPlaylist,
+  fetchRecommendedPlaylists,
   newAlbums,
   toplistOfArtists,
   toplists,
@@ -29,7 +29,7 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
   const fetchData = () => {
     // let response: any;
     // response = await recommendPlaylist({ limit: 10});
-    recommendPlaylist({ limit: 30 }).then(
+    fetchRecommendedPlaylists({ limit: 30 }).then(
       (data: any) => {
         setRecommendPlaylists(data.result);
       }
@@ -51,7 +51,8 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
       kr: 3,
     };
     toplistOfArtists(
-      toplistOfArtistsAreaTable[settings.musicLanguage]
+      // toplistOfArtistsAreaTable[settings.musicLanguage]
+      {type: toplistOfArtistsAreaTable[settings.musicLanguage]}
     ).then((data: any) => {
       let indexs: Number[] = [];
       while (indexs.length < 6) {

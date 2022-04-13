@@ -5,8 +5,9 @@ import useColorScheme from "./hooks/useColorScheme";
 import Navigation from "./navigation";
 import React from "react";
 import { connect } from "react-redux";
+import * as Sentry from "sentry-expo";
 
-function App(props) {
+export default function App(props) {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
   console.log("app props", props);
@@ -33,5 +34,23 @@ function mapStateToProps(state, ownProps) {
   return { lang, ...ownProps }
 }
 
-export default connect(mapStateToProps)(App)
 
+Sentry.init({
+  dsn: "https://d04343e5480f44b9ae13e1fcce091e45@o1201332.ingest.sentry.io/6326030",
+  // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
+  // We recommend adjusting this value in production.
+  tracesSampleRate: 1.0,
+  enableInExpoDevelopment: true,
+  debug: true, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
+});
+
+
+// Access any @sentry/react-native exports via:
+// Sentry.Native.*
+
+// Access any @sentry/browser exports via:
+// Sentry.Browser.*
+
+// Sentry.Native.wrap
+// export default connect(mapStateToProps)(App)
+// export default Sentry.wrap(connect(mapStateToProps)(App))

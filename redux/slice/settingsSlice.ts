@@ -14,9 +14,9 @@ export type lyricFontSizeProp = 'small' | 'medium' | 'large' | 'xlarge';
 const enabledPlaylistCategories = playlistCategories
   .filter(c => c.enable)
   .map(c => c.name);
-interface PayLoadInject {
-  key: string,
-  value: any
+interface PayLoadInject<T> {
+  key: keyof T,
+  value: T[keyof T]
 }
 interface SettingsState {
   lang: langProp,
@@ -117,9 +117,9 @@ export const settingsSlice = createSlice({
     // switchLyricsFontSize: (state, action: PayloadAction<lyricFontSizeProp>) => {
     //   state.lyricFontSize = action.payload;
     // },
-    updateSettings: (state, { payload }: PayloadAction<PayLoadInject>) => {
+    updateSettings: (state, { payload }: PayloadAction<PayLoadInject<SettingsState>>) => {
       const { key, value } = payload;
-      state[key] = value;
+      (<typeof value>state[key]) = value;
     },
   },
 })

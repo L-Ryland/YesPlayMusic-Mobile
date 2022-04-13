@@ -80,6 +80,7 @@ export function CoverList(props: any) {
         keyExtractor={(item, index) => index.toString()}
         numColumns={2}
         horizontal={!verticalStyle}
+        nestedScrollEnabled={true}
       />
     </SafeAreaView>
   );

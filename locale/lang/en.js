@@ -28,6 +28,8 @@ export default {
     albums: 'Albums',
     artists: 'Artists',
     mvs: 'MVs',
+    cloudDisk: 'Cloud Disk',
+    topListen: 'Top Listen',
     newPlayList: 'New Playlist',
     userProfileMenu: {
       settings: 'Settings',

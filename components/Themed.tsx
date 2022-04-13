@@ -12,7 +12,7 @@ import {
   Button as DefaultButton,
   TextInput as DefaultTextInput,
   TouchableHighlight,
-  StyleSheet
+  StyleSheet,
 } from "react-native";
 import { Props, SettingsScreen as DefaultSettingsScreen } from "react-native-settings-screen";
 import { SvgProps } from "react-native-svg";
@@ -120,8 +120,8 @@ export function SettingsScreen<T extends SettingsScreenProps>(props: T) {
 // export function Button(props: ThemeProps & DefaultButton["props"]) {
 //   return <DefaultButton {...props} />;
 // }
-export const Button: React.FC<ThemeProps & TouchableHighlight["props"]> = (props) => {
-  const { lightColor, darkColor, onPress, children, ...otherProps } = props;
+export const Button: React.FC<ThemeProps & DefaultButton["props"]> = (props) => {
+  const { lightColor, darkColor, onPress, title, ...otherProps } = props;
   const buttonColor = useThemeColor(
     { light: lightColor, dark: darkColor },
     'buttonColor'
@@ -144,13 +144,13 @@ export const Button: React.FC<ThemeProps & TouchableHighlight["props"]> = (props
   return (
     <TouchableHighlight onPress={onPress}>
       <View style={styles.middleButton}>
-        <Text style={styles.middleTitle}>{children}</Text>
+        <Text style={styles.middleTitle}>{title}</Text>
       </View>
     </TouchableHighlight>
   );
 }
 
-export const Title: React.FC = styled(Text).attrs(() => ({
+export const Title: React.FC<TextProps> = styled(Text).attrs(() => ({
   adjustsFontSizeToFit: true
 }))`
   display: flex;
@@ -161,7 +161,7 @@ export const Title: React.FC = styled(Text).attrs(() => ({
   fontWeight: 700;
   padding: 0px 0px 8px 8px;
 `
-export const CoverTitle: React.FC = styled(Text)`
+export const CoverTitle: React.FC<TextProps> = styled(Text)`
   font-size: 16px;
   font-weight: 600;
   line-height: 20;
@@ -170,7 +170,7 @@ export const CoverTitle: React.FC = styled(Text)`
   text-align: justify;
   flex-wrap: wrap;
 `;
-export const CoverSubTitle: React.FC = styled(Text)`
+export const CoverSubTitle: React.FC<TextProps> = styled(Text)`
   font-size: 13px;
   color: #e8e6e3;
   opacity: 0.68;
