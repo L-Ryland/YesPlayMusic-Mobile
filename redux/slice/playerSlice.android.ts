@@ -153,7 +153,7 @@ export const setTracklist = createAsyncThunk(
     const newTracks = await Promise.all(tracks.map(async (track) => {
       console.log("current track", track);
 
-      const source = await fetchAudioSource(track.id).then(result => {
+      const source = await fetchAudioSource({id: track.id}).then(result => {
 
         if (!result.data[0]) return null;
         if (!result.data[0].url) return null;

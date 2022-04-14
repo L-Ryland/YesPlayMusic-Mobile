@@ -1,6 +1,4 @@
 export * from './MainSettings'
-export * from './AppearanceSettings'
-export * from './LanguageSettings'
 export * from './SubSettings'
 export * from './Cover'
 export * from './CoverRow'

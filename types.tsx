@@ -44,8 +44,6 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> = Composit
 export type SettingsStackParamList = {
   SettingsScreen: undefined,
   SubSettingsScreen: {requestSubSettings: string}| undefined,
-  LanguageSettings: undefined, 
-  AppearanceSettings: undefined, 
   MusicPreference: undefined,
   MusicQuality: undefined,
   ShowLyricsTranslation: undefined,
@@ -56,8 +54,8 @@ export type SettingsStackParamList = {
   Library: undefined;
 };
 
-export type SettingsStackScreenProps<Screen extends keyof SettingsStackParamList> = NativeStackScreenProps<
-  SettingsStackParamList, Screen
+export type SettingsStackScreenProps<SettingsScreen extends keyof SettingsStackParamList> = NativeStackScreenProps<
+  SettingsStackParamList, SettingsScreen
 >;
 
 // options used in settings screens

@@ -7,7 +7,7 @@ import {
   RootStackScreenProps,
   PlaylistDetailProp,
 } from "@/types";
-import { getPlaylistDetail, subscribePlaylist, deletePlaylist, getMP3 } from "@/api";
+import { fetchPlaylist, likeAPlaylist, deletePlaylist, fetchAudioSource } from "@/api";
 import { Heart, HeartSolid, Plus, Play, Lock } from "@/components/icons";
 import dayjs from "dayjs";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
@@ -84,8 +84,8 @@ export function PlaylistScreen({
   const { itemProps } = route.params;
   // console.log(itemProps);
 
-  const loadData = (id, next = undefined) => {
-    getPlaylistDetail(id, true).then(async (data: any) => {
+  const loadData = (id: number, next = undefined) => {
+    fetchPlaylist({id}, true).then(async (data: any) => {
       // alert(JSON.stringify(data));
       setPlaylist(data.playlist);
       // alert(JSON.stringify(data.playlist.tracks));
@@ -95,6 +95,15 @@ export function PlaylistScreen({
       dispatch(setTracklist(data.playlist.tracks));
     })
   }
+  React.useEffect(() => {
+    const { likedSongs, itemProps: { id } } = route.params;
+    if (likedSongs) {
+      loadData(data.likedSongPlaylistID);
+    } else {
+      loadData(id);
+    }
+    return () => { };
+  }, [route.params.itemProps]);
   let updateTime;
   if (playlist) {
     console.log(playlist);

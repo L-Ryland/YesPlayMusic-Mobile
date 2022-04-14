@@ -9,10 +9,6 @@ export enum PlaylistApiNames {
   TOP_LISTS = 'toplists',
 }
 
-export interface ResponseType {
-  code: number
-}
-
 // 歌单详情
 export interface FetchPlaylistParams {
   id: number
@@ -97,11 +93,32 @@ export function likeAPlaylist(
     },
   })
 }
+
+export interface DeletePlaylistParams {
+  id: number
+}
+/**
+ * 删除歌单
+ * 说明 : 调用此接口 , 传入歌单id可删除歌单
+ * - id : 歌单id,可多个,用逗号隔开
+ * @export
+ * @param {DeletePlaylistParams} params
+ * @return {*}  {Promise<ResponseFormat>}
+ */
+export function deletePlaylist( params: DeletePlaylistParams): Promise<ResponseFormat> {
+  return request({
+    url: "/playlist/delete",
+    method: "post",
+    params,
+  });
+}
+
+
 /**
  * 所有榜单
  * 说明 : 调用此接口,可获取所有榜单 接口地址 : /toplist
  */
- export function toplists(): Promise<ResponseType> {
+ export function toplists(): Promise<ResponseFormat> {
   return request({
     url: "/toplist",
     method: "get",
@@ -153,7 +170,7 @@ const defaultTopPlaylistParams: TopPlaylistParams = {order: 'hot', limit: 50}
  * @param {string=} params.cat
  * @param {number=} params.limit
  */
- export function topPlaylist(params: TopPlaylistParams = defaultTopPlaylistParams): Promise<ResponseType> {
+ export function topPlaylist(params: TopPlaylistParams = defaultTopPlaylistParams): Promise<ResponseFormat> {
   return request({
     url: "/top/playlist",
     method: "get",

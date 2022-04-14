@@ -14,9 +14,6 @@ import { doLogout, isAccountLoggedIn, isLooseLoggedIn } from '@/utils/auth'
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from '../store'
 
-type likedSongPlayListIDType = Number
-type lastRefreshCookieDateType = Number
-type loginModeType = String | null
 
 interface UserType {
   userId?: number
@@ -34,9 +31,9 @@ interface PayLoadInject<T> {
 // Define a type for the slice state
 interface GeneralState {
   user: UserType
-  likedSongPlaylistID: likedSongPlayListIDType
-  lastRefreshCookieDate: lastRefreshCookieDateType
-  loginMode: loginModeType
+  likedSongPlaylistID: number,
+  lastRefreshCookieDate: number, 
+  loginMode: string | null
   liked: {
     songs?: number[],
     playlists?: unknown[],
@@ -64,17 +61,17 @@ export const dataSlice = createSlice({
   reducers: {
     setLikedSongPlaylist: (
       state,
-      action: PayloadAction<likedSongPlayListIDType>,
+      action: PayloadAction<number>,
     ) => {
       state.likedSongPlaylistID = action.payload
     },
     setLastRefreshCookieDate: (
       state,
-      action: PayloadAction<lastRefreshCookieDateType>,
+      action: PayloadAction<number>,
     ) => {
       state.lastRefreshCookieDate = action.payload
     },
-    setLoginMode: (state, action: PayloadAction<loginModeType>) => {
+    setLoginMode: (state, action: PayloadAction<string>) => {
       state.loginMode = action.payload
     },
     updatedLikedItems: (state, { payload }: PayloadAction<LikedItemInject>) => {

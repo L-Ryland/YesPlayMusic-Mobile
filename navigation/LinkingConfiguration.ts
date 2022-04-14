@@ -35,7 +35,6 @@ const linking: LinkingOptions<RootStackParamList> = {
             initialRouteName: "SettingsScreen",
             screens: {
               SettingsScreen: "settings_screen",
-              LanguageSettings: "language_settings",
               SubSettingsScreen: "sub_settings",
             },
           },

@@ -1,8 +1,9 @@
 
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 class Storage {
 
-  cache: { [key: string]: string } = {}
+  cache = {};
   constructor() {
     this.cache = this.cache;
     this.init();

@@ -7,7 +7,7 @@ import React from "react";
 import { connect } from "react-redux";
 import * as Sentry from "sentry-expo";
 
-export default function App(props) {
+function App(props) {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
   console.log("app props", props);
@@ -52,5 +52,5 @@ Sentry.init({
 // Sentry.Browser.*
 
 // Sentry.Native.wrap
-// export default connect(mapStateToProps)(App)
+export default connect(mapStateToProps)(App)
 // export default Sentry.wrap(connect(mapStateToProps)(App))

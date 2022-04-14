@@ -59,7 +59,7 @@ export const isAccountLoggedIn = () => {
   return (
     getCookie("MUSIC_U") !== undefined &&
     // data.loginMode === "account"
-    data.loginMode.search(/account/)
+    data?.loginMode?.search(/account/)
   );
 }
 
@@ -67,7 +67,7 @@ export const isAccountLoggedIn = () => {
 export function isUsernameLoggedIn() {
   const data = getData();
   // return data.loginMode === 'username'
-  return data.loginMode.search(/username/);
+  return data?.loginMode?.search(/username/);
 }
 
 // 账户登录或者用户名搜索都判断为登录，宽松检查

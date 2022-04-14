@@ -3,7 +3,7 @@ import type { RootState } from '../store'
 
 import shuffle from "lodash/shuffle";
 
-import { getMP3 } from '@/api';
+import { fetchAudioSource } from '@/api';
 import { cacheTrackSource } from '@/utils/db';
 
 
@@ -79,7 +79,7 @@ export const setTracklist = createAsyncThunk(
     const newTracks = await Promise.all(tracks.map(async (track) => {
       console.log("current track", track);
 
-      const source = await getMP3(track.id).then(result => {
+      const source = await fetchAudioSource(track.id).then(result => {
 
         if (!result.data[0]) return null;
         if (!result.data[0].url) return null;
