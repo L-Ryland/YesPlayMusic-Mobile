@@ -8,6 +8,7 @@ import {
   lyricsBackgroundProp,
   musicLangProp,
   musicQualityProp,
+  SettingsState,
   switchLang,
   updateSettings
 } from "../redux/slice/settingsSlice";
@@ -16,29 +17,22 @@ import type { OptionType } from "../types";
 import { connect } from "react-redux";
 import { ActionCreatorWithPayload } from "@reduxjs/toolkit";
 
-interface LangOptionType extends OptionType {
-  option: langProp;
-}
-const languageOptions: LangOptionType[] = [
+
+const languageOptions: OptionType<'lang'>[] = [
   { option: "en", name: "🇬🇧 English" },
   { option: "tr", name: "🇹🇷 Türkçe" },
   { option: "zh-CN", name: "🇨🇳 简体中文" },
   { option: "zh-TW", name: "繁體中文" },
 ];
 
-interface AppearnceOptionType extends OptionType {
-  option: appreanceProp;
-}
-const appearanceOptions: AppearnceOptionType[] = [
+const appearanceOptions: OptionType<'appearance'>[] = [
   { option: "auto", name: "Auto" },
   { option: "light", name: "Bright" },
   { option: "dark", name: "Dark" },
 ];
 
-interface MusicLangOptionType extends OptionType {
-  option: musicLangProp;
-}
-const musicLangOptions: MusicLangOptionType[] = [
+
+const musicLangOptions: OptionType<'musicLanguage'>[] = [
   { option: "all", name: "No Preference" },
   { option: "zh", name: "China-Pop" },
   { option: "ea", name: "Western" },
@@ -46,29 +40,20 @@ const musicLangOptions: MusicLangOptionType[] = [
   { option: "kr", name: "K-Pop" },
 ];
 
-interface MusicQualityOptionType extends OptionType {
-  option: musicQualityProp;
-}
-const musicQualityOptions: MusicQualityOptionType[] = [
-  { option: 128000, name: "128Kbps" },
+
+const musicQualityOptions: OptionType<'musicQuality'>[] = [
   { option: 192000, name: "192Kbps" },
   { option: 320000, name: "320Kbps" },
   { option: 999000, name: "FLAC" },
 ];
 
-interface LyricsBgOptionType extends OptionType {
-  option: lyricsBackgroundProp;
-}
-const lyricsBgOptions: LyricsBgOptionType[] = [
+const lyricsBgOptions: OptionType<'lyricsBackground'>[] = [
   { option: "on", name: "On" },
   { option: "off", name: "Off" },
   { option: "blur", name: "Blur" },
 ];
 
-interface LyricsFsizeOptionType extends OptionType {
-  option: lyricFontSizeProp;
-}
-const lyricsFsizeOptions: LyricsFsizeOptionType[] = [
+const lyricsFsizeOptions: OptionType<'lyricFontSize'>[] = [
   { option: "small", name: "16px" },
   { option: "medium", name: "22px" },
   { option: "large", name: "28px" },
@@ -89,10 +74,10 @@ export function SubSettingsView({
   const { params } = route;
 
   // select methods as parameters passedd to settingsData Array. 
-  function selectGeneral(optionName?: string) {
+  function selectGeneral(optionName?: keyof SettingsState) {
 
     let optionsName: OptionType[] = [];
-    let currentAction: ActionCreatorWithPayload<any, string> = updateSettings, currentState;
+    let currentState: typeof settings[keyof typeof settings];
     let optionKey = optionName;
     switch (optionKey) {
       case "lang":

@@ -6,6 +6,7 @@
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { SettingsState } from './redux/slice/settingsSlice';
 
 declare global {
   namespace ReactNavigation {
@@ -60,9 +61,9 @@ export type SettingsStackScreenProps<SettingsScreen extends keyof SettingsStackP
 
 // options used in settings screens
 
-export interface OptionType {
-  option: string|number, 
-  name: string
+export interface OptionType<T extends keyof SettingsState = any> {
+  option: SettingsState[T], 
+  name: string,
 }
 export type CoverProps = {
   coverImgUrl?: string;

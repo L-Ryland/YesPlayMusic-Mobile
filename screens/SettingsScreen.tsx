@@ -12,6 +12,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/useRedux'
 import { logOutThunk, selectData } from '@/redux/slice/dataSlice'
 import { connect, ConnectedProps, MapStateToProps } from 'react-redux'
 import { RootState } from '@/redux/store'
+import { isAccountLoggedIn } from '@/utils/auth'
 
 const MainSettings = createSettingsDataFactory()
 
@@ -104,15 +105,11 @@ function SettingsScreenView({
     <View style={styles.container}>
       {/* <MainSettings navigation={navigation} route={route} /> */}
       <MainSettings.SettingsScreen viewStyle={viewStyle} textStyle={textStyle}>
-        <MainSettings.UserInfo
-          source={
-            user
-              ? { uri: user.avatarUrl }
-              : require('@/assets/images/favicon.png')
-          }
-          title={user.nickname ?? 'Please login to continue'}
+        {isAccountLoggedIn() ? <MainSettings.UserInfo
+          source={{ uri: user.avatarUrl }}
+          title={user.nickname}
           subTitle={user.signature}
-        />
+        />: <MainSettings.UserInfo source={require('@/assets/images/favicon.png')} title="Please Login To Continue"/>}
         <Universal.Section />
         <Lyrics.Section />
         <Others.Section />
@@ -124,7 +121,7 @@ function SettingsScreenView({
           />
         </HeaderNull.Section>
         <MainSettings.CustomView
-          Element={() => <VersionText children="0.1.0" />}
+          Element={() => <VersionText>.0.1.0</VersionText>}
         />
       </MainSettings.SettingsScreen>
     </View>

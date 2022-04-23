@@ -18,7 +18,7 @@ interface PayLoadInject<T> {
   key: keyof T,
   value: T[keyof T]
 }
-interface SettingsState {
+export interface SettingsState {
   lang: langProp,
   appearance: appreanceProp,
   musicLanguage: musicLangProp,
