@@ -2,12 +2,6 @@ import type { SettingsData } from "react-native-settings-screen";
 import { SettingsStackScreenProps } from "../types";
 import { SettingsScreen as SettingsPage } from "./Themed";
 import {
-  appreanceProp,
-  langProp,
-  lyricFontSizeProp,
-  lyricsBackgroundProp,
-  musicLangProp,
-  musicQualityProp,
   SettingsState,
   switchLang,
   updateSettings
@@ -15,7 +9,6 @@ import {
 import { Text } from "./Themed";
 import type { OptionType } from "../types";
 import { connect } from "react-redux";
-import { ActionCreatorWithPayload } from "@reduxjs/toolkit";
 
 
 const languageOptions: OptionType<'lang'>[] = [

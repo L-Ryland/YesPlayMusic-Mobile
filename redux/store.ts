@@ -10,11 +10,12 @@ import {
   REGISTER,
 } from "redux-persist";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import thunkMiddleWare from "redux-thunk";
+
 // ...
 import settingsReducer from "./slice/settingsSlice";
 import dataReducer from "./slice/dataSlice";
 import playerReducer from './slice/playerSlice'
-// import saga from "./saga";
 
 const persistSettigsReducer = persistReducer(
   { key: "settings", storage: AsyncStorage },
@@ -46,8 +47,8 @@ export const store = configureStore({
       // redux-persist integration
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-      },  
-    }),
+      },
+    }).prepend(thunkMiddleWare),
     // apiSlice
     // .concat(apiSlice.middleware),
   devTools: process.env.NODE_ENV !== "production",

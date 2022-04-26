@@ -1,23 +1,25 @@
-import { playlistCategories } from '@/utils/staticData';
-import { createSlice, createEntityAdapter, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
+import {playlistCategories} from '@/utils/staticData';
+import {createSlice, createEntityAdapter, PayloadAction, createAsyncThunk} from '@reduxjs/toolkit'
 import i18n from 'i18n-js';
-import type { RootState } from '../store'
+import type {RootState} from '../store'
 
-export type langProp = 'en' | 'tr' | 'zh-CN' | 'zh-TW';
-export type appreanceProp = 'auto' | 'light' | 'dark';
-export type musicLangProp = 'all' | 'zh' | 'ea' | 'jp' | 'kr';
-export type musicQualityProp = 128000 | 192000 | 320000 | 999000;
-export type showLyricsTranslationProp = Boolean;
-export type lyricsBackgroundProp = 'on' | 'off' | 'blur';
-export type lyricFontSizeProp = 'small' | 'medium' | 'large' | 'xlarge';
+type langProp = 'en' | 'tr' | 'zh-CN' | 'zh-TW';
+type appreanceProp = 'auto' | 'light' | 'dark';
+type musicLangProp = 'all' | 'zh' | 'ea' | 'jp' | 'kr';
+type musicQualityProp = 128000 | 192000 | 320000 | 999000;
+type showLyricsTranslationProp = Boolean;
+type lyricsBackgroundProp = 'on' | 'off' | 'blur';
+type lyricFontSizeProp = 'small' | 'medium' | 'large' | 'xlarge';
 // Define a type for the slice state
 const enabledPlaylistCategories = playlistCategories
   .filter(c => c.enable)
   .map(c => c.name);
+
 interface PayLoadInject<T> {
   key: keyof T,
   value: T[keyof T]
 }
+
 export interface SettingsState {
   lang: langProp,
   appearance: appreanceProp,
@@ -44,6 +46,7 @@ export interface SettingsState {
     port: Number
   }
 }
+
 const settingsAdapter = createEntityAdapter<SettingsState>({});
 // Define the initial state using that type
 const initialState: SettingsState = {
@@ -75,19 +78,15 @@ const initialState: SettingsState = {
 
 export const switchLang = createAsyncThunk(
   'settings/switchLang',
-  async (locale: any, thunkAPI ) => {
-    if ( locale as langProp ) {
-      i18n.locale = locale;
-      console.log("current locale", i18n.locale, locale);
-      
-      thunkAPI.dispatch(updateSettings({
-        key: 'lang',
-        value: locale
-      }))
-      thunkAPI.fulfillWithValue('success');
-    } else {
-      thunkAPI.rejectWithValue('lang type failure');
-    }
+  async (locale: langProp, thunkAPI) => {
+    i18n.locale = locale;
+    console.log("current locale", i18n.locale, locale);
+
+    thunkAPI.dispatch(updateSettings({
+      key: 'lang',
+      value: locale
+    }))
+    thunkAPI.fulfillWithValue('success');
   }
 );
 
@@ -117,8 +116,8 @@ export const settingsSlice = createSlice({
     // switchLyricsFontSize: (state, action: PayloadAction<lyricFontSizeProp>) => {
     //   state.lyricFontSize = action.payload;
     // },
-    updateSettings: (state, { payload }: PayloadAction<PayLoadInject<SettingsState>>) => {
-      const { key, value } = payload;
+    updateSettings: (state, {payload}: PayloadAction<PayLoadInject<SettingsState>>) => {
+      const {key, value} = payload;
       (<typeof value>state[key]) = value;
     },
   },

@@ -10,11 +10,12 @@ import { useThemeColor, View, Text } from '../components/Themed'
 import { SettingsStackScreenProps } from '../types'
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux'
 import { logOutThunk, selectData } from '@/redux/slice/dataSlice'
-import { connect, ConnectedProps, MapStateToProps } from 'react-redux'
+import { connect } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { isAccountLoggedIn } from '@/utils/auth'
+import { SettingsState } from '@/redux/slice/settingsSlice'
 
-const MainSettings = createSettingsDataFactory()
+const MainSettings = createSettingsDataFactory();
 
 function SettingsScreenView({
   user,
@@ -22,7 +23,7 @@ function SettingsScreenView({
   route,
 }: ReturnType<typeof mapStateToProps>) {
   const dispatch = useAppDispatch()
-  const switchSubSettings = (param: string) => {
+  const switchSubSettings = (param: keyof SettingsState) => {
     navigation.navigate<'SubSettingsScreen'>('SubSettingsScreen', {
       requestSubSettings: param,
     })
@@ -37,7 +38,7 @@ function SettingsScreenView({
     header: 'Universal',
     rows: [
       {
-        title: 'Lanuages',
+        title: 'Languages',
         showDisclosureIndicator: true,
         renderAccessory: () => (
           <Text style={{ color: '#999', marginRight: 6, fontSize: 18 }}>
@@ -92,7 +93,7 @@ function SettingsScreenView({
         showDisclosureIndicator: true,
       },
       {
-        title: 'Playlists From Apple Muisic',
+        title: 'Playlists From Apple Music',
         renderAccessory: () => <Switch value onValueChange={() => {}} />,
       },
     ],
@@ -109,7 +110,7 @@ function SettingsScreenView({
           source={{ uri: user.avatarUrl }}
           title={user.nickname}
           subTitle={user.signature}
-        />: <MainSettings.UserInfo source={require('@/assets/images/favicon.png')} title="Please Login To Continue"/>}
+        />: <MainSettings.UserInfo source={require('@/assets/images/favicon.png')} title="Please Login To Continue" subTitle=""/>}
         <Universal.Section />
         <Lyrics.Section />
         <Others.Section />
@@ -159,7 +160,7 @@ function mapStateToProps(
   const { user } = state.data;
   return {
     user, navigation, route
-  } 
+  }
 }
 
 const connector = connect(mapStateToProps)(SettingsScreenView)
