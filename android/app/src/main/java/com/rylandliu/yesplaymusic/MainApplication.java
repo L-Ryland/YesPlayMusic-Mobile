@@ -1,28 +1,18 @@
 package com.rylandliu.yesplaymusic;
-import expo.modules.updates.UpdatesDevLauncherController;
-import expo.modules.devlauncher.DevLauncherController;
 
 import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
 import androidx.annotation.NonNull;
-
-
-import com.facebook.react.PackageList;
-import com.facebook.react.ReactApplication;
-import com.facebook.react.ReactInstanceManager;
-import com.facebook.react.ReactNativeHost;
-import com.facebook.react.ReactPackage;
+import com.facebook.react.*;
 import com.facebook.soloader.SoLoader;
-
 import expo.modules.ApplicationLifecycleDispatcher;
 import expo.modules.ReactNativeHostWrapper;
-
-
+import expo.modules.devlauncher.DevLauncherController;
+import expo.modules.updates.UpdatesDevLauncherController;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import com.nozbe.watermelondb.WatermelonDBPackage;
 
 public class MainApplication extends Application implements ReactApplication {
   private final ReactNativeHost mReactNativeHost = new ReactNativeHostWrapper(

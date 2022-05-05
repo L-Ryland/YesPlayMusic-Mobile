@@ -2,20 +2,20 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from '../store'
 
 import shuffleFunc from "lodash/shuffle";
+import { proxy } from "valtio"
 
 import TrackPlayer, { Capability, State, Event } from "react-native-track-player";
 import { fetchAudioSource } from '@/api';
 import { cacheTrackSource } from '@/utils/db';
 
 
-
-async function init() {
-  const currentTrack = await TrackPlayer.getCurrentTrack();
-  if (currentTrack !== null) {
-    return;
-  }
-  await TrackPlayer.setupPlayer({});
-  await TrackPlayer.updateOptions({
+function init(): typeof TrackPlayer {
+  // const currentTrack = await TrackPlayer.getCurrentTrack();
+  // if (currentTrack !== null) {
+  //   return proxy(TrackPlayer);
+  // }
+  TrackPlayer.setupPlayer({});
+  TrackPlayer.updateOptions({
     stopWithApp: true,
     capabilities: [
       Capability.Play,
@@ -36,15 +36,11 @@ async function init() {
       Capability.SkipToPrevious
     ]
   });
-  return TrackPlayer;
+  return proxy(TrackPlayer);
+  // return TrackPlayer;
 }
-// interface PayLoadInject<T> {
-//   key: keyof T;
-//   value: T[keyof T];
-// }
+
 type PayLoadInject<T> = {
-  // key: keyof T & string,
-  // value:  T[keyof T],
   key: keyof T, value: T[keyof T],
 };
 // Define a type for the slice state
@@ -72,7 +68,7 @@ interface GeneralState {
   personalFMNextTrack: { id: number, [key: string]: any };
   trackTimestamp: AudioTimestamp,
   hasLyrics: boolean,
-  // TrackPlayer: typeof TrackPlayer | undefined,
+  TrackPlayer: typeof TrackPlayer,
 }
 
 // Define the initial state using that type
@@ -103,7 +99,7 @@ const initialState: GeneralState = {
     performanceTime: 0,
   },
   hasLyrics: false,
-  // TrackPlayer: undefined,
+  TrackPlayer: init(),
 }
 
 
@@ -130,7 +126,6 @@ export const playerSlice = createSlice({
       // state[key] = value;
       (<typeof value>state[key]) = value;
     },
-
   },
   extraReducers: (builder) => {
     builder.addCase(setTracklist.fulfilled, (state, { payload }) => {
@@ -138,9 +133,10 @@ export const playerSlice = createSlice({
       state.list = list;
       state.shuffledList = shuffleFunc(list);
     });
-    builder.addDefaultCase((state, _) => {
-      init();
-    })
+    // builder.addDefaultCase((state, _) => {
+    //   init();
+    //   state.TrackPlayer = proxy(TrackPlayer);
+    // })
   }
 })
 

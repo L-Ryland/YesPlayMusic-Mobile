@@ -120,7 +120,6 @@ export function PlaylistScreen({
   const ButtonBox = styled(View).attrs(() => ({
     children: [
       (<View key='likebox' style={{ flexDirection: 'row' }}>
-        {/* <HeartSolid {...svgStyle} /> */}
         <SvgIcon name='HeartSolid' {...svgStyle}/>
         <SvgIcon name="Heart" {...svgStyle}/>
         <SvgIcon name="Plus" {...svgStyle}/>

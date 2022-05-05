@@ -115,7 +115,6 @@ export function PlaylistScreen({
     if (currentQueue) {
       await TrackPlayer.reset();
       console.log("playTrack currentQueue", await TrackPlayer.getQueue());
-
     }
     const { likedSongs, itemProps: { id } } = route.params;
     const { list } = player;
@@ -125,7 +124,6 @@ export function PlaylistScreen({
       loadData(id);
     }
     await TrackPlayer.add(list);
-
     TrackPlayer.play();
 
   }

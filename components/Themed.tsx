@@ -14,7 +14,6 @@ import {
   TouchableHighlight,
   StyleSheet,
 } from "react-native";
-import { Props, SettingsScreen as DefaultSettingsScreen } from "react-native-settings-screen";
 import { SvgProps } from "react-native-svg";
 import styled from "styled-components/native";
 
@@ -58,9 +57,6 @@ export type TextProps = ThemeProps & DefaultText["props"];
 export type ViewProps = ThemeProps & DefaultView["props"];
 export type ScrollViewProps = ThemeProps & DefaultScrollView["props"];
 export type ImageProps = ThemeProps & DefaultImage["props"];
-export type SettingsScreenProps = ThemeProps &
-  DefaultSettingsScreen["props"] &
-  DefaultScrollView["props"];
 
 export function Text<T extends DefaultText["props"] & ThemeProps>(props: T) {
   const { style, lightColor, darkColor, ...otherProps } = props;
@@ -107,16 +103,6 @@ export function Image<T extends ImageProps>(props: T) {
   );
 }
 
-export function SettingsScreen<T extends SettingsScreenProps>(props: T) {
-  let { style, data, lightColor, darkColor, ...otherProps } = props;
-
-  const backgroundColor = useThemeColor(
-    { light: lightColor, dark: darkColor },
-    "background"
-  );
-
-  return <DefaultSettingsScreen data={data} style={{ backgroundColor }} {...otherProps} />;
-}
 // export function Button(props: ThemeProps & DefaultButton["props"]) {
 //   return <DefaultButton {...props} />;
 // }
@@ -195,7 +181,7 @@ export const CoverSubTitle: React.FC<TextProps> = styled(Text)`
 
 //   return <DefaultTextInput style={[{backgroundColor}, {color}, style]} ref={ref} {...otherProps} />;
 // }
-export const TextInput: React.FC<ThemeProps & DefaultTextInput["props"]> 
+export const TextInput: React.FC<ThemeProps & DefaultTextInput["props"]>
 = React.forwardRef((props: ThemeProps & DefaultTextInput["props"], ref: React.Ref<DefaultTextInput> | undefined) => {
 
   const { style, lightColor, darkColor, ...otherProps } = props;
@@ -216,33 +202,33 @@ export const SvgIcon: React.FC<SvgProps & {name: string}> = ({name, ...otherProp
   switch (name) {
     case "Explicit":
       return <Explicit {...otherProps}/>
-    case "Heart": 
+    case "Heart":
       return <Heart {...otherProps} />
-    case "HeartSolid": 
+    case "HeartSolid":
       return <HeartSolid {...otherProps}/>
-    case "Lock": 
+    case "Lock":
       return <Lock {...otherProps}/>
-    case "Mail": 
+    case "Mail":
       return <Mail {...otherProps}/>
-    case "Mobile": 
+    case "Mobile":
       return <Mobile {...otherProps}/>
-    case "Next": 
+    case "Next":
       return <Next {...otherProps}/>
-    case "Pause": 
+    case "Pause":
       return <Pause {...otherProps}/>
-    case "Play": 
+    case "Play":
       return <Play {...otherProps}/>
-    case "Plus": 
+    case "Plus":
       return <Plus {...otherProps}/>
-    case "Previous": 
+    case "Previous":
       return <Previous {...otherProps}/>
-    case "Repeat_1": 
+    case "Repeat_1":
       return <Repeat_1 {...otherProps}/>
-    case "Shuffle": 
+    case "Shuffle":
       return <Shuffle {...otherProps}/>
-    case "X": 
+    case "X":
       return <X {...otherProps}/>
-    default: 
+    default:
       return <></>
   }
 }

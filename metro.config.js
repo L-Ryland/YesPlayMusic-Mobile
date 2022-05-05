@@ -32,12 +32,12 @@ module.exports = {
 //     transformer: {
 //       getTransfromOptions: async () => ({
 //         transform: {
-//           experimentalImportSupport: false, 
+//           experimentalImportSupport: false,
 //           inlineRequires: false
 //         }
 //       }),
 //       babelTransfromerPath: require.resolve("react-native-svg-transformer")
-//     }, 
+//     },
 //     resolver: {
 //       assetExts: assetExts.filter(ext => ext !== "svg"),
 //       sourceExts: [...sourceExts, "svg"],

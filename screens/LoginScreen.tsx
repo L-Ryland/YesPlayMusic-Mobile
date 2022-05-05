@@ -276,7 +276,7 @@ const LoginQR = (props) => {
         <Text> | </Text>
         <LoginOptionText onPress={() => setState('mobile')} >Login wight Mobile</LoginOptionText>
       </View>
-      <Button children="test" onPress={()=>isAccountLoggedIn()} />
+      <Button title="test" onPress={()=>isAccountLoggedIn()} />
     </View>
   );
 }

@@ -110,7 +110,7 @@ function SettingsScreenView({
           source={{ uri: user.avatarUrl }}
           title={user.nickname}
           subTitle={user.signature}
-        />: <MainSettings.UserInfo source={require('@/assets/images/favicon.png')} title="Please Login To Continue" subTitle=""/>}
+        />: <MainSettings.UserInfo source={require('@/assets/images/favicon.png')} title="Please Login To Continue" subTitle="" onPress={() => navigation.navigate('Library')}/>}
         <Universal.Section />
         <Lyrics.Section />
         <Others.Section />
