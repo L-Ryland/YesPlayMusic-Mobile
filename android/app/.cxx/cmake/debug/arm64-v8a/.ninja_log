@@ -15,3 +15,6 @@
 0	5	0	clean	f539acf455306f72
 4	920	1651658596	CMakeFiles/native-lib.dir/src/main/cpp/native-lib.cpp.o	8a5673076fcccb78
 922	2897	1651658598	../../../../build/intermediates/cmake/debug/obj/arm64-v8a/libnative-lib.so	d562f2fcde9fa528
+0	8	0	clean	f539acf455306f72
+2	610	1652023920	CMakeFiles/native-lib.dir/src/main/cpp/native-lib.cpp.o	8a5673076fcccb78
+612	1000	1652023920	../../../../build/intermediates/cmake/debug/obj/arm64-v8a/libnative-lib.so	d562f2fcde9fa528

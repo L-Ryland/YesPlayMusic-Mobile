@@ -7,7 +7,46 @@ import { useAppSelector } from "@/hooks/useRedux";
 import { selectData, setLastRefreshCookieDate } from "@/redux/slice/dataSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+/**
+ * @description 调整网易云封面图片大小
+ * @param  {string} url 封面图片URL
+ * @param  {'xs'|'sm'|'md'|'lg'} size - 大小，值对应为 128px | 256px | 512px | 1024px
+ */
+export function resizeImage(
+  url: string,
+  size: "xs" | "sm" | "md" | "lg"
+): string {
+  if (!url) return "";
 
+  const sizeMap = {
+    xs: "128",
+    sm: "256",
+    md: "512",
+    lg: "1024",
+  };
+  return `${url}?param=${sizeMap[size]}y${sizeMap[size]}`.replace(
+    "http://",
+    "https://"
+  );
+}
+/**
+ * @description 格式化日期
+ * @param  {number} timestamp - 时间戳
+ * @param  {'en'|'zh-TW'|'zh-CN'='en'} locale - 日期语言
+ * @param  {string='default'} format - 格式化字符串，参考 dayjs
+ */
+export function formatDate(
+  timestamp: number,
+  locale: "en" | "zh-TW" | "zh-CN" = "zh-CN",
+  format: string = "default"
+): string {
+  if (!timestamp) return "";
+  if (format === "default") {
+    format = "MMM D, YYYY";
+    if (["zh-CN", "zh-TW"].includes(locale)) format = "YYYY年MM月DD日";
+  }
+  return dayjs(timestamp).format(format);
+}
 const parseData = async () => {
   try {
     const data = await AsyncStorage.getItem("persist:data");
@@ -15,9 +54,9 @@ const parseData = async () => {
   } catch (error) {
     console.error("data parse error", error);
   }
-}
+};
 let data;
-(async () => data = await parseData())();
+(async () => (data = await parseData()))();
 console.log();
 export function isTrackPlayable(track) {
   let result = {
@@ -54,14 +93,16 @@ export function isTrackPlayable(track) {
   }
   return result;
 }
-type privilegeType = { id: unknown, [key: string]: unknown }
-export function mapTrackPlayableStatus(tracks: any[], privileges: privilegeType[] = []) {
+type privilegeType = { id: unknown; [key: string]: unknown };
+export function mapTrackPlayableStatus(
+  tracks: any[],
+  privileges: privilegeType[] = []
+) {
   console.log("mapTrackPlayableStatus");
   if (!tracks?.length) {
     console.log("mapTrackPlaybleStatus no length");
     return tracks;
   } else {
-
     console.log("mapTrackPlayableStatus length", tracks.length);
   }
 

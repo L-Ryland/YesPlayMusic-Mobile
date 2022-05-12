@@ -22,8 +22,10 @@ const linking: LinkingOptions<RootStackParamList> = {
             },
           },
           Library: {
+            initialRouteName: "LibraryScreen",
             screens: {
-              Library: "library",
+              LibraryScreen: "LibraryScreen",
+              LoginScreen: "LoginScreen"
             },
           },
           Explore: {

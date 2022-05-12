@@ -19,10 +19,25 @@ import styled from "styled-components/native";
 
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
-import { Explicit, Heart, HeartSolid, Lock, Mail, Mobile, Next, Pause, Play, Plus, Previous, Repeat_1, Shuffle, X } from "./icons";
+import {
+  Explicit,
+  Heart,
+  HeartSolid,
+  Lock,
+  Mail,
+  Mobile,
+  Next,
+  Pause,
+  Play,
+  Plus,
+  Previous,
+  Repeat_1,
+  Shuffle,
+  X,
+} from "./icons";
 
 export function useThemeColor(
-  props: { light?: string; dark?: string; },
+  props: { light?: string; dark?: string },
   colorName: keyof typeof Colors.light & keyof typeof Colors.dark
 ) {
   const theme = useColorScheme();
@@ -35,17 +50,20 @@ export function useThemeColor(
   }
 }
 
-export function useSvgStyle(
-  { height = 35, width = 35, active = false }
-) {
+export function useSvgStyle({
+  height = 35,
+  width = 35,
+  active = false,
+}): SvgProps {
   const theme = useColorScheme();
-  const svgColor = active?Colors[theme]['tint']:Colors[theme]['text'];
-  console.log('current svgColor', svgColor);
+  const svgColor = active ? Colors[theme]["tint"] : Colors[theme]["text"];
+  console.log("current svgColor", svgColor);
 
   return {
-    height, width,
+    height,
+    width,
     color: svgColor,
-  }
+  };
 }
 
 type ThemeProps = {
@@ -106,12 +124,14 @@ export function Image<T extends ImageProps>(props: T) {
 // export function Button(props: ThemeProps & DefaultButton["props"]) {
 //   return <DefaultButton {...props} />;
 // }
-export const Button: React.FC<ThemeProps & DefaultButton["props"]> = (props) => {
+export const Button: React.FC<ThemeProps & DefaultButton["props"]> = (
+  props
+) => {
   const { lightColor, darkColor, onPress, title, ...otherProps } = props;
   const buttonColor = useThemeColor(
     { light: lightColor, dark: darkColor },
-    'buttonColor'
-  )
+    "buttonColor"
+  );
   const styles = StyleSheet.create({
     middleButton: {
       backgroundColor: buttonColor,
@@ -120,13 +140,13 @@ export const Button: React.FC<ThemeProps & DefaultButton["props"]> = (props) => 
       paddingRight: 10,
       paddingLeft: 10,
       paddingBottom: 6,
-      alignContent: 'center',
-      borderRadius: 10
+      alignContent: "center",
+      borderRadius: 10,
     },
     middleTitle: {
-      fontSize: 16
+      fontSize: 16,
     },
-  })
+  });
   return (
     <TouchableHighlight onPress={onPress}>
       <View style={styles.middleButton}>
@@ -134,19 +154,19 @@ export const Button: React.FC<ThemeProps & DefaultButton["props"]> = (props) => 
       </View>
     </TouchableHighlight>
   );
-}
+};
 
 export const Title: React.FC<TextProps> = styled(Text).attrs(() => ({
-  adjustsFontSizeToFit: true
+  adjustsFontSizeToFit: true,
 }))`
   display: flex;
-  justifyContent: space-between;
-  alignItems: flex-end;
+  justify-content: space-between;
+  align-items: flex-end;
   margin-bottom: 20;
-  fontSize: 40;
-  fontWeight: 700;
+  font-size: 40;
+  font-weight: 700;
   padding: 0px 0px 8px 8px;
-`
+`;
 export const CoverTitle: React.FC<TextProps> = styled(Text)`
   font-size: 16px;
   font-weight: 600;
@@ -181,54 +201,67 @@ export const CoverSubTitle: React.FC<TextProps> = styled(Text)`
 
 //   return <DefaultTextInput style={[{backgroundColor}, {color}, style]} ref={ref} {...otherProps} />;
 // }
-export const TextInput: React.FC<ThemeProps & DefaultTextInput["props"]>
-= React.forwardRef((props: ThemeProps & DefaultTextInput["props"], ref: React.Ref<DefaultTextInput> | undefined) => {
+export const TextInput: React.FC<ThemeProps & DefaultTextInput["props"]> =
+  React.forwardRef(
+    (
+      props: ThemeProps & DefaultTextInput["props"],
+      ref: React.Ref<DefaultTextInput> | undefined
+    ) => {
+      const { style, lightColor, darkColor, ...otherProps } = props;
 
-  const { style, lightColor, darkColor, ...otherProps } = props;
+      const backgroundColor = useThemeColor(
+        { light: lightColor, dark: darkColor },
+        "background"
+      );
+      const color = useThemeColor(
+        { light: lightColor, dark: darkColor },
+        "text"
+      );
 
-  const backgroundColor = useThemeColor(
-    { light: lightColor, dark: darkColor },
-    "background"
+      return (
+        <DefaultTextInput
+          style={[{ backgroundColor }, { color }, style]}
+          ref={ref}
+          {...otherProps}
+        />
+      );
+    }
   );
-  const color = useThemeColor(
-    { light: lightColor, dark: darkColor },
-    "text"
-  );
 
-  return <DefaultTextInput style={[{ backgroundColor }, { color }, style]} ref={ref} {...otherProps} />;
-})
-
-export const SvgIcon: React.FC<SvgProps & {name: string}> = ({name, ...otherProps}) => {
+export const SvgIcon: React.FC<SvgProps & { name: string }> = ({
+  name,
+  ...otherProps
+}) => {
   switch (name) {
     case "Explicit":
-      return <Explicit {...otherProps}/>
+      return <Explicit {...otherProps} />;
     case "Heart":
-      return <Heart {...otherProps} />
+      return <Heart {...otherProps} />;
     case "HeartSolid":
-      return <HeartSolid {...otherProps}/>
+      return <HeartSolid {...otherProps} />;
     case "Lock":
-      return <Lock {...otherProps}/>
+      return <Lock {...otherProps} />;
     case "Mail":
-      return <Mail {...otherProps}/>
+      return <Mail {...otherProps} />;
     case "Mobile":
-      return <Mobile {...otherProps}/>
+      return <Mobile {...otherProps} />;
     case "Next":
-      return <Next {...otherProps}/>
+      return <Next {...otherProps} />;
     case "Pause":
-      return <Pause {...otherProps}/>
+      return <Pause {...otherProps} />;
     case "Play":
-      return <Play {...otherProps}/>
+      return <Play {...otherProps} />;
     case "Plus":
-      return <Plus {...otherProps}/>
+      return <Plus {...otherProps} />;
     case "Previous":
-      return <Previous {...otherProps}/>
+      return <Previous {...otherProps} />;
     case "Repeat_1":
-      return <Repeat_1 {...otherProps}/>
+      return <Repeat_1 {...otherProps} />;
     case "Shuffle":
-      return <Shuffle {...otherProps}/>
+      return <Shuffle {...otherProps} />;
     case "X":
-      return <X {...otherProps}/>
+      return <X {...otherProps} />;
     default:
-      return <></>
+      return <></>;
   }
-}
+};

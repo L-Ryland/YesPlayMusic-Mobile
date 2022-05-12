@@ -33,7 +33,7 @@ interface GeneralState {
   personalFMNextTrack: { id: number, [key: string]: any };
   trackTimestamp: AudioTimestamp,
   hasLyrics: boolean,
-  TrackPlayer,
+  trackPlayer,
   State,
   Event,
 }
@@ -66,7 +66,7 @@ const initialState: GeneralState = {
     performanceTime: 0,
   },
   hasLyrics: false,
-  TrackPlayer: undefined,
+  trackPlayer: undefined,
   State: undefined,
   Event: undefined,
 }

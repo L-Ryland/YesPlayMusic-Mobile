@@ -1,36 +1,45 @@
 import { TouchableHighlight, StyleSheet } from "react-native";
 import styled from "styled-components/native";
 import { View, Text, Image } from "@/components";
+import { NavigationProp, useNavigation } from "@react-navigation/core";
+import { RootStackParamList, RootStackScreenProps } from "@/types";
 
 interface Artist {
-  id: number,
-  name: string,
-  [key: string]: any
+  id: number;
+  name: string;
+  [key: string]: any;
 }
 interface Album {
-  "id": number,
-  "name": string,
-  "picUrl": string,
-  [key: string]: any
+  id: number;
+  name: string;
+  picUrl: string;
+  [key: string]: any;
 }
 
 interface TrackProps {
-  id: number,
-  name: string,
-  ar: Artist[],
-  al: Album,
-  [key: string]: any
+  id: number;
+  name: string;
+  ar: Artist[];
+  al: Album;
+  [key: string]: any;
 }
-export function TrackItem({ track, navigate }) {
+export function TrackItem({
+  track,
+  handlePlay,
+}: {
+  track: Track;
+  handlePlay: () => void;
+}) {
+  const navigate = useNavigation<NavigationProp<RootStackParamList>>().navigate;
   const { name, ar } = track;
   // console.log(track);
-  const artists: string = ar.length == 1 ? ar[0].name : ar.reduce(({ name: prev }, { name: cur }) => prev + ', ' + cur);
+  const artists: string = ar.map((artist) => artist.name).toString();
   // console.log(art${100};
 
-
   const handlePress = () => {
-    navigate('Player', {track});
+    navigate("Player", { track });
     // methods: play this track
+    handlePlay();
   };
   const TrackView = styled(View)`
     display: flex;
@@ -54,12 +63,13 @@ export function TrackItem({ track, navigate }) {
         width: 50,
         borderRadius: 10,
         margin: 5,
-      }
-    })
-    return <Image source={{ uri: track.al.picUrl }} style={styles.albumImageStyle}/>
-  }
-  const SongInfo = styled(View)`
-  `;
+      },
+    });
+    return (
+      <Image source={{ uri: track.al.picUrl }} style={styles.albumImageStyle} />
+    );
+  };
+  const SongInfo = styled(View)``;
   const Title = styled(Text)`
     font-size: 18px;
     font-weight: 600;

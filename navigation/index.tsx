@@ -19,6 +19,7 @@ import useColorScheme from "../hooks/useColorScheme";
 import {
   HomeScreen,
   LibraryScreen,
+  LoginScreen,
   ExploreScreen,
   SettingsScreen,
   PlayerScreen,
@@ -27,13 +28,12 @@ import {
   ModalScreen,
   PlaylistScreen
 } from "@/screens";
-import { LanguageSettings } from "../components";
 import {
   RootStackParamList,
   RootTabParamList,
   SettingsStackParamList,
   RootTabScreenProps,
-} from "../types";
+} from "@/types";
 import LinkingConfiguration from "./LinkingConfiguration";
 import { Tracker } from "@/components/Tracker";
 
@@ -112,7 +112,7 @@ function BottomTabNavigator() {
         />
         <BottomTab.Screen
           name="Library"
-          component={LibraryScreen}
+          component={LibraryNavigator}
           options={{
             title: "Library",
             tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
@@ -162,6 +162,17 @@ function SettingsNavigator() {
       </SettingsStack.Group>
     </SettingsStack.Navigator>
   );
+}
+function LibraryNavigator() {
+  const LibraryStack = createNativeStackNavigator();
+  return (
+    <LibraryStack.Navigator initialRouteName="LibraryScreen">
+      <LibraryStack.Group>
+        <LibraryStack.Screen name="Library" component={LibraryScreen} options={{headerShown: false}}/>
+        <LibraryStack.Screen name="Login" component={LoginScreen} options={{headerShown: false}}/>
+      </LibraryStack.Group>
+    </LibraryStack.Navigator>
+  )
 }
 
 /**

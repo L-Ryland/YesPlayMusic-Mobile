@@ -1,50 +1,54 @@
 import Cookies from "js-cookie";
 // import AsyncStorage from "@react-native-async-storage/async-storage";
 import { logout } from "@/api/auth";
-import AsyncStorage from "@/utils/AsyncStorage";
+import storage from "@/utils/storage";
 import { Platform } from "expo-modules-core";
+import {l} from "i18n-js";
+import {userData} from "@/hydrate/data";
+
 // import store from '@/store';
 
-function getData() {
-  const data = AsyncStorage.getItem('persist:data');
-  return data;
+async function getData() {
+  return await storage.getAllDataForKey("data");
 }
 
-
-
-export function setCookies(string) {
+export async function setCookies(string) {
   const cookies = string.split(";;");
-  cookies.map((cookie) => {
-    if (Platform.OS == 'web') {
-      document.cookie = cookie;
-    }
-    const cookieKeyValue = cookie.split(";")[0].split("=");
-    // localStorage.setItem(`cookie-${cookieKeyValue[0]}`, cookieKeyValue[1]);
-    AsyncStorage.setItem(
-      `cookie-${cookieKeyValue[0]}`,
-      cookieKeyValue[1]
-    );
+  await storage.save({
+    key: "cookies",
+    data: cookies.map((cookie) => {
+      // if (Platform.OS == "web") document.cookie = cookie;
+      const cookieKeyValue = cookie.split(";")[0].split("=");
+      return { key: cookieKeyValue[0], value: cookieKeyValue[1] };
+    }),
   });
+  userData.cookie = await getCookie("MUSIC_U");
 }
 
-export function getCookie(key) {
-  let cookies;
-  console.debug('getCookies initiate', cookies);
-  if (Platform.OS == 'web') {
-    cookies = Cookies.get(key);
+export async function getCookie(key) {
+  // if (Platform.OS == "web") {
+  //   return Cookies.get(key);
+  // }
+  try {
+    const cookieData = await storage.load({ key: "cookies" });
+    return cookieData.find((cookie) => cookie.key == key)??undefined;
+
+  } catch (e) {
+    console.log("no cookies stored");
   }
-  console.debug('getCookies previous', cookies);
-  cookies = AsyncStorage.getItem(`cookie-${key}`);
-  console.debug('getCookies', cookies);
-  return cookies;
-  // return Cookies.get(key) ?? localStorage.getItem(`cookie-${key}`);
 }
 
-export function removeCookie(key) {
-  if (Platform.OS == 'web') {
+export async function removeCookie(key) {
+  if (Platform.OS == "web") {
     Cookies.remove(key);
   }
-  AsyncStorage.removeItem(`cookie-${key}`);
+
+  const cookieData = await storage.load({ key: "cookies" });
+  await storage.remove({ key: "cookies" });
+  storage.save({
+    key: "cookies",
+    data: cookieData.filter((cookie) => cookie.key !== key),
+  });
   // localStorage.removeItem(`cookie-${key}`);
 }
 
@@ -59,9 +63,9 @@ export const isAccountLoggedIn = () => {
   return (
     getCookie("MUSIC_U") !== undefined &&
     // data.loginMode === "account"
-    data?.loginMode?.search(/account/)
+    data.data?.loginMode?.search(/account/)
   );
-}
+};
 
 // 用户名搜索（用户数据为只读）
 export function isUsernameLoggedIn() {

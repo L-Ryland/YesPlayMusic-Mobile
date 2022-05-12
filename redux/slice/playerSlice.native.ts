@@ -1,74 +1,48 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { RootState } from '../store'
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { RootState } from "../store";
 
 import shuffleFunc from "lodash/shuffle";
-import { proxy } from "valtio"
+import { proxy } from "valtio";
 
-import TrackPlayer, { Capability, State, Event } from "react-native-track-player";
-import { fetchAudioSource } from '@/api';
-import { cacheTrackSource } from '@/utils/db';
-
-
-function init(): typeof TrackPlayer {
-  // const currentTrack = await TrackPlayer.getCurrentTrack();
-  // if (currentTrack !== null) {
-  //   return proxy(TrackPlayer);
-  // }
-  TrackPlayer.setupPlayer({});
-  TrackPlayer.updateOptions({
-    stopWithApp: true,
-    capabilities: [
-      Capability.Play,
-      Capability.Pause,
-      Capability.SkipToNext,
-      Capability.SkipToPrevious
-    ],
-    compactCapabilities: [
-      Capability.Play,
-      Capability.Pause,
-      Capability.SkipToNext,
-      Capability.SkipToPrevious
-    ],
-    notificationCapabilities: [
-      Capability.Play,
-      Capability.Pause,
-      Capability.SkipToNext,
-      Capability.SkipToPrevious
-    ]
-  });
-  return proxy(TrackPlayer);
-  // return TrackPlayer;
-}
+import TrackPlayer, {
+  Capability,
+  State,
+  Event,
+} from "react-native-track-player";
+import { fetchAudioSource } from "@/api";
+import { cacheTrackSource } from "@/utils/db";
+import { Player } from "@/utils/player";
 
 type PayLoadInject<T> = {
-  key: keyof T, value: T[keyof T],
+  key: keyof T;
+  value: T[keyof T];
 };
 // Define a type for the slice state
 interface GeneralState {
   playing: boolean;
   progress: number;
   enabled: boolean;
-  repeatMode: 'off' | 'on' | 'one';
+  repeatMode: "off" | "on" | "one";
   shuffle: boolean;
   reversed: boolean;
-  volume: number,
-  volumeBeforeMuted: number,
-  personalFMLoading: boolean,
+  volume: number;
+  volumeBeforeMuted: number;
+  personalFMLoading: boolean;
   personalFMNextLoading: boolean;
 
   list: Array<any>;
   current: number;
   shuffledList: Array<any>;
   shuffledCurrent: number;
-  playlistSource: { type: string, id: number, [key: string]: any };
-  currentTrack: { id: number, [key: string]: any };
+  playlistSource: { type: string; id: number; [key: string]: any };
+  currentTrack: { id: number; [key: string]: any };
   playNextList: Array<any>;
   isPersonalFM: boolean;
-  personalFMTrack: { id: number, [key: string]: any };
-  personalFMNextTrack: { id: number, [key: string]: any };
-  trackTimestamp: AudioTimestamp,
-  hasLyrics: boolean,
-  TrackPlayer: typeof TrackPlayer,
+  personalFMTrack: { id: number; [key: string]: any };
+  personalFMNextTrack: { id: number; [key: string]: any };
+  trackTimestamp: AudioTimestamp;
+  hasLyrics: boolean;
+  trackPlayer: Player;
 }
 
 // Define the initial state using that type
@@ -76,7 +50,7 @@ const initialState: GeneralState = {
   playing: false, // 是否正在播放中
   progress: 0, // 当前播放歌曲的进度
   enabled: false, // 是否启用Player
-  repeatMode: 'off', // off | on | one
+  repeatMode: "off", // off | on | one
   shuffle: false, // true | false
   reversed: false,
   volume: 1, // 0 to 1
@@ -88,7 +62,7 @@ const initialState: GeneralState = {
   current: 0, // 当前播放歌曲在播放列表里的index
   shuffledList: [], // 被随机打乱的播放列表，随机播放模式下会使用此播放列表
   shuffledCurrent: 0, // 当前播放歌曲在随机列表里面的index
-  playlistSource: { type: 'album', id: 123 }, // 当前播放列表的信息
+  playlistSource: { type: "album", id: 123 }, // 当前播放列表的信息
   currentTrack: { id: 86827685 }, // 当前播放歌曲的详细信息
   playNextList: [], // 当这个list不为空时，会优先播放这个list的歌
   isPersonalFM: false, // 是否是私人FM模式
@@ -99,13 +73,11 @@ const initialState: GeneralState = {
     performanceTime: 0,
   },
   hasLyrics: false,
-  TrackPlayer: init(),
-}
-
-
+  trackPlayer: new Player(),
+};
 
 export const playerSlice = createSlice({
-  name: 'player',
+  name: "player",
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
@@ -121,7 +93,10 @@ export const playerSlice = createSlice({
     setHasLyrics: (state, action: PayloadAction<boolean>) => {
       state.hasLyrics = action.payload;
     },
-    updatePlayerStatus: (state, action: PayloadAction<PayLoadInject<GeneralState>>) => {
+    updatePlayerStatus: (
+      state,
+      action: PayloadAction<PayLoadInject<GeneralState>>
+    ) => {
       const { key, value } = action.payload;
       // state[key] = value;
       (<typeof value>state[key]) = value;
@@ -137,50 +112,54 @@ export const playerSlice = createSlice({
     //   init();
     //   state.TrackPlayer = proxy(TrackPlayer);
     // })
-  }
-})
-
+  },
+});
 
 export const setTracklist = createAsyncThunk(
-  'player/setPlaylist',
+  "player/setPlaylist",
   async (tracks: any[], thunkAPI) => {
     console.log("currentstate", thunkAPI.getState());
     // generate directly played playlist
-    const newTracks = await Promise.all(tracks.map(async (track) => {
-      console.log("current track", track);
+    const newTracks = await Promise.all(
+      tracks.map(async (track) => {
+        console.log("current track", track);
 
-      const source = await fetchAudioSource({id: track.id}).then(result => {
+        const source = await fetchAudioSource({ id: track.id }).then(
+          (result) => {
+            if (!result.data[0]) return null;
+            if (!result.data[0].url) return null;
+            if (result.data[0].freeTrialInfo !== null) return null; // 跳过只能试听的歌曲
+            const source = result.data[0].url.replace(/^http:/, "https:");
+            const currentState = thunkAPI.getState();
+            console.log("currentstate", currentState);
+            const automaticallyCacheSongs = false;
+            if (automaticallyCacheSongs) {
+              cacheTrackSource(track, source, result.data[0].br);
+            }
 
-        if (!result.data[0]) return null;
-        if (!result.data[0].url) return null;
-        if (result.data[0].freeTrialInfo !== null) return null; // 跳过只能试听的歌曲
-        const source = result.data[0].url.replace(/^http:/, 'https:');
-        const currentState = thunkAPI.getState();
-        console.log("currentstate", currentState);
-        const automaticallyCacheSongs = false;
-        if (automaticallyCacheSongs) {
-          cacheTrackSource(track, source, result.data[0].br);
-        }
-
-        return source;
-      });
-      const artists = track.ar.length == 1 ? track.ar[0].name : track.ar.reduce((prev, cur) => prev.name + ", " + cur.name);
-      return {
-        url: source,
-        title: track.name,
-        artist: artists,
-        artwork: track.al.picUrl,
-      };
-    }));
+            return source;
+          }
+        );
+        const artists =
+          track.ar.length == 1
+            ? track.ar[0].name
+            : track.ar.reduce((prev, cur) => prev.name + ", " + cur.name);
+        return {
+          url: source,
+          title: track.name,
+          artist: artists,
+          artwork: track.al.picUrl,
+        };
+      })
+    );
 
     return newTracks;
   }
-)
-export const {
-  setPlayingStatus, setTrackTimeStamp, updatePlayerStatus
-} = playerSlice.actions
+);
+export const { setPlayingStatus, setTrackTimeStamp, updatePlayerStatus } =
+  playerSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectPlayer = (state: RootState) => state.player;
 
-export default playerSlice.reducer
+export default playerSlice.reducer;

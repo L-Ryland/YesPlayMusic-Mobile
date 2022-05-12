@@ -1,4 +1,3 @@
-export * from './SubSettings'
 export * from './Cover'
 export * from './CoverRow'
 export * from './Themed'

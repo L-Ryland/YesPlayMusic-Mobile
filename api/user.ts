@@ -1,14 +1,13 @@
-import type { ResponseFormat } from '@/types';
-import request from '@/utils/request'
+import type { ResponseFormat } from "@/types";
+import request from "@/utils/request";
 
 export enum UserApiNames {
-  FETCH_USER_ACCOUNT = 'fetchUserAccount',
-  FETCH_USER_LIKED_TRACKS_IDS = 'fetchUserLikedTracksIDs',
-  FETCH_USER_PLAYLISTS = 'fetchUserPlaylists',
-  FETCH_USER_ALBUMS = 'fetchUserAlbums',
-  FETCH_USER_ARTIST = 'fetchUserArtists',
+  FETCH_USER_ACCOUNT = "fetchUserAccount",
+  FETCH_USER_LIKED_TRACKS_IDS = "fetchUserLikedTracksIDs",
+  FETCH_USER_PLAYLISTS = "fetchUserPlaylists",
+  FETCH_USER_ALBUMS = "fetchUserAlbums",
+  FETCH_USER_ARTIST = "fetchUserArtists",
 }
-
 
 /**
  * 获取用户详情
@@ -18,148 +17,155 @@ export enum UserApiNames {
  */
 export function userDetail(uid: number) {
   return request({
-    url: '/user/detail',
-    method: 'get',
+    url: "/user/detail",
+    method: "get",
     params: {
       uid,
       timestamp: new Date().getTime(),
     },
-  })
+  });
 }
 
 // 获取账号详情
-export interface fetchUserAccountResponse extends ResponseFormat {
-  code: number
+export interface FetchUserAccountResponse extends ResponseFormat {
+  code: number;
   account: {
-    anonimousUser: boolean
-    ban: number
-    baoyueVersion: number
-    createTime: number
-    donateVersion: number
-    id: number
-    paidFee: boolean
-    status: number
-    tokenVersion: number
-    type: number
-    userName: string
-    vipType: number
-    whitelistAuthority: number
-  } | null
+    anonimousUser: boolean;
+    ban: number;
+    baoyueVersion: number;
+    createTime: number;
+    donateVersion: number;
+    id: number;
+    paidFee: boolean;
+    status: number;
+    tokenVersion: number;
+    type: number;
+    userName: string;
+    vipType: number;
+    whitelistAuthority: number;
+  } | null;
   profile: {
-    userId: number
-    userType: number
-    nickname: string
-    avatarImgId: number
-    avatarUrl: string
-    backgroundImgId: number
-    backgroundUrl: string
-    signature: string
-    createTime: number
-    userName: string
-    accountType: number
-    shortUserName: string
-    birthday: number
-    authority: number
-    gender: number
-    accountStatus: number
-    province: number
-    city: number
-    authStatus: number
-    description: string | null
-    detailDescription: string | null
-    defaultAvatar: boolean
-    expertTags: [] | null
-    experts: [] | null
-    djStatus: number
-    locationStatus: number
-    vipType: number
-    followed: boolean
-    mutual: boolean
-    authenticated: boolean
-    lastLoginTime: number
-    lastLoginIP: string
-    remarkName: string | null
-    viptypeVersion: number
-    authenticationTypes: number
-    avatarDetail: string | null
-    anchor: boolean
-  } | null
+    userId: number;
+    userType: number;
+    nickname: string;
+    avatarImgId: number;
+    avatarUrl: string;
+    backgroundImgId: number;
+    backgroundUrl: string;
+    signature: string;
+    createTime: number;
+    userName: string;
+    accountType: number;
+    shortUserName: string;
+    birthday: number;
+    authority: number;
+    gender: number;
+    accountStatus: number;
+    province: number;
+    city: number;
+    authStatus: number;
+    description: string | null;
+    detailDescription: string | null;
+    defaultAvatar: boolean;
+    expertTags: [] | null;
+    experts: [] | null;
+    djStatus: number;
+    locationStatus: number;
+    vipType: number;
+    followed: boolean;
+    mutual: boolean;
+    authenticated: boolean;
+    lastLoginTime: number;
+    lastLoginIP: string;
+    remarkName: string | null;
+    viptypeVersion: number;
+    authenticationTypes: number;
+    avatarDetail: string | null;
+    anchor: boolean;
+  } | null;
 }
-export function fetchUserAccount(): Promise<fetchUserAccountResponse> {
+export function fetchUserAccount(): Promise<FetchUserAccountResponse> {
   return request({
-    url: '/user/account',
-    method: 'get',
+    url: "/user/account",
+    method: "get",
     params: {
       timestamp: new Date().getTime(),
     },
-  })
+  });
 }
 
 // 获取用户歌单
 export interface FetchUserPlaylistsParams {
-  uid: number
-  offset?: number
-  limit?: number // default 30
+  uid: number;
+  offset?: number;
+  limit?: number; // default 30
 }
 export interface FetchUserPlaylistsResponse {
-  code: number
-  more: boolean
-  version: string
-  playlist: Playlist[]
+  code: number;
+  more: boolean;
+  version: string;
+  playlist: Playlist[];
 }
 export function fetchUserPlaylists(
   params: FetchUserPlaylistsParams
 ): Promise<FetchUserPlaylistsResponse> {
   return request({
-    url: '/user/playlist',
-    method: 'get',
+    url: "/user/playlist",
+    method: "get",
     params: {
       ...params,
-      timestamp: new Date().getTime()
+      timestamp: new Date().getTime(),
     },
-  })
+  });
 }
 
 export interface UserPlayHistoryParams {
-  uid: number,
-  type: number
+  uid: number;
+  type: number;
 }
 /**
  * 获取用户播放记录
  * 说明 : 登录后调用此接口 , 传入用户 id, 可获取用户播放记录
  * - uid : 用户 id
  * - type : type=1 时只返回 weekData, type=0 时返回 allData
-  * @export
-  * @param {UserPlayHistoryParams} params
-  * @return {*}  {Promise<ResponseFormat>}
+ * @export
+ * @param {UserPlayHistoryParams} params
+ * @return {*}  {Promise<ResponseFormat>}
  */
- export function userPlayHistory(params: UserPlayHistoryParams): Promise<ResponseFormat> {
+export function userPlayHistory(
+  params: UserPlayHistoryParams
+): Promise<ResponseFormat> {
   return request({
-    url: '/user/record',
-    method: 'get',
+    url: "/user/record",
+    method: "get",
     params,
   });
 }
 
 export interface FetchUserLikedTracksIDsParams {
-  uid: number
+  uid: number;
 }
 export interface FetchUserLikedTracksIDsResponse {
-  code: number
-  checkPoint: number
-  ids: number[]
+  code: number;
+  checkPoint: number;
+  ids: number[];
 }
+
+/**
+ * Fetch user liked trackIDS
+ * @param params
+ */
 export function fetchUserLikedTracksIDs(
   params: FetchUserLikedTracksIDsParams
 ): Promise<FetchUserLikedTracksIDsResponse> {
   return request({
-    url: '/likelist',
-    method: 'get',
+    url: "/likelist",
+    method: "get",
     params: {
       uid: params.uid,
       timestamp: new Date().getTime(),
     },
-  })
+  });
 }
 
 /**
@@ -170,58 +176,58 @@ export function fetchUserLikedTracksIDs(
  */
 export function dailySignin(type = 0) {
   return request({
-    url: '/daily_signin',
-    method: 'post',
+    url: "/daily_signin",
+    method: "post",
     params: {
       type,
       timestamp: new Date().getTime(),
     },
-  })
+  });
 }
 
 export interface FetchUserAlbumsParams {
-  offset?: number // default 0
-  limit?: number // default 25
+  offset?: number; // default 0
+  limit?: number; // default 25
 }
 export interface FetchUserAlbumsResponse {
-  code: number
-  hasMore: boolean
-  paidCount: number
-  count: number
-  data: Album[]
+  code: number;
+  hasMore: boolean;
+  paidCount: number;
+  count: number;
+  data: Album[];
 }
 export function fetchUserAlbums(
   params: FetchUserAlbumsParams
 ): Promise<FetchUserAlbumsResponse> {
   return request({
-    url: '/album/sublist',
-    method: 'get',
+    url: "/album/sublist",
+    method: "get",
     params: {
       ...params,
       timestamp: new Date().getTime(),
     },
-  })
+  });
 }
 
 // 获取收藏的歌手
 export interface FetchUserArtistsResponse {
-  code: number
-  hasMore: boolean
-  count: number
-  data: Artist[]
+  code: number;
+  hasMore: boolean;
+  count: number;
+  data: Artist[];
 }
 export function fetchUserArtists(): Promise<FetchUserArtistsResponse> {
   return request({
-    url: '/artist/sublist',
-    method: 'get',
+    url: "/artist/sublist",
+    method: "get",
     params: {
       timestamp: new Date().getTime(),
     },
-  })
+  });
 }
 
 export interface FetchLikedMVsParams {
-  limit?: number, 
+  limit?: number;
 }
 /**
  * 获取收藏的MV（需要登录）
@@ -229,13 +235,13 @@ export interface FetchLikedMVsParams {
  */
 export function fetchLikedMVs(params): Promise<ResponseFormat> {
   return request({
-    url: '/mv/sublist',
-    method: 'get',
+    url: "/mv/sublist",
+    method: "get",
     params: {
       limit: params.limit,
       timestamp: new Date().getTime(),
     },
-  })
+  });
 }
 
 /**
@@ -261,13 +267,13 @@ export function fetchLikedMVs(params): Promise<ResponseFormat> {
 // }
 
 export interface FetchCloudDiskParams {
-  limit?: number,
-  offset?: number,
+  limit?: number;
+  offset?: number;
 }
 export const defaultFetchCloudDiskParams: FetchCloudDiskParams = {
   limit: 200,
   offset: 0,
-}
+};
 /**
  * 获取云盘歌曲（需要登录）
  * 说明 : 登录后调用此接口 , 可获取云盘数据 , 获取的数据没有对应 url, 需要再调用一 次 /song/url 获取 url
@@ -277,15 +283,17 @@ export const defaultFetchCloudDiskParams: FetchCloudDiskParams = {
  * @param {number} params.limit
  * @param {number=} params.offset
  */
-export function fetchCloudDisk(params: FetchCloudDiskParams = defaultFetchCloudDiskParams) {
+export function fetchCloudDisk(
+  params: FetchCloudDiskParams = defaultFetchCloudDiskParams
+) {
   return request({
-    url: '/user/cloud',
-    method: 'get',
+    url: "/user/cloud",
+    method: "get",
     params: {
-      ...params, 
-      timestmap: new Date().getTime()
+      ...params,
+      timestmap: new Date().getTime(),
     },
-  })
+  });
 }
 
 /**

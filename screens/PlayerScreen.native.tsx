@@ -10,7 +10,8 @@ import TrackPlayer, { useTrackPlayerEvents, Event, State, usePlaybackState, useP
 import type { Track } from "react-native-track-player";
 import dayjs, { duration } from "dayjs";
 import Duration from "dayjs/plugin/duration";
-import { updatePlayerStatus } from "@/redux/slice/playerSlice.android";
+import { updatePlayerStatus } from "@/redux/slice/playerSlice.native";
+import {RootState} from "@/redux/store";
 
 dayjs.extend(Duration)
 const { width, height } = Dimensions.get('window');
@@ -70,12 +71,12 @@ export function PlayerScreen({ navigation, route }) {
   const dispatch = useAppDispatch();
   const playbackState = usePlaybackState();
   const progress = useProgress();
-  const player = useAppSelector(selectPlayer);
+  const player = useAppSelector<RootState["player"]>(selectPlayer);
   const [currentTrack, setCurrentTrack] = useState<Track | undefined>(undefined);
   // const [trackTitle, setTrackTitle] = React.useState<string>();
   // const [trackArtist, setTrackArtist] = React.useState<Track>();
   // const [trackArtwork, setTrackArtwork] = React.useState<Track["artwork"]>();
-  const { repeatMode, shuffle, shuffledList, list } = player;
+  const { repeatMode, shuffle, shuffledList, list, trackPlayer } = player;
   console.log("player screen", navigation, route);
   const { al: { name: songTitle, picUrl }, ar } = route.params.track;
   console.log('player picurl', picUrl, "screen width", width,);

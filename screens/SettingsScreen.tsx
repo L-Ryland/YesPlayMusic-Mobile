@@ -1,124 +1,146 @@
-import { StyleSheet, Switch } from 'react-native'
-import styled from 'styled-components/native'
-import type { TextStyle, ViewStyle, ImageProps } from 'react-native'
-import * as React from 'react'
+import { StyleSheet, Switch } from "react-native";
+import styled from "styled-components/native";
+import type { TextStyle, ViewStyle, ImageProps } from "react-native";
+import * as React from "react";
 
-import { createSettingsDataFactory } from 'react-native-settings-template'
+import { createSettingsDataFactory } from "react-native-settings-template";
 
-import { useThemeColor, View, Text } from '../components/Themed'
+import { useThemeColor, View, Text } from "@/components";
 // import { MainSettings } from '../components';
-import { SettingsStackScreenProps } from '../types'
-import { useAppDispatch, useAppSelector } from '@/hooks/useRedux'
-import { logOutThunk, selectData } from '@/redux/slice/dataSlice'
-import { connect } from 'react-redux'
-import { RootState } from '@/redux/store'
-import { isAccountLoggedIn } from '@/utils/auth'
-import { SettingsState } from '@/redux/slice/settingsSlice'
+import { SettingsStackScreenProps } from "@/types";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { logOutThunk, selectData } from "@/redux/slice/dataSlice";
+import { connect } from "react-redux";
+import { RootState } from "@/redux/store";
+import { isAccountLoggedIn, removeCookie } from "@/utils/auth";
+import { SettingsState } from "@/redux/slice/settingsSlice";
+import { useMutation } from "react-query";
+import { logout } from "@/api";
+import { userData, initialUserData } from "@/hydrate/data";
+import { useSnapshot } from "valtio";
+import useUser from "@/hooks/useUser";
 
 const MainSettings = createSettingsDataFactory();
 
-function SettingsScreenView({
-  user,
+export function SettingsScreen({
   navigation,
-  route,
-}: ReturnType<typeof mapStateToProps>) {
-  const dispatch = useAppDispatch()
+}: SettingsStackScreenProps<"SettingsScreen">) {
+  const handleLogOut = useMutation(logout, {
+    onSuccess: () => {
+      Object.assign(userData, initialUserData);
+      removeCookie("MUSIC_U");
+      removeCookie("__csrf");
+    },
+  });
   const switchSubSettings = (param: keyof SettingsState) => {
-    navigation.navigate<'SubSettingsScreen'>('SubSettingsScreen', {
+    navigation.navigate<"SubSettingsScreen">("SubSettingsScreen", {
       requestSubSettings: param,
-    })
-  }
+    });
+  };
+  const tintBackgroundColor = useThemeColor({}, "tintBackground");
+  const textColor = useThemeColor({}, "text");
   const viewStyle: ViewStyle = {
-    backgroundColor: useThemeColor({}, 'tintBackground'),
-  }
+    backgroundColor: tintBackgroundColor,
+  };
   const textStyle: TextStyle = {
-    color: useThemeColor({}, 'text'),
-  }
+    color: textColor,
+  };
+  const userProfile = useUser().data?.profile;
+  console.log("[SettingsScreen] [userProfile]", useUser())
   const universalKeys = {
-    header: 'Universal',
+    header: "Universal",
     rows: [
       {
-        title: 'Languages',
+        title: "Languages",
         showDisclosureIndicator: true,
         renderAccessory: () => (
-          <Text style={{ color: '#999', marginRight: 6, fontSize: 18 }}>
+          <Text style={{ color: "#999", marginRight: 6, fontSize: 18 }}>
             🇬🇧 English
           </Text>
         ),
-        onPress: () => switchSubSettings('lang'),
+        onPress: () => switchSubSettings("lang"),
       },
       {
-        title: 'Appearance',
+        title: "Appearance",
         showDisclosureIndicator: true,
-        onPress: () => switchSubSettings('appearance'),
+        onPress: () => switchSubSettings("appearance"),
       },
       {
-        title: 'Music Preference',
+        title: "Music Preference",
         showDisclosureIndicator: true,
-        onPress: () => switchSubSettings('musicLanguage'),
+        onPress: () => switchSubSettings("musicLanguage"),
       },
       {
-        title: 'Stream Quality',
+        title: "Stream Quality",
         showDisclosureIndicator: true,
-        onPress: () => switchSubSettings('musicQuality'),
+        onPress: () => switchSubSettings("musicQuality"),
       },
     ],
-  }
+  };
   const lyricsKeys = {
-    type: 'SECTION',
-    header: 'Lyrics',
+    type: "SECTION",
+    header: "Lyrics",
     rows: [
       {
-        title: 'Show Lyrics Translation',
+        title: "Show Lyrics Translation",
         renderAccessory: () => <Switch value onValueChange={() => {}} />,
       },
       {
-        title: 'Show Lyrics Background',
+        title: "Show Lyrics Background",
         showDisclosureIndicator: true,
-        onPress: () => switchSubSettings('lyricsBackground'),
+        onPress: () => switchSubSettings("lyricsBackground"),
       },
       {
-        title: 'Lyrics Font Size',
+        title: "Lyrics Font Size",
         showDisclosureIndicator: true,
-        onPress: () => switchSubSettings('lyricFontSize'),
+        onPress: () => switchSubSettings("lyricFontSize"),
       },
     ],
-  }
+  };
   const othersKeys = {
-    type: 'SECTION',
-    header: 'Others',
+    type: "SECTION",
+    header: "Others",
     rows: [
       {
-        title: 'Connect to Last.fm',
+        title: "Connect to Last.fm",
         showDisclosureIndicator: true,
       },
       {
-        title: 'Playlists From Apple Music',
+        title: "Playlists From Apple Music",
         renderAccessory: () => <Switch value onValueChange={() => {}} />,
       },
     ],
-  }
-  const Universal = MainSettings.createSectionFactory(universalKeys)
-  const Lyrics = MainSettings.createSectionFactory(lyricsKeys)
-  const Others = MainSettings.createSectionFactory(othersKeys)
-  const HeaderNull = MainSettings.createSectionFactory()
+  };
+  const Universal = MainSettings.createSectionFactory(universalKeys);
+  const Lyrics = MainSettings.createSectionFactory(lyricsKeys);
+  const Others = MainSettings.createSectionFactory(othersKeys);
+  const HeaderNull = MainSettings.createSectionFactory();
   return (
     <View style={styles.container}>
       {/* <MainSettings navigation={navigation} route={route} /> */}
       <MainSettings.SettingsScreen viewStyle={viewStyle} textStyle={textStyle}>
-        {isAccountLoggedIn() ? <MainSettings.UserInfo
-          source={{ uri: user.avatarUrl }}
-          title={user.nickname}
-          subTitle={user.signature}
-        />: <MainSettings.UserInfo source={require('@/assets/images/favicon.png')} title="Please Login To Continue" subTitle="" onPress={() => navigation.navigate('Library')}/>}
+        {userData.loginMode == "account" && userProfile ? (
+          <MainSettings.UserInfo
+            source={{ uri: userProfile.avatarUrl }}
+            title={userProfile.nickname}
+            subTitle={userProfile.signature}
+          />
+        ) : (
+          <MainSettings.UserInfo
+            source={require("@/assets/images/favicon.png")}
+            title="Please Login To Continue"
+            subTitle=""
+            onPress={() => navigation.navigate("Library")}
+          />
+        )}
         <Universal.Section />
         <Lyrics.Section />
         <Others.Section />
         <HeaderNull.Section>
           <HeaderNull.Row
             title="Log Out"
-            titleStyles={{ color: 'red', alignSelf: 'center' }}
-            onPress={() => dispatch(logOutThunk)}
+            titleStyles={{ color: "red", alignSelf: "center" }}
+            onPress={() => handleLogOut.mutate()}
           />
         </HeaderNull.Section>
         <MainSettings.CustomView
@@ -126,7 +148,7 @@ function SettingsScreenView({
         />
       </MainSettings.SettingsScreen>
     </View>
-  )
+  );
 }
 
 const VersionText = styled(Text)`
@@ -135,34 +157,20 @@ const VersionText = styled(Text)`
   color: #999;
   margin-bottom: 40;
   margin-top: -30;
-`
+`;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   separator: {
     marginVertical: 30,
     height: 1,
-    width: '80%',
+    width: "80%",
   },
-})
-
-function mapStateToProps(
-  state: RootState,
-  { navigation, route }: SettingsStackScreenProps<'SettingsScreen'>,
-) {
-  const { user } = state.data;
-  return {
-    user, navigation, route
-  }
-}
-
-const connector = connect(mapStateToProps)(SettingsScreenView)
-
-export const SettingsScreen = connector
+});

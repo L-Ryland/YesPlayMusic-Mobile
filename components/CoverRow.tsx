@@ -93,7 +93,6 @@ export function CoverRow(props: CoverRowProps|any) {
 
   return (
     <SafeAreaView>
-      <ScrollView>
       <FlatList
         data={items}
         renderItem={renderItem}
@@ -104,7 +103,6 @@ export function CoverRow(props: CoverRowProps|any) {
         nestedScrollEnabled={true}
         // style={isHorizontal?null:styles.flatListStyle}
       />
-      </ScrollView>
     </SafeAreaView>
   );
 }

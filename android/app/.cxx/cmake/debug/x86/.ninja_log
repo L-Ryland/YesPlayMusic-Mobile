@@ -15,3 +15,6 @@
 0	6	0	clean	f539acf455306f72
 18	1655	1651658601	CMakeFiles/native-lib.dir/src/main/cpp/native-lib.cpp.o	e73147407579b1c
 1772	2146	1651658601	../../../../build/intermediates/cmake/debug/obj/x86/libnative-lib.so	40ef710c785bdbd8
+0	8	0	clean	f539acf455306f72
+2	598	1652023921	CMakeFiles/native-lib.dir/src/main/cpp/native-lib.cpp.o	e73147407579b1c
+598	796	1652023921	../../../../build/intermediates/cmake/debug/obj/x86/libnative-lib.so	40ef710c785bdbd8

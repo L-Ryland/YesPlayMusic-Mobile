@@ -1,18 +1,18 @@
 import { StyleSheet, Appearance, StatusBar } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import { Text, View, ScrollView, Title } from "../components/Themed";
-import { CoverRow, DailyTracksCard, FMCard, Tracker } from "../components";
-import { RootTabScreenProps } from "../types";
-import { byAppleMusic } from "../utils/staticData.js";
+import { Text, ScrollView, Title } from "@/components";
+import { CoverRow, DailyTracksCard, FMCard, Tracker } from "@/components";
+import { RootTabScreenProps } from "@/types";
+import { byAppleMusic } from "@/utils/staticData";
 // import { useRecommendPlaylistQuery } from "@/redux/slice/apiSlice";
 import {
   fetchRecommendedPlaylists,
   newAlbums,
   toplistOfArtists,
   toplists,
-  topPlaylist
+  topPlaylist,
 } from "@/api";
 import { useAppSelector } from "@/hooks/useRedux";
 import { selectSettings } from "@/redux/slice/settingsSlice";
@@ -23,25 +23,14 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
   const [topArtists, setTopArtists] = useState(undefined);
   const [toplist, setToplist] = useState(undefined);
   const [data, setData] = useState(undefined);
-  // const { currentData, isLoading } = useRecommendPlaylistQuery(undefined);
-  // const recommendPlaylist = currentData?.result;
   const settings = useAppSelector(selectSettings);
-  const fetchData = () => {
-    // let response: any;
-    // response = await recommendPlaylist({ limit: 10});
-    fetchRecommendedPlaylists({ limit: 30 }).then(
-      (data: any) => {
-        setRecommendPlaylists(data.result);
-      }
-    );
-    // setRecommendPlaylists(response.result);
-    // response = await newAlbums({ limit: 10, area: "ALL" });
-    // console.log(response);
-    newAlbums({ limit: 10, area: 'ALL' }).then(
-      (data: any) => {
-        setNewAlbum(data.albums);
-      }
-    );
+  const fetchData = async () => {
+    fetchRecommendedPlaylists({ limit: 30 }).then((data: any) => {
+      setRecommendPlaylists(data.result);
+    });
+    newAlbums({ limit: 10, area: "ALL" }).then((data: any) => {
+      setNewAlbum(data.albums);
+    });
     // setNewAlbum(response.albums);
     const toplistOfArtistsAreaTable = {
       all: undefined,
@@ -52,7 +41,7 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
     };
     toplistOfArtists(
       // toplistOfArtistsAreaTable[settings.musicLanguage]
-      {type: toplistOfArtistsAreaTable[settings.musicLanguage]}
+      { type: toplistOfArtistsAreaTable[settings.musicLanguage] }
     ).then((data: any) => {
       let indexs: Number[] = [];
       while (indexs.length < 6) {
@@ -62,32 +51,28 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
       const filterArtists = data.list.artists.filter((l, index) =>
         indexs.includes(index)
       );
-      // console.log("filtered artists", filterArtists);
 
-      setTopArtists(filterArtists)
+      setTopArtists(filterArtists);
     });
-    toplists().then(
-      (data: any) => {
-        setToplist(data.list);
-      }
-    );
+    toplists().then((data: any) => {
+      setToplist(data.list);
+    });
     // response = await toplists();
     // setToplist(response.list);
     // response = await topPlaylist();
     // console.log(response);
-
   };
 
   useEffect(() => {
     fetchData();
-    return () => { };
+    return () => {};
   }, []);
   // console.log(recommendPlaylists, newAlbum);
   // console.log(data);
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView >
+      <ScrollView>
         <Title>by Apple Music</Title>
         <CoverRow
           rowNumber={1}
@@ -97,9 +82,7 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
           imageSize={1024}
           navigate={props.navigation.navigate}
         />
-        <Title>
-          Recommended PlayLists
-        </Title>
+        <Title>Recommended PlayLists</Title>
         {!recommendPlaylists ? (
           <Text>Loading</Text>
         ) : (
@@ -115,7 +98,10 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
         <DailyTracksCard />
         <FMCard />
         <Text style={styles.title}>Recommended Artists</Text>
-        <CoverRow rowNumber={1} type="artist" items={topArtists}
+        <CoverRow
+          rowNumber={1}
+          type="artist"
+          items={topArtists}
           navigate={props.navigation.navigate}
         />
 

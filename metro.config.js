@@ -3,7 +3,7 @@ const { getDefaultConfig } = require("expo/metro-config");
 
 const defaultConfig = getDefaultConfig(__dirname);
 const { resolver, transformer } = defaultConfig;
-const {assetExts, sourceExts, blacklistRE} = resolver;
+const { assetExts, sourceExts, blacklistRE } = resolver;
 // module.exports = getDefaultConfig(__dirname);
 const newAssetExts = assetExts.filter((ext) => ext !== "svg");
 const blacklist = require("metro-config/src/defaults/exclusionList");
@@ -20,8 +20,8 @@ module.exports = {
       /\/android\/.*/,
       /\/ios\/.*/,
     ]),
-    assetExts: [...newAssetExts, 'db'],
-    sourceExts: [...sourceExts, 'svg'],
+    assetExts: [...newAssetExts, "db"],
+    sourceExts: [...sourceExts, "svg"],
   },
 };
 // module.exports = (async () => {

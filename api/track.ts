@@ -19,7 +19,7 @@ export interface FetchTracksResponse {
 }
 export function fetchTracks(
   params: FetchTracksParams
-): Promise<any> {
+): Promise<FetchTracksResponse> {
   return request({
     url: '/song/detail',
     method: 'get',

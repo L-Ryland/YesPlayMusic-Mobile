@@ -9,6 +9,8 @@ import { createSettingsDataFactory } from "react-native-settings-template";
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "@/redux/store";
 import { switchLang, updateSettings } from "@/redux/slice/settingsSlice";
+import { settings } from "@/hydrate/settings";
+import { useSnapshot } from "valtio";
 
 const SubSettings = createSettingsDataFactory();
 const SectionData = SubSettings.createSectionFactory();
@@ -53,12 +55,10 @@ const lyricsFsizeOptions: OptionType<"lyricFontSize">[] = [
   { option: "xlarge", name: "36px" },
 ];
 
-function SubSettingsScreenView({
-  dispatch,
-  settings,
-  navigation,
+export function SubSettingsScreen({
   route,
-}: SubSettingsScreenConnectedProps) {
+}: SettingsStackScreenProps<"SubSettingsScreen">) {
+  const snappedSettings = useSnapshot(settings);
   const viewStyle: ViewStyle = {
     backgroundColor: useThemeColor({}, "tintBackground"),
   };
@@ -66,38 +66,19 @@ function SubSettingsScreenView({
     color: useThemeColor({}, "text"),
   };
   const [subElements, setSubElements] = React.useState<OptionType[]>();
-  const {
-    lang,
-    appearance,
-    musicLanguage,
-    musicQuality,
-    lyricsBackground,
-    lyricFontSize,
-  } = settings;
   const handleSettingsDispatch = (option: OptionType) => {
     if (!route.params) return;
     const { requestSubSettings } = route.params;
-    if (requestSubSettings == "lang") {
-      // @ts-ignore
-      dispatch(switchLang(option.option)).then();
-    } else {
-      dispatch(
-        updateSettings({ key: requestSubSettings, value: option.option })
-      );
-    }
+    settings[requestSubSettings.toString()] = option.option;
   };
   const handleRenderAccessory = (option: OptionType) => {
-    if (route.params) {
-      const { requestSubSettings } = route.params;
-      if (option.option == settings[requestSubSettings]) {
-        return (
-          <Text style={{ color: "#999", marginRight: 6, fontSize: 18 }}>
-            Selected
-          </Text>
-        );
-      }
-    }
-    return  <></>
+    if (!route.params) return <></>;
+    const { requestSubSettings } = route.params;
+    return (
+      <Text style={{ color: "#999", marginRight: 6, fontSize: 18 }}>
+        {option.option == snappedSettings[requestSubSettings] ? "Selected" : ""}
+      </Text>
+    );
   };
   React.useEffect(() => {
     if (!route.params) return;
@@ -168,7 +149,3 @@ function mapStateToProps(
   const { settings } = state;
   return { settings, navigation, route };
 }
-
-type SubSettingsScreenConnectedProps = ConnectedProps<typeof connector>;
-const connector = connect(mapStateToProps);
-export const SubSettingsScreen = connector(SubSettingsScreenView);
