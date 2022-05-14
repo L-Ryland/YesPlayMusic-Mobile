@@ -1,4 +1,47 @@
 # 更新日志
+### 4.5.14 | 2022.05.06
+- 修复获取歌单所有歌曲接口分页问题 [#1524](https://github.com/Binaryify/NeteaseCloudMusicApi/pull/1524)
+
+- 增加支持罗马音歌词返回 [#1523](https://github.com/Binaryify/NeteaseCloudMusicApi/pull/1523)
+
+### 4.5.12 | 2022.04.15
+- 新增`黑胶时光机`接口 [#1511](https://github.com/Binaryify/NeteaseCloudMusicApi/pull/1511)
+
+### 4.5.11 | 2022.04.06
+- 修复云盘接口mimetype获取错误 [#1503](https://github.com/Binaryify/NeteaseCloudMusicApi/pull/1503)
+
+### 4.5.10 | 2022.03.28
+- 修复了若干问题
+
+- 新增`歌单更新播放量`接口
+
+### 4.5.9 | 2022.03.20
+- 修复云盘上传接口部分文件名格式上传失败的问题
+
+- 新增 `/inner/version` 接口，用于获取当前版本号
+
+### 4.5.8 | 2022.03.05
+- 新增歌手粉丝数量接口[#1485](https://github.com/Binaryify/NeteaseCloudMusicApi/issues/1485)
+
+- 新增音乐人任务(新)接口
+
+- 更新 `appver`
+
+### 4.5.6 | 2022.02.12
+- 歌单封面上传接口缺失参数时返回状态码修正
+
+### 4.5.6 | 2022.02.09
+- 新增重复昵称检测接口 [#1469](https://github.com/Binaryify/NeteaseCloudMusicApi/issues/1469)
+
+### 4.5.5 | 2022.02.09
+- 搜索接口支持搜索声音
+
+### 4.5.4 | 2022.02.09
+- 修复云盘上传无法获取到文件的问题
+
+### 4.5.3 | 2022.02.04
+- 增加签到进度接口 [#1462](https://github.com/Binaryify/NeteaseCloudMusicApi/pull/1462)
+
 ### 4.5.2 | 2022.01.28
 - 入口文件优化 [#1457](https://github.com/Binaryify/NeteaseCloudMusicApi/pull/1457)
 

@@ -1,11 +1,10 @@
-import { CoverRowProps, CoverProps } from "@/types";
-import { iteratorSymbol } from "immer/dist/internal";
+import { CoverProps } from "@/types";
 import { Dimensions, StyleSheet, TouchableHighlight, ViewProps } from "react-native";
 import { SafeAreaView, ListRenderItem } from "react-native";
 import styled from "styled-components/native";
 
-import { View, Text, Cover } from ".";
-
+import { View, Text} from "@/components/Themed";
+import {Cover} from "@/components/Cover";
 
 
 const FlatList = styled.FlatList`

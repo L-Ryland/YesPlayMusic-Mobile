@@ -9,11 +9,12 @@ import {
   NavigatorScreenParams,
 } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { SettingsState } from "./redux/slice/settingsSlice";
+import type {SettingsState} from "@/hydrate/settings";
+
 
 declare global {
   namespace ReactNavigation {
-    interface RootParamList extends RootStackParamList {}
+    interface RootParamList extends RootStackParamList, SettingsStackParamList, LibraryStackParamList {}
   }
 }
 
@@ -24,7 +25,7 @@ export type RootStackParamList = {
   Player: undefined;
   Tracker: undefined;
   Playlist: { itemProps: any; likedSongs: any };
-};
+}
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
   NativeStackScreenProps<RootStackParamList, Screen>;
@@ -33,8 +34,7 @@ export type RootTabParamList = {
   Home: undefined;
   Explore: undefined;
   Library: undefined;
-  Login: undefined
-  Settings: NavigatorScreenParams<SettingsStackParamList> | undefined;
+  Settings: undefined;
 };
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
@@ -43,19 +43,19 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
     NativeStackScreenProps<RootStackParamList>
   >;
 
+type test = NativeStackScreenProps<RootTabParamList | SettingsStackParamList | LibraryStackParamList>["navigation"]["navigate"]
 export type SettingsStackParamList = {
   SettingsScreen: undefined;
   SubSettingsScreen: { requestSubSettings: keyof SettingsState } | undefined;
 };
+export type SettingsStackScreenProps<Screen extends keyof SettingsStackParamList> = NativeStackScreenProps<SettingsStackParamList, Screen>
 
 export type LibraryStackParamList = {
-  LibraryScreen: undefined;
-  LoginScreen: undefined;
+  Library: undefined;
+  Login: undefined;
 }
+export type LibraryStackScreenProps<Screen extends keyof LibraryStackParamList> = NativeStackScreenProps<LibraryStackParamList, Screen>
 
-export type SettingsStackScreenProps<
-  SettingsScreen extends keyof SettingsStackParamList
-> = NativeStackScreenProps<SettingsStackParamList, SettingsScreen>;
 
 // options used in settings screens
 

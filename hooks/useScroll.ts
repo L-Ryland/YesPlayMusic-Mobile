@@ -1,5 +1,6 @@
 // Inspired by https://github.com/vueuse/vueuse
 import { throttle as lodashThrottle } from 'lodash-es'
+import {useState, useEffect} from "react";
 
 interface ArrivedState {
   top: boolean

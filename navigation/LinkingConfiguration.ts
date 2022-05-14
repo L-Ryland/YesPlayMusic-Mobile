@@ -22,7 +22,6 @@ const linking: LinkingOptions<RootStackParamList> = {
             },
           },
           Library: {
-            initialRouteName: "LibraryScreen",
             screens: {
               LibraryScreen: "LibraryScreen",
               LoginScreen: "LoginScreen"
@@ -34,7 +33,6 @@ const linking: LinkingOptions<RootStackParamList> = {
             },
           },
           Settings: {
-            initialRouteName: "SettingsScreen",
             screens: {
               SettingsScreen: "settings_screen",
               SubSettingsScreen: "sub_settings",

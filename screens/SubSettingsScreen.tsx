@@ -2,13 +2,10 @@ import * as React from "react";
 import { StyleSheet } from "react-native";
 import type { ViewStyle, TextStyle } from "react-native";
 
-import { useThemeColor, View, Text } from "../components/Themed";
+import { useThemeColor, View, Text } from "@/components/Themed";
 // import { SubSettings } from '../components';
 import type { OptionType, SettingsStackScreenProps } from "@/types";
 import { createSettingsDataFactory } from "react-native-settings-template";
-import { connect, ConnectedProps } from "react-redux";
-import { RootState } from "@/redux/store";
-import { switchLang, updateSettings } from "@/redux/slice/settingsSlice";
 import { settings } from "@/hydrate/settings";
 import { useSnapshot } from "valtio";
 
@@ -142,10 +139,3 @@ const styles = StyleSheet.create({
   },
 });
 
-function mapStateToProps(
-  state: RootState,
-  { navigation, route }: SettingsStackScreenProps<"SubSettingsScreen">
-) {
-  const { settings } = state;
-  return { settings, navigation, route };
-}

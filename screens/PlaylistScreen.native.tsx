@@ -1,11 +1,11 @@
-import React, { Fragment, memo, useReducer } from "react";
+import React, { Fragment, memo} from "react";
 import {
   StyleSheet,
   TouchableHighlight,
   Dimensions,
   ToastAndroid,
   SafeAreaView,
-  FlatList,
+  FlatList, LogBox,
 } from "react-native";
 import styled from "styled-components/native";
 import {
@@ -16,42 +16,19 @@ import {
   useSvgStyle,
   TrackItem,
 } from "@/components";
-import { RootStackScreenProps, PlaylistDetailProp } from "@/types";
-import {
-  fetchPlaylist,
-  likeAPlaylist,
-  deletePlaylist,
-  fetchAudioSource,
-} from "@/api";
+import { RootStackScreenProps} from "@/types";
 import { Heart, HeartSolid, Plus, Play, Lock } from "@/components/icons";
 import dayjs from "dayjs";
-import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
-import { selectSettings } from "@/redux/slice/settingsSlice";
 import { cacheTrackSource } from "@/utils/db";
-import { selectData } from "@/redux/slice/dataSlice";
-import { selectPlayer, setTracklist } from "@/redux/slice/playerSlice";
 import { useSnapshot } from "valtio";
-import {
-  Mode as PlayerMode,
-  TrackListSourceType,
-  State as PlayerState,
-} from "@/utils/player";
 import { SvgProps } from "react-native-svg";
-import { RootState } from "@/redux/store";
 import usePlaylist from "@/hooks/usePlaylist";
 import { formatDate, resizeImage } from "@/utils/common";
 import useTracksInfinite from "@/hooks/useTracksInfinite";
-function reducer(state, action) {
-  switch (action) {
-    case "increment":
-      return { count: state.count + 1 };
-    case "decrement":
-      return { count: state.count - 1 };
-    default:
-      throw new Error();
-  }
-}
+import {PlayerMode, TrackListSourceType, trackPlayer} from "@/hydrate/player";
+import useUserPlaylists from "@/hooks/useUserPlaylists";
 const { width } = Dimensions.get("window");
+
 const coverStyle = {
   width: width / 3,
   height: width / 3,
@@ -116,12 +93,11 @@ const PlayButton = ({
   playlist: Playlist | undefined;
   handlePlay: () => void;
 }) => {
-  const { trackPlayer } = useAppSelector<RootState["player"]>(selectPlayer);
-  alert(JSON.parse(trackPlayer));
+  const {mode, trackListSource} = useSnapshot(trackPlayer);
   const isThisPlaylistPlaying =
-    trackPlayer.mode === PlayerMode.TrackList &&
-    trackPlayer.trackListSource?.type === TrackListSourceType.Playlist &&
-    trackPlayer.trackListSource?.id === playlist?.id;
+    mode === PlayerMode.TrackList &&
+    trackListSource?.type === TrackListSourceType.Playlist &&
+    trackListSource?.id === playlist?.id;
   const wrappedHandlePlay = () => {
     if (isThisPlaylistPlaying) {
       trackPlayer.playOrPause();
@@ -305,12 +281,6 @@ const Header = memo(
             <Heart {...svgStyle} />
             <Plus {...svgStyle} />
           </View>
-          <TouchableHighlight
-            onPress={() => handlePlay()}
-            style={{ alignSelf: "flex-end" }}
-          >
-            <Play {...svgStyle} height={50} width={50} />
-          </TouchableHighlight>
           <PlayButton
             svgStyle={svgStyle}
             playlist={playlist}
@@ -387,8 +357,7 @@ export const PlaylistScreen = ({
     likedSongs,
     itemProps: { id },
   } = route.params;
-  const { likedSongPlaylistID } = useAppSelector<RootState["data"]>(selectData);
-  const { trackPlayer } = useAppSelector<RootState["player"]>(selectPlayer);
+  const likedSongPlaylistID = useUserPlaylists().data?.playlist[0].id;
   const { data, isLoading } = usePlaylist({
     id: likedSongs ? likedSongPlaylistID : id ?? 0,
   });
@@ -396,14 +365,16 @@ export const PlaylistScreen = ({
 
   const handlePlay = React.useCallback(
     (trackID: number | null = null) => {
-      playlist && trackPlayer.playPlaylist(playlist.id, trackID);
-      if (playlist?.id) {
+      if (!playlist?.id) {
         ToastAndroid.show("无法播放歌单", ToastAndroid.SHORT);
         return;
       }
+      // ToastAndroid.show(`TrackID - ${trackID}, Playlist ID - ${playlist.id}`, ToastAndroid.CENTER);
+      playlist && trackPlayer.playPlaylist(playlist.id, trackID);
     },
     [playlist]
   );
+  React.useEffect(() => LogBox.ignoreLogs(['VirtualizedLists should never be nested']))
   return (
     <ScrollView style={styles.container}>
       <Header

@@ -4,14 +4,15 @@ import {
   FetchArtistParams,
   ArtistApiNames,
   FetchArtistResponse,
-} from "@/shared/api/Artist";
+} from "@/api/artist";
+import {useQuery} from "react-query";
 
 export default function useArtist(
   params: FetchArtistParams,
   noCache?: boolean
 ) {
   return useQuery(
-    [ArtistApiNames.FetchArtist, params],
+    [ArtistApiNames.FETCH_ARTIST, params],
     () => fetchArtist(params, !!noCache),
     {
       enabled: !!params.id && params.id > 0 && !isNaN(Number(params.id)),

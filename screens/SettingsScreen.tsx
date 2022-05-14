@@ -6,17 +6,12 @@ import * as React from "react";
 import { createSettingsDataFactory } from "react-native-settings-template";
 
 import { useThemeColor, View, Text } from "@/components";
-// import { MainSettings } from '../components';
-import { SettingsStackScreenProps } from "@/types";
-import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
-import { logOutThunk, selectData } from "@/redux/slice/dataSlice";
-import { connect } from "react-redux";
-import { RootState } from "@/redux/store";
-import { isAccountLoggedIn, removeCookie } from "@/utils/auth";
-import { SettingsState } from "@/redux/slice/settingsSlice";
+import {SettingsStackScreenProps} from "@/types";
+import { removeCookie } from "@/utils/auth";
 import { useMutation } from "react-query";
 import { logout } from "@/api";
 import { userData, initialUserData } from "@/hydrate/data";
+import {settings, SettingsState} from "@/hydrate/settings"
 import { useSnapshot } from "valtio";
 import useUser from "@/hooks/useUser";
 
@@ -33,9 +28,10 @@ export function SettingsScreen({
     },
   });
   const switchSubSettings = (param: keyof SettingsState) => {
-    navigation.navigate<"SubSettingsScreen">("SubSettingsScreen", {
+    navigation.navigate("SubSettingsScreen", {
       requestSubSettings: param,
     });
+    navigation.navigate("Settings")
   };
   const tintBackgroundColor = useThemeColor({}, "tintBackground");
   const textColor = useThemeColor({}, "text");

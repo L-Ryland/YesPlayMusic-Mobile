@@ -1,6 +1,4 @@
 import React from "react";
-import { useAppSelector } from "@/hooks/useRedux";
-import { selectSettings } from "@/redux/slice/settingsSlice";
 import { StyleSheet } from "react-native";
 import styled from "styled-components/native";
 
@@ -13,9 +11,9 @@ import {
   toplists,
 } from "@/api";
 import { SafeAreaView } from "react-native-safe-area-context";
+import {settings} from "@/hydrate/settings";
 
 export function ExploreScreen({ navigation, route }) {
-  const settings = useAppSelector(selectSettings);
   // console.log(settings.enabledPlaylistCategories);
   const [activeCategory, setActiveCategory] = React.useState("全部");
   const [playlists, setPlaylists] = React.useState([]);

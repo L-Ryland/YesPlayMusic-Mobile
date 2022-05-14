@@ -9,7 +9,7 @@ import { clamp, shuffle } from "lodash-es";
 import axios from "axios";
 import { resizeImage } from "@/utils/common";
 import { fetchPlaylistWithReactQuery } from "@/hooks/usePlaylist";
-import { fetchAlbumWithReactQuery } from "@/hooks/useAlbum";
+
 import TrackPlayer, {
   Capability,
   State,
@@ -17,9 +17,11 @@ import TrackPlayer, {
   RepeatMode,
 } from "react-native-track-player";
 import { ToastAndroid } from "react-native";
-import tr from "@/locale/lang/tr";
 import { proxy } from "valtio";
 import { devtools } from "valtio/utils";
+import {fetchAlbum, fetchTracks} from "@/api";
+import {Platform} from "expo-modules-core";
+if (Platform.OS !== "android") { exports.Player = class Player{}}
 
 type TrackID = number;
 
@@ -37,14 +39,12 @@ export interface ModifiedTrack extends DefaultTrack {
   id?: number;
 }
 
-export enum Mode {
+export enum PlayerMode {
   TrackList = "trackList",
   FM = "fm",
 }
 
-export { State, RepeatMode } from "react-native-track-player";
-
-const PLAY_PAUSE_FADE_DURATION = 200;
+export { State, RepeatMode, Event} from "react-native-track-player";
 
 export class Player {
   private _track: ModifiedTrack | undefined;
@@ -58,7 +58,7 @@ export class Player {
   private _player!: typeof TrackPlayer;
 
   state: State = State.Connecting;
-  mode: Mode = Mode.TrackList;
+  mode: PlayerMode = PlayerMode.TrackList;
   trackList: ModifiedTrack[] = [];
   fmTrackList: ModifiedTrack[] = [];
   shuffledList: ModifiedTrack[] = [];
@@ -131,6 +131,15 @@ export class Player {
   //       return this._trackIndex - 1
   //   }
   // }
+  /**
+   * Get Repeat Mode
+   */
+  getRepeatMode() {
+    return this._player.getRepeatMode();
+  }
+  set repeatMode(mode) {
+    this._player.setRepeatMode(mode);
+  }
 
   /**
    * Get next track index
@@ -152,9 +161,10 @@ export class Player {
   /**
    * Get current playing track
    */
-  async getTrack(): Promise<ModifiedTrack | null> {
+  async getCurrentTrack(trackID?: number): Promise<ModifiedTrack | null> {
+    if (trackID) return this._player.getTrack(trackID);
     let currentList: ModifiedTrack[];
-    if (this.mode === Mode.TrackList) {
+    if (this.mode === PlayerMode.TrackList) {
       currentList = this.shuffle ? this.shuffledList : this.trackList;
       const currentTrackIndex = await this._player.getCurrentTrack();
       const track = await this._player.getTrack(currentTrackIndex);
@@ -167,9 +177,13 @@ export class Player {
   /**
    * Get current trackID
    */
-  async getTrackID() {
-    const currentTrack = await this.getTrack();
+  async getTrackID(trackID?: number) {
+    const currentTrack = await this.getCurrentTrack();
     return currentTrack?.id;
+  }
+
+  getTrack(trackID: number) {
+    return this._player.getTrack(trackID);
   }
 
   /**
@@ -186,7 +200,7 @@ export class Player {
         this.playShuffleList(this.trackList, await this.getTrackID()))();
     } else {
       this._trackIndex = this.trackList.findIndex(
-        async (t) => t == (await this.getTrack())
+        async (t) => t == (await this.getCurrentTrack())
       );
     }
     this._shuffle = value;
@@ -212,7 +226,7 @@ export class Player {
   /**
    * Fetch track details from Netease based on this.trackID
    */
-  private async _fetchTrack(trackID: TrackID) {
+  private async _fetchTrack(trackID: TrackID): Promise<ModifiedTrack> {
     const { songs } = await fetchTracksWithReactQuery({ ids: [trackID] });
     const { data: audio } = await fetchAudioSourceWithReactQuery({
       id: trackID,
@@ -245,13 +259,13 @@ export class Player {
    */
   private async _playTrack() {
     this.state = State.Buffering;
-    const track = await this.getTrack();
+    const track = await this.getCurrentTrack();
     if (!track) {
       ToastAndroid.show("加载歌曲信息失败", ToastAndroid.SHORT);
       return;
     }
-    if (this.mode === Mode.TrackList) this._track = track;
-    if (this.mode === Mode.FM) this.fmTrackList[0] = track;
+    if (this.mode === PlayerMode.TrackList) this._track = track;
+    if (this.mode === PlayerMode.FM) this.fmTrackList[0] = track;
     this.play();
   }
 
@@ -294,8 +308,9 @@ export class Player {
     const prefetchNextTrack = async () => {
       const prefetchTrackID = this.fmTrackList[1].id!;
       const { artwork } = await this._fetchTrack(prefetchTrackID);
-      axios.get(resizeImage(artwork, "md"));
-      axios.get(resizeImage(artwork, "xs"));
+      if (!artwork) return
+      axios.get(resizeImage(artwork.toString(), "md"));
+      axios.get(resizeImage(artwork.toString(), "xs"));
     };
 
     this.fmTrackList.shift();
@@ -329,7 +344,7 @@ export class Player {
   /**
    * Get playing state
    */
-  async getState(): Promise<State> {
+  getState(): Promise<State> {
     return this._player.getState();
   }
 
@@ -337,7 +352,7 @@ export class Player {
    * Play current track
    */
   async play() {
-    if ((await this._player.getState()) == State.Playing) {
+    if ((await this.getState()) == State.Playing) {
       return;
     }
     this._player.play();
@@ -395,8 +410,8 @@ export class Player {
    * Play next track
    */
   async skipToNext(forceFM: boolean = false) {
-    if (forceFM || this.mode === Mode.FM) {
-      this.mode = Mode.FM;
+    if (forceFM || this.mode === PlayerMode.FM) {
+      this.mode = PlayerMode.FM;
       return this._nextFMTrack();
     }
     if ((await this.getNextTrackIndex()) === undefined) {
@@ -410,18 +425,31 @@ export class Player {
 
   /**
    * 播放一个track id列表
-   * @param {number[]} list
+   * @param tracks
    * @param {null|number} autoPlayTrackID
    */
-  async playAList(list: ModifiedTrack[], autoPlayTrackID?: null | number) {
-    this.mode = Mode.TrackList;
-    this.trackList = list;
+  async playAList(trackIds: TrackID[], autoPlayTrackID?: null | number) {
+    ToastAndroid.show(`[trackplayer] playAList`, ToastAndroid.CENTER);
+    this.mode = PlayerMode.TrackList;
+    // const trackList = await Promise.all(songs.map(async (s) => {
+    //   const audioSource = await fetchAudioSourceWithReactQuery({id: s.id});
+    //   const url = audioSource.data[0].url??'';
+    //   return {
+    //     id: s.id,
+    //     url,
+    //     artist: s.ar.map((ar) => ar.name).join(", "),
+    //     title: s.name,
+    //     artwork: s.al.picUrl,
+    //   };
+    // }))
+    // this.trackList = trackList.filter(t => t.url != '');
+    this.trackList = await Promise.all(trackIds.map(async (t) => await this._fetchTrack(t)));
     this._player.reset();
-    this._player.add(list);
-    this._player.skip(autoPlayTrackID ?? 0);
+    this._player.add(this.trackList);
+    autoPlayTrackID && this._player.skip(autoPlayTrackID);
     this.play();
-    if (this._shuffle) this.playShuffleList(list);
-    this._playTrack();
+    if (this._shuffle) this.playShuffleList(this.trackList);
+    // this._playTrack();
   }
 
   /**
@@ -431,21 +459,19 @@ export class Player {
    */
   async playPlaylist(playlistID: number, autoPlayTrackID?: null | number) {
     const { playlist } = await fetchPlaylistWithReactQuery({ id: playlistID });
-    if (playlist.trackIds?.length) return;
+    // alert(playlistID)
+    if (!playlist.trackIds?.length) return;
     this._trackListSource = {
       type: TrackListSourceType.Playlist,
       id: playlistID,
     };
-    const { songs } = await fetchTracksWithReactQuery({
+    const { songs } = await fetchTracks({
       ids: playlist.trackIds?.map((t) => t.id) ?? [],
     });
-    const trackList = songs.map((s) => ({
-      id: s.id,
-      url: s.rtUrl ?? "",
-      artist: s.ar.map((ar) => ar.name).join(", "),
-      album: s.al.picUrl,
-    }));
-    this.playAList(trackList, autoPlayTrackID);
+    this.playAList(
+      playlist.trackIds.map(t => t.id),
+      autoPlayTrackID
+    )
   }
 
   /**
@@ -454,27 +480,20 @@ export class Player {
    * @param  {null|number=} autoPlayTrackID
    */
   async playAlbum(albumID: number, autoPlayTrackID?: null | number) {
-    const { songs } = await fetchAlbumWithReactQuery({ id: albumID });
+    const { songs } = await fetchAlbum({ id: albumID });
     if (!songs?.length) return;
     this._trackListSource = {
       type: TrackListSourceType.Album,
       id: albumID,
     };
-    this._playTrack();
-    const trackList = songs.map((s) => ({
-      id: s.id,
-      url: s.rtUrl ?? "",
-      artist: s.ar.map((ar) => ar.name).join(", "),
-      album: s.al.picUrl,
-    }));
-    this.playAList(trackList, autoPlayTrackID);
+    this.playAList(songs.map(t=>t.id), autoPlayTrackID);
   }
 
   /**
    *  Play personal fm
    */
   async playFM() {
-    this.mode = Mode.FM;
+    this.mode = PlayerMode.FM;
     if (this.fmTrackList.length > 0) {
       this._track = this.fmTrackList[0];
     }
@@ -485,7 +504,7 @@ export class Player {
    * Trash current PersonalFMTrack
    */
   async fmTrash() {
-    this.mode = Mode.FM;
+    this.mode = PlayerMode.FM;
     const trashTrackID = this.fmTrackList[0].id!;
     fmTrash(trashTrackID);
     this._nextFMTrack();

@@ -37,11 +37,13 @@ export function fetchPlaylistWithReactQuery(params: FetchPlaylistParams) {
 }
 
 export async function prefetchPlaylist(params: FetchPlaylistParams) {
+  const queryKey = [PlaylistApiNames.FETCH_PLAYLIST, params]
   await reactQueryClient.prefetchQuery(
-    [PlaylistApiNames.FETCH_PLAYLIST, params],
+    queryKey,
     () => fetch(params),
     {
       staleTime: 3600000,
     }
   );
+  return reactQueryClient.getQueryData(queryKey);
 }

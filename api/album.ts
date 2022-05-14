@@ -24,7 +24,7 @@ export interface FetchAlbumResponse {
 }
 export function fetchAlbum(
   params: FetchAlbumParams,
-  noCache: boolean
+  noCache?: boolean
 ): Promise<FetchAlbumResponse> {
   const otherParams: { timestamp?: number } = {};
   if (noCache) otherParams.timestamp = new Date().getTime();

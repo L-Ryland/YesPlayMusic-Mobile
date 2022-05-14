@@ -1,16 +1,16 @@
-import { fetchLyric } from '@/renderer/api/track'
-import reactQueryClient from '@/renderer/utils/reactQueryClient'
+import { fetchLyric } from '@/api/track'
+import reactQueryClient from '@/utils/reactQueryClient'
 import {
   FetchLyricParams,
   FetchLyricResponse,
   TrackApiNames,
-} from '@/shared/api/Track'
-import { APIs } from '@/shared/CacheAPIs'
-import { IpcChannels } from '@/shared/IpcChannels'
+} from '@/api/track'
+import { APIs } from '@/api/CacheAPIs'
+import {useQuery} from "react-query";
 
 export default function useLyric(params: FetchLyricParams) {
   return useQuery(
-    [TrackApiNames.FetchLyric, params],
+    [TrackApiNames.FETCH_LYRIC, params],
     () => {
       return fetchLyric(params)
     },
@@ -18,20 +18,13 @@ export default function useLyric(params: FetchLyricParams) {
       enabled: !!params.id && params.id !== 0,
       refetchInterval: false,
       staleTime: Infinity,
-      initialData: (): FetchLyricResponse | undefined =>
-        window.ipcRenderer?.sendSync(IpcChannels.GetApiCacheSync, {
-          api: APIs.Lyric,
-          query: {
-            id: params.id,
-          },
-        }),
     }
   )
 }
 
 export function fetchTracksWithReactQuery(params: FetchLyricParams) {
   return reactQueryClient.fetchQuery(
-    [TrackApiNames.FetchLyric, params],
+    [TrackApiNames.FETCH_LYRIC, params],
     () => {
       return fetchLyric(params)
     },

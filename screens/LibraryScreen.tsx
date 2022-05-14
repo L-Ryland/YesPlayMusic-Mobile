@@ -30,7 +30,7 @@ import usePlaylist from "@/hooks/usePlaylist";
 import useUserAlbums from "@/hooks/useUserAlbums";
 import useUser from "@/hooks/useUser";
 import useUserArtists from "@/hooks/useUserArtists";
-import {RootTabScreenProps} from "@/types";
+import {LibraryStackParamList, LibraryStackScreenProps, RootStackScreenProps, RootTabScreenProps} from "@/types";
 import useUserLikedTracksIDs, {useUserLikedTracks} from "@/hooks/useUserLikedTracksIDs";
 
 const { width } = Dimensions.get("window");
@@ -151,7 +151,7 @@ const UserArtists = () => {
     />
   );
 };
-export const LibraryScreen = ({navigation}: RootTabScreenProps<"Library">) => {
+export const LibraryScreen = ({navigation}: LibraryStackScreenProps<"Library">) => {
   console.log("Library entrance")
   const svgStyle = useSvgStyle({});
   const [category, setCategory] = React.useState<

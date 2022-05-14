@@ -1,26 +1,17 @@
 import React from 'react'
 import { Platform, StyleSheet } from "react-native";
-import { View, Text } from "@/components";
-import { connect } from 'react-redux';
+import { View, Text } from "@/components/Themed";
+import {ModifiedTrack, trackPlayer} from "@/hydrate/player";
+import {useSnapshot} from "valtio";
 
-export const TrackerView = (props) => {
+export const Tracker = (props) => {
   console.log("tracker props", props);
-  const { TrackPlayer, State } = props.player;
-  const [currentTrack, setCurrentTrack] = React.useState({});
-
+  const snappedPlayer = useSnapshot(trackPlayer);
+  const [currentTrack, setCurrentTrack] = React.useState<ModifiedTrack | null>();
   if (Platform.OS == 'web') {
     return <View></View>;
-  } 
-  async function getCurrentTrack() {
-    const currentTrack = await TrackPlayer.getCurrentTrack();
-    setCurrentTrack(currentTrack);
-    alert(JSON.stringify(currentTrack))
   }
-  React.useEffect(() => {
-    getCurrentTrack();
-
-    return () => { }
-  }, [])
+  React.useMemo(async ()=>setCurrentTrack(await snappedPlayer.getCurrentTrack()), [snappedPlayer]);
 
   return (
     currentTrack ? <View style={styles.tracker}>
@@ -34,13 +25,5 @@ const styles = StyleSheet.create({
   }
 })
 
-function mapStateToProps(state) {
-  const { player } = state;
-  return { player };
-}
-function mapDispatchToProps(dispatch) {
 
-}
-
-export const Tracker = connect(mapStateToProps)(TrackerView);
 

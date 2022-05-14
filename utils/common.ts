@@ -3,8 +3,6 @@ import { refreshCookie } from "@/api/auth";
 import { dailySignin } from "@/api/user";
 import dayjs from "dayjs";
 // import store from '@/store';
-import { useAppSelector } from "@/hooks/useRedux";
-import { selectData, setLastRefreshCookieDate } from "@/redux/slice/dataSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 /**
@@ -169,7 +167,6 @@ export function updateHttps(url) {
 }
 
 export function dailyTask() {
-  const data = useAppSelector(selectData);
   let lastDate = data.lastRefreshCookieDate;
   if (
     isAccountLoggedIn() &&
@@ -182,7 +179,7 @@ export function dailyTask() {
       //   key: 'lastRefreshCookieDate',
       //   value: dayjs().date(),
       // });
-      setLastRefreshCookieDate(dayjs().date());
+      data.lastRefreshCookieDate = dayjs().date();
     });
     dailySignin(0).catch(() => {
       console.debug("[debug][common.js] 手机端重复签到");

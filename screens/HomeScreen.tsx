@@ -6,7 +6,6 @@ import { Text, ScrollView, Title } from "@/components";
 import { CoverRow, DailyTracksCard, FMCard, Tracker } from "@/components";
 import { RootTabScreenProps } from "@/types";
 import { byAppleMusic } from "@/utils/staticData";
-// import { useRecommendPlaylistQuery } from "@/redux/slice/apiSlice";
 import {
   fetchRecommendedPlaylists,
   newAlbums,
@@ -14,8 +13,8 @@ import {
   toplists,
   topPlaylist,
 } from "@/api";
-import { useAppSelector } from "@/hooks/useRedux";
-import { selectSettings } from "@/redux/slice/settingsSlice";
+import {useSnapshot} from "valtio";
+import {settings} from "@/hydrate/settings";
 
 export function HomeScreen(props: RootTabScreenProps<"Home">) {
   const [recommendPlaylists, setRecommendPlaylists] = useState(undefined);
@@ -23,7 +22,6 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
   const [topArtists, setTopArtists] = useState(undefined);
   const [toplist, setToplist] = useState(undefined);
   const [data, setData] = useState(undefined);
-  const settings = useAppSelector(selectSettings);
   const fetchData = async () => {
     fetchRecommendedPlaylists({ limit: 30 }).then((data: any) => {
       setRecommendPlaylists(data.result);
@@ -32,6 +30,7 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
       setNewAlbum(data.albums);
     });
     // setNewAlbum(response.albums);
+    const snappedSettings = useSnapshot(settings);
     const toplistOfArtistsAreaTable = {
       all: undefined,
       zh: 1,
@@ -41,7 +40,7 @@ export function HomeScreen(props: RootTabScreenProps<"Home">) {
     };
     toplistOfArtists(
       // toplistOfArtistsAreaTable[settings.musicLanguage]
-      { type: toplistOfArtistsAreaTable[settings.musicLanguage] }
+      { type: toplistOfArtistsAreaTable[snappedSettings.musicLanguage] }
     ).then((data: any) => {
       let indexs: Number[] = [];
       while (indexs.length < 6) {
