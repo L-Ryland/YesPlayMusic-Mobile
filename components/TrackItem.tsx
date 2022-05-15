@@ -1,6 +1,6 @@
 import { TouchableHighlight, StyleSheet } from "react-native";
 import styled from "styled-components/native";
-import { View, Text, Image } from "@/components";
+import { View, Text, Image, TextProps } from "@/components";
 import { NavigationProp, useNavigation } from "@react-navigation/core";
 import { RootStackParamList, RootStackScreenProps } from "@/types";
 
@@ -16,13 +16,6 @@ interface Album {
   [key: string]: any;
 }
 
-interface TrackProps {
-  id: number;
-  name: string;
-  ar: Artist[];
-  al: Album;
-  [key: string]: any;
-}
 export function TrackItem({
   track,
   handlePlay,
@@ -70,17 +63,24 @@ export function TrackItem({
     );
   };
   const SongInfo = styled(View)``;
-  const Title = styled(Text)`
+  const Title = styled(Text).attrs((): TextProps =>({
+    numberOfLines: 1,
+    ellipsizeMode: "tail"
+  }))`
     font-size: 18px;
     font-weight: 600;
     padding-right: 16px;
     overflow: hidden;
   `;
-  const SubTitle = styled(Text)`
-    font-size: 18px;
+  const SubTitle = styled(Text).attrs((): TextProps => ({
+    numberOfLines: 1,
+    ellipsizeMode: "tail"
+  }))`
+    font-size: 16px;
     font-weight: 600;
     padding-right: 16px;
     overflow: hidden;
+    color: #ccc;
   `;
 
   return (

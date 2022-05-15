@@ -6,7 +6,7 @@ export enum PlaylistApiNames {
   FETCH_RECOMMENDED_PLAYLISTS = 'fetchRecommendedPlaylists',
   FETCH_DAILY_RECOMMEND_PLAYLISTS = 'fetchDailyRecommendPlaylists',
   LIKE_A_PLAYLIST = 'likeAPlaylist',
-  TOP_LISTS = 'toplists',
+  FETCH_TOP_LISTS = 'toplists',
 }
 
 // 歌单详情
@@ -41,7 +41,7 @@ export function fetchPlaylist(
 }
 
 // 推荐歌单
-interface FetchRecommendedPlaylistsParams {
+export interface FetchRecommendedPlaylistsParams {
   limit?: number
 }
 export interface FetchRecommendedPlaylistsResponse {
@@ -50,8 +50,9 @@ export interface FetchRecommendedPlaylistsResponse {
   hasTaste: boolean
   result: Playlist[]
 }
+const defaultFetchRecommendPlaylistsParams = {limit: 30}
 export function fetchRecommendedPlaylists(
-  params: FetchRecommendedPlaylistsParams
+  params: FetchRecommendedPlaylistsParams = defaultFetchRecommendPlaylistsParams
 ): Promise<FetchRecommendedPlaylistsResponse> {
   return request({
     url: '/personalized',
@@ -113,12 +114,15 @@ export function deletePlaylist( params: DeletePlaylistParams): Promise<ResponseF
   });
 }
 
-
+export interface FetchToplistsResponse extends ResponseFormat {
+  list: Playlist[],
+  artistToplist: unknown
+}
 /**
  * 所有榜单
  * 说明 : 调用此接口,可获取所有榜单 接口地址 : /toplist
  */
- export function toplists(): Promise<ResponseFormat> {
+ export function fetchToplists(): Promise<FetchToplistsResponse> {
   return request({
     url: "/toplist",
     method: "get",

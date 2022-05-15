@@ -14,7 +14,7 @@ import type {SettingsState} from "@/hydrate/settings";
 
 declare global {
   namespace ReactNavigation {
-    interface RootParamList extends RootStackParamList, SettingsStackParamList, LibraryStackParamList {}
+    interface RootParamList extends RootStackParamList{}
   }
 }
 
@@ -22,9 +22,10 @@ export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined;
   Modal: undefined;
   NotFound: undefined;
-  Player: undefined;
-  Tracker: undefined;
-  Playlist: { itemProps: any; likedSongs: any };
+  Player: {track} | undefined;
+  Playlist: { itemProps?: {id: number}; likedSongs?: unknown };
+  Album: { itemProps?: {id: number}; likedSongs?: unknown };
+  Artist: { itemProps?: {id: number}; likedSongs?: unknown };
 }
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
@@ -45,8 +46,9 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
 
 type test = NativeStackScreenProps<RootTabParamList | SettingsStackParamList | LibraryStackParamList>["navigation"]["navigate"]
 export type SettingsStackParamList = {
-  SettingsScreen: undefined;
-  SubSettingsScreen: { requestSubSettings: keyof SettingsState } | undefined;
+  Settings:  undefined;
+  SubSettings: { requestSubSettings: keyof SettingsState } | undefined;
+  Library: undefined
 };
 export type SettingsStackScreenProps<Screen extends keyof SettingsStackParamList> = NativeStackScreenProps<SettingsStackParamList, Screen>
 

@@ -31,6 +31,7 @@ import {
   Play,
   Plus,
   Previous,
+  Repeat,
   Repeat_1,
   Shuffle,
   X,
@@ -255,6 +256,8 @@ export const SvgIcon: React.FC<SvgProps & { name: string }> = ({
       return <Plus {...otherProps} />;
     case "Previous":
       return <Previous {...otherProps} />;
+    case "Repeat":
+      return <Repeat {...otherProps}/>
     case "Repeat_1":
       return <Repeat_1 {...otherProps} />;
     case "Shuffle":

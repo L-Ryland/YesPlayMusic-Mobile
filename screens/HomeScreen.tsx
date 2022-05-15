@@ -1,133 +1,125 @@
 import { StyleSheet, Appearance, StatusBar } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
-import { Text, ScrollView, Title } from "@/components";
+import { Text, ScrollView, View, Title } from "@/components";
 import { CoverRow, DailyTracksCard, FMCard, Tracker } from "@/components";
 import { RootTabScreenProps } from "@/types";
 import { byAppleMusic } from "@/utils/staticData";
-import {
-  fetchRecommendedPlaylists,
-  newAlbums,
-  toplistOfArtists,
-  toplists,
-  topPlaylist,
-} from "@/api";
-import {useSnapshot} from "valtio";
-import {settings} from "@/hydrate/settings";
+import { useSnapshot } from "valtio";
+import { MusicLang, settings } from "@/hydrate/settings";
+import { useRecommendPlaylist, useToplist } from "@/hooks/usePlaylist";
+import { useNewAlbums } from "@/hooks/useAlbum";
+import { useTopArtists } from "@/hooks/useArtist";
+
+const AppleMusic: React.FC = () => (
+  <View>
+    <Title>by Apple Music</Title>
+    <CoverRow
+      rowNumber={1}
+      type="playlist"
+      items={byAppleMusic}
+      subText="by AppleMusic"
+      imageSize={1024}
+    />
+  </View>
+);
+const RecommendPlaylists: React.FC = () => {
+  const { data: recommendPlaylist, isLoading } = useRecommendPlaylist();
+  return (
+    <View>
+      <Title>Recommended PlayLists</Title>
+      {isLoading ? (
+        <Text>Loading</Text>
+      ) : (
+        <CoverRow
+          rowNumber={2}
+          type="playlist"
+          items={recommendPlaylist?.result}
+          subText="copywriter"
+        />
+      )}
+    </View>
+  );
+};
+const RecommendArtists: React.FC = () => {
+  const { musicLanguage } = useSnapshot(settings);
+  const { data: topArtists, isLoading } = useTopArtists({
+    type: musicLanguage,
+  });
+  return (
+    <View>
+      <Text style={styles.title}>Recommended Artists</Text>
+      {isLoading ? (
+        <Text>Loading</Text>
+      ) : (
+        <CoverRow rowNumber={1} type="artist" items={topArtists} />
+      )}
+    </View>
+  );
+};
+const NewAlbums: React.FC = () => {
+  const { data: newAlbums, isLoading } = useNewAlbums({
+    limit: 10,
+    area: "ALL",
+  });
+  return (
+    <View>
+      <Title>Latest Albums</Title>
+      {isLoading ? (
+        <Text>Loading</Text>
+      ) : (
+        <CoverRow
+          rowNumber={1}
+          type="album"
+          items={newAlbums?.albums}
+          subText="artist"
+        />
+      )}
+    </View>
+  );
+};
+const Charts: React.FC = () => {
+  const { data: toplist, isLoading } = useToplist();
+  return (
+    <View>
+      <Title>Charts</Title>
+      {isLoading ? (
+        <Text>Loading</Text>
+      ) : (
+        <CoverRow
+          rowNumber={1}
+          type="playlist"
+          items={toplist?.list}
+          subText="updateFrequency"
+        />
+      )}
+    </View>
+  );
+};
 
 export function HomeScreen(props: RootTabScreenProps<"Home">) {
-  const [recommendPlaylists, setRecommendPlaylists] = useState(undefined);
-  const [newAlbum, setNewAlbum] = useState(undefined);
-  const [topArtists, setTopArtists] = useState(undefined);
-  const [toplist, setToplist] = useState(undefined);
-  const [data, setData] = useState(undefined);
-  const fetchData = async () => {
-    fetchRecommendedPlaylists({ limit: 30 }).then((data: any) => {
-      setRecommendPlaylists(data.result);
-    });
-    newAlbums({ limit: 10, area: "ALL" }).then((data: any) => {
-      setNewAlbum(data.albums);
-    });
-    // setNewAlbum(response.albums);
-    const snappedSettings = useSnapshot(settings);
-    const toplistOfArtistsAreaTable = {
-      all: undefined,
-      zh: 1,
-      ea: 2,
-      jp: 4,
-      kr: 3,
-    };
-    toplistOfArtists(
-      // toplistOfArtistsAreaTable[settings.musicLanguage]
-      { type: toplistOfArtistsAreaTable[snappedSettings.musicLanguage] }
-    ).then((data: any) => {
-      let indexs: Number[] = [];
-      while (indexs.length < 6) {
-        let tmp = ~~(Math.random() * 100);
-        if (!indexs.includes(tmp)) indexs.push(tmp);
-      }
-      const filterArtists = data.list.artists.filter((l, index) =>
-        indexs.includes(index)
-      );
+  // const [recommendPlaylists, setRecommendPlaylists] = useState(undefined);
+  // const [newAlbum, setNewAlbum] = useState(undefined);
+  // const [topArtists, setTopArtists] = useState(undefined);
+  // const [toplist, setToplist] = useState(undefinedartists);
+  // const newAlbums = useNewAlbums({limit: 10, area: "ALL"}).data?.albums;
+  // alert(`${JSON.parse(topArtists.data)}`);
 
-      setTopArtists(filterArtists);
-    });
-    toplists().then((data: any) => {
-      setToplist(data.list);
-    });
-    // response = await toplists();
-    // setToplist(response.list);
-    // response = await topPlaylist();
-    // console.log(response);
-  };
-
-  useEffect(() => {
-    fetchData();
-    return () => {};
-  }, []);
   // console.log(recommendPlaylists, newAlbum);
   // console.log(data);
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        <Title>by Apple Music</Title>
-        <CoverRow
-          rowNumber={1}
-          type="playlist"
-          items={byAppleMusic}
-          subText="by AppleMusic"
-          imageSize={1024}
-          navigate={props.navigation.navigate}
-        />
-        <Title>Recommended PlayLists</Title>
-        {!recommendPlaylists ? (
-          <Text>Loading</Text>
-        ) : (
-          <CoverRow
-            rowNumber={2}
-            type="playlist"
-            items={recommendPlaylists}
-            subText="copywriter"
-            navigate={props.navigation.navigate}
-          />
-        )}
+        <AppleMusic />
+        <RecommendPlaylists />
         <Title>For You</Title>
         <DailyTracksCard />
         <FMCard />
-        <Text style={styles.title}>Recommended Artists</Text>
-        <CoverRow
-          rowNumber={1}
-          type="artist"
-          items={topArtists}
-          navigate={props.navigation.navigate}
-        />
-
-        <Title>Latest Albums</Title>
-        {!newAlbum ? (
-          <Text>Loading</Text>
-        ) : (
-          <CoverRow
-            rowNumber={1}
-            type="album"
-            items={newAlbum}
-            subText="artist"
-            navigate={props.navigation.navigate}
-          />
-        )}
-        <Title>Charts</Title>
-        {!toplist ? (
-          <Text>Loading</Text>
-        ) : (
-          <CoverRow
-            rowNumber={1}
-            type="playlist"
-            items={toplist}
-            subText="updateFrequency"
-            navigate={props.navigation.navigate}
-          />
-        )}
+        <RecommendArtists/>
+        <NewAlbums/>
+        <Charts/>
       </ScrollView>
       <Tracker />
     </SafeAreaView>

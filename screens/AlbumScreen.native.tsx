@@ -227,9 +227,9 @@ const TrackList = memo(
 );
 TrackList.displayName = "TrackList";
 
-export const PlaylistScreen = ({
+export const AlbumScreen = ({
   route,
-}: RootStackScreenProps<"Playlist">) => {
+}: RootStackScreenProps<"Album">) => {
   const {
     likedSongs,
     itemProps,

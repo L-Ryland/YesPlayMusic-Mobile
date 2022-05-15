@@ -5,6 +5,7 @@ import type { AxiosPromise, AxiosResponse } from "axios";
 
 export enum AlbumApiNames {
   FETCH_ALBUM = "fetchAlbum",
+  FETCH_NEW_ALBUM = "fetchNewAlbum",
 }
 
 export interface ResponseType {
@@ -59,6 +60,9 @@ export interface NewALbumsParams {
   offeSet?: number;
   area?: "ALL" | "ZH" | "EA" | "KR" | "JP";
 }
+export interface FetchNewALbumsResponse extends ResponseType {
+  albums: Album[]
+}
 const defaultNewAlbumsParams = { limit: 30, offset: 0 };
 /**
  * 全部新碟
@@ -71,9 +75,9 @@ const defaultNewAlbumsParams = { limit: 30, offset: 0 };
  * @param {number=} params.offset
  * @param {string} params.area
  */
-export function newAlbums(
+export function fetchNewAlbums(
   params: NewALbumsParams = defaultNewAlbumsParams
-): AxiosPromise<ResponseType> {
+): Promise<FetchNewALbumsResponse> {
   return request({
     url: "/album/new",
     method: "get",

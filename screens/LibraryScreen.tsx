@@ -5,7 +5,9 @@ import {
   Dimensions,
   ImageBackground,
   Image,
-  FlatList, LogBox,
+  FlatList,
+  LogBox,
+  ToastAndroid,
 } from "react-native";
 import {
   Title,
@@ -30,10 +32,23 @@ import usePlaylist from "@/hooks/usePlaylist";
 import useUserAlbums from "@/hooks/useUserAlbums";
 import useUser from "@/hooks/useUser";
 import useUserArtists from "@/hooks/useUserArtists";
-import {LibraryStackParamList, LibraryStackScreenProps, RootStackScreenProps, RootTabScreenProps} from "@/types";
-import useUserLikedTracksIDs, {useUserLikedTracks} from "@/hooks/useUserLikedTracksIDs";
+import {
+  LibraryStackScreenProps,
+} from "@/types";
+import useUserLikedTracksIDs, {
+  useUserLikedTracks,
+} from "@/hooks/useUserLikedTracksIDs";
 
 const { width } = Dimensions.get("window");
+
+enum Category {
+  Playlists,
+  Albums,
+  Artists,
+  MVs,
+  CloudDisk,
+  TopListen,
+}
 
 const LikedSongs = ({ item }) => {
   const {
@@ -74,7 +89,7 @@ const UserCard = ({ profile }) => {
     id: playlists?.playlist?.[0].id ?? 0,
   });
   // const {data} = useUserLikedTracksIDs();
-  const {data: likedTracks} = useUserLikedTracks();
+  const { data: likedTracks } = useUserLikedTracks();
   return (
     <RowView>
       <ImageBackground
@@ -144,101 +159,89 @@ const UserArtists = () => {
   const { data: artists } = useUserArtists();
   return (
     <CoverRow
-      type="playlist"
+      type="artist"
       items={artists?.data.slice(0, 8)}
       imageSize={1024}
       verticalStyle={true}
     />
   );
 };
-export const LibraryScreen = ({navigation}: LibraryStackScreenProps<"Library">) => {
-  console.log("Library entrance")
+const SwitchCatagory: React.FC<{ category: Category }> = ({ category }) => {
+  switch (category) {
+    case Category.Playlists:
+      return <UserPlaylists />;
+    case Category.Albums:
+      return <UserAlbums />;
+    case Category.Artists:
+      return <UserArtists />;
+    default:
+      ToastAndroid.show("Still Working On That", ToastAndroid.SHORT);
+      return <View></View>;
+  }
+};
+export const LibraryScreen = ({
+  navigation,
+}: LibraryStackScreenProps<"Library">) => {
   const svgStyle = useSvgStyle({});
-  const [category, setCategory] = React.useState<
-    "playlists" | "albums" | "artists" | "mvs" | "cloudDisk" | "topListen"
-  >("playlists");
+  const [category, setCategory] = React.useState<Category>(Category.Playlists);
   const handleDatabase = async () => {
     await database.write(async () => {
       const post = await database.unsafeResetDatabase();
       return post;
     });
   };
-  React.useEffect(()=>{
-    console.log('[LibraryScreen] [userData]', userData);
-    if (!userData.loginMode) navigation.navigate("Login");
-  }, [userData.loginMode])
   // console.log("liked", liked);
   const { data: user } = useUser();
   const { data: playlists } = useUserPlaylists();
   const { data: likedSongsPlaylist } = usePlaylist({
     id: playlists?.playlist?.[0].id ?? 0,
   });
-  React.useEffect(()=>{
-    LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
-    return () => {}
-  })
+  React.useEffect(() => {
+    LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
+    console.log("[LibraryScreen] [userData]", userData);
+    if (!userData.loginMode) navigation.navigate("Login");
+  }, [userData.loginMode, user?.profile]);
   return (
     <SafeAreaView>
       <ScrollView>
-      <RowView>
-        <Title>
-          {user?.profile?.nickname ?? ""}
-          {t("library.sLibrary")}{" "}
-        </Title>
-      </RowView>
-      <Button title="delete test database" onPress={handleDatabase} />
-      {/*<ScrollView>*/}
+        <RowView>
+          <Title>
+            {user?.profile?.nickname ?? ""}
+            {t("library.sLibrary")}{" "}
+          </Title>
+        </RowView>
+        <Button title="delete test database" onPress={handleDatabase} />
+        {/*<ScrollView>*/}
         <UserCard profile={user?.profile} />
         <ScrollView horizontal={true}>
           <Button
             title={t("library.playlists")}
-            onPress={() => setCategory("playlists")}
+            onPress={() => setCategory(Category.Playlists)}
           />
           <Button
             title={t("library.albums")}
-            onPress={() => setCategory("albums")}
+            onPress={() => setCategory(Category.Albums)}
           />
           <Button
             title={t("library.artists")}
-            onPress={() => setCategory("artists")}
+            onPress={() => setCategory(Category.Artists)}
           />
-          <Button title={t("library.mvs")} onPress={() => setCategory("mvs")} />
+          <Button
+            title={t("library.mvs")}
+            onPress={() => setCategory(Category.MVs)}
+          />
           <Button
             title={t("library.cloudDisk")}
-            onPress={() => setCategory("cloudDisk")}
+            onPress={() => setCategory(Category.CloudDisk)}
           />
           <Button
             title={t("library.topListen")}
-            onPress={() => setCategory("topListen")}
+            onPress={() => setCategory(Category.TopListen)}
           />
         </ScrollView>
-        <View>
-          {category == "playlists" && (
-            // <FlatList
-            //   data={liked.playlists.slice(0, 9)}
-            //   numColumns={2}
-            //   renderItem={LikedPlaylists}
-            //   keyExtractor={(item, index) => index.toString()}
-            //   initialNumToRender={3}
-            //   nestedScrollEnabled={true}
-            // />
-            <UserPlaylists />
-          )}
-          {category == "albums" && <UserAlbums />}
-          {category == "artists" && <UserArtists />}
-          {/*{category == "cloudDisk" && (*/}
-          {/*  <CoverRow*/}
-          {/*    type="playlist"*/}
-          {/*    items={liked.cloudDisk.slice(0, 8)}*/}
-          {/*    imageSize={1024}*/}
-          {/*    verticalStyle={true}*/}
-          {/*  />*/}
-          {/*)}*/}
-          {category == "topListen" ||
-            (category == "cloudDisk" && <Text>Still Working On That...</Text>)}
-        </View>
-      {/*</ScrollView>*/}
-    </ScrollView>
+        <SwitchCatagory category={category} />
+        {/*</ScrollView>*/}
+      </ScrollView>
     </SafeAreaView>
   );
 };

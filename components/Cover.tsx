@@ -26,7 +26,7 @@ import { Explicit, Lock } from "./icons";
 // `;
 export function Cover(props: any) {
   // console.log('@', props);
-  const { imageUrl, subText, name, isPrivacy, isExplicit, imageStyle, viewStyle, componentWidth } = props;
+  const { imageUrl, subText, name, isPrivacy, isExplicit, imageStyle, viewStyle, type } = props;
   return (
     <View style={viewStyle}>
       <View >
@@ -37,7 +37,7 @@ export function Cover(props: any) {
           style={imageStyle}
         />
         <View >
-          <CoverTitle>
+          <CoverTitle style={{textAlign: type == "artist" ? 'center' : "justify" }}>
             {isExplicit && <Explicit />}
             {isPrivacy && <Lock />}
             {name ?? ''}
@@ -56,5 +56,4 @@ const styles = StyleSheet.create({
   coverContainer: {
     position: "relative",
   },
-
 });

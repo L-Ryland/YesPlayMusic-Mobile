@@ -5,52 +5,80 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import storage from "@/utils/storage";
 import { devtools } from "valtio/utils";
 
-type langProp = "en" | "tr" | "zh-CN" | "zh-TW";
-type appreanceProp = "auto" | "light" | "dark";
-type musicLangProp = "all" | "zh" | "ea" | "jp" | "kr";
-type musicQualityProp = 128000 | 192000 | 320000 | 999000;
-type showLyricsTranslationProp = Boolean;
-type lyricsBackgroundProp = "on" | "off" | "blur";
-type lyricFontSizeProp = "small" | "medium" | "large" | "xlarge";
+export enum Lang {
+  EN = "en",
+  TR = "tr",
+  CN = "zh-CN",
+  TW = "zh-TW",
+}
+export enum Appearance {
+  Auto = "auto",
+  Light = "light",
+  Dark = "dark"
+}
+export enum MusicLang {
+  zh  = 1,
+  ea,
+  jp,
+  kr,
+}
+export enum MusicQuality {
+  Low = 128000,
+  Normal = 192000,
+  High = 32000,
+  FLAC = 999000,
+}
+export enum LyricsBackground {
+  On = "on",
+  Off = "off",
+  Blur = "blur",
+}
+export enum LyricsFontSize {
+  Small = "16px",
+  Medium = "22px",
+  Large = "28px",
+  Xlarge = "36px"
+}
+
 // Define a type for the slice state
 const enabledPlaylistCategories = playlistCategories
   .filter((c) => c.enable)
   .map((c) => c.name);
 
 export interface SettingsState {
-  lang: langProp;
-  appearance: appreanceProp;
-  musicLanguage: musicLangProp;
-  musicQuality: musicQualityProp;
-  showLyricsTranslation: showLyricsTranslationProp;
-  lyricsBackground: lyricsBackgroundProp;
-  lyricFontSize: lyricFontSizeProp;
-  outputDevice: String;
-  showPlaylistsByAppleMusic: Boolean;
-  enableUnblockNeteaseMusic: Boolean;
-  automaticallyCacheSongs: Boolean;
-  cacheLimit: Number;
-  enableReversedMode: Boolean;
-  nyancatStyle: Boolean;
-  enableDiscordRichPresence: Boolean;
-  enableGlobalShortcut: Boolean;
-  subTitleDefault: Boolean;
+  lang: Lang;
+  appearance: Appearance;
+  musicLanguage: MusicLang;
+  musicQuality: MusicQuality;
+  showLyricsTranslation: boolean;
+  lyricsBackground: LyricsBackground;
+  lyricFontSize: LyricsFontSize;
+  outputDevice: string;
+  showPlaylistsByAppleMusic: boolean;
+  enableUnblockNeteaseMusic: boolean;
+  automaticallyCacheSongs: boolean;
+  cacheLimit: number;
+  enableReversedMode: boolean;
+  nyancatStyle: boolean;
+  enableDiscordRichPresence: boolean;
+  enableGlobalShortcut: boolean;
+  subTitleDefault: boolean;
   enabledPlaylistCategories: string[];
-  showLibraryDefault: Boolean;
+  showLibraryDefault: boolean;
   proxyConfig: {
-    protocol: String;
-    server: String;
-    port: Number;
+    protocol: string;
+    server: string;
+    port: number;
   };
 }
 
 // Define the initial state using that type
 const initialState: SettingsState = {
-  lang: "en",
-  musicLanguage: "all",
-  appearance: "auto",
+  lang: Lang.EN,
+  musicLanguage: MusicLang.ea,
+  appearance: Appearance.Auto,
   musicQuality: 320000,
-  lyricFontSize: "medium",
+  lyricFontSize: LyricsFontSize.Medium,
   outputDevice: "default",
   showPlaylistsByAppleMusic: true,
   enableUnblockNeteaseMusic: true,
@@ -59,7 +87,7 @@ const initialState: SettingsState = {
   enableReversedMode: false,
   nyancatStyle: false,
   showLyricsTranslation: true,
-  lyricsBackground: "on",
+  lyricsBackground: LyricsBackground.On,
   enableDiscordRichPresence: false,
   enableGlobalShortcut: true,
   showLibraryDefault: false,

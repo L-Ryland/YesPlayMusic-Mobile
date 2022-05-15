@@ -23,8 +23,8 @@ const linking: LinkingOptions<RootStackParamList> = {
           },
           Library: {
             screens: {
-              LibraryScreen: "LibraryScreen",
-              LoginScreen: "LoginScreen"
+              Library: "library",
+              Login: "login"
             },
           },
           Explore: {
@@ -34,8 +34,8 @@ const linking: LinkingOptions<RootStackParamList> = {
           },
           Settings: {
             screens: {
-              SettingsScreen: "settings_screen",
-              SubSettingsScreen: "sub_settings",
+              Settings: "settings_screen",
+              SubSettings: "sub_settings",
             },
           },
 
@@ -43,7 +43,9 @@ const linking: LinkingOptions<RootStackParamList> = {
       },
       Modal: "modal",
       NotFound: "*",
-      Playlist: "playlist"
+      Playlist: "playlist",
+      Album: "album",
+      Artist: "artist"
     },
   },
 };

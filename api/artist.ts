@@ -1,10 +1,12 @@
 import request from '@/utils/request';
 import { mapTrackPlayableStatus } from '@/utils/common';
 import type { AxiosPromise } from 'axios';
+import { ResponseFormat } from "@/types";
 
 export enum ArtistApiNames {
   FETCH_ARTIST = 'fetchArtist',
   FETCH_ARTIST_ALBUMS = 'fetchArtistAlbums',
+  FETCH_TOP_ARTISTS = 'fetchTopArtists'
 }
 
 export interface ResponseType { 
@@ -42,8 +44,7 @@ export interface FetchArtistAlbumsParams {
   limit?: number // default: 50
   offset?: number // default: 0
 }
-export interface FetchArtistAlbumsResponse {
-  code: number
+export interface FetchArtistAlbumsResponse extends ResponseFormat {
   hotAlbums: Album[]
   more: boolean
   artist: Artist
@@ -60,6 +61,13 @@ export function fetchArtistAlbums(
 export interface ToplistArtistsParams {
   type: number | undefined
 }
+export interface TopListArtistsResponse extends ResponseFormat {
+  list: {
+    artists: Artist[],
+    updateTime: number,
+    type: ToplistArtistsParams["type"]
+  }
+}
 
  /**
   * 歌手榜
@@ -73,10 +81,10 @@ export interface ToplistArtistsParams {
   * @param {ToplistArtistsParams} [params=defaultToplistArtistsParams]
   * @return {*}  {AxiosPromise<ResponseType>}
   */
- export function toplistOfArtists(params: ToplistArtistsParams ): AxiosPromise<ResponseType> {
+ export function fetchToplistOfArtists(params: ToplistArtistsParams ): Promise<TopListArtistsResponse> {
   return request({
     url: '/toplist/artist',
     method: 'get',
     params,
-  })
+  });
 }

@@ -1,34 +1,37 @@
 import { CoverRowProps, CoverProps } from "@/types";
-import { iteratorSymbol } from "immer/dist/internal";
 import React from "react";
-import { Dimensions, StyleSheet, TouchableHighlight, ViewProps, ViewStyle } from "react-native";
+import {
+  Dimensions,
+  StyleSheet,
+  TouchableHighlight,
+  ViewProps,
+  ViewStyle,
+} from "react-native";
 import { SafeAreaView, ListRenderItem } from "react-native";
 import styled from "styled-components/native";
 
-import { ScrollView, Cover } from '@/components';
-
-
+import { Cover } from "@/components/Cover";
+import { useNavigation } from "@react-navigation/core";
 
 const FlatList = styled.FlatList`
   display: flex;
 `;
 
-export function CoverRow(props: CoverRowProps|any) {
+export function CoverRow(props: CoverRowProps | any) {
   const [isHorizontal, setIsHorizontal] = React.useState(true);
-  const [ numColumns, setNumColumns ] = React.useState<number>();
-
-  let { items, type, subText, verticalStyle, imageSize} = props;
-  React.useEffect(()=>{
+  const [numColumns, setNumColumns] = React.useState<number>();
+  const navigation = useNavigation();
+  let { items, type, subText, verticalStyle, imageSize } = props;
+  React.useEffect(() => {
     if (verticalStyle) {
       setIsHorizontal(false);
       setNumColumns(2);
     }
     // console.log("isHorizontal", isHorizontal);
-    
   }, [verticalStyle]);
-  
+
   // console.log(items, subText);
-  const { width } = Dimensions.get('window');
+  const { width } = Dimensions.get("window");
   const getImageUrl = (item: CoverProps) => {
     if (item.img1v1Url) {
       let img1v1ID = item.img1v1Url.split("/");
@@ -39,17 +42,19 @@ export function CoverRow(props: CoverRowProps|any) {
       }
     }
     let img = item.img1v1Url || item.picUrl || item.coverImgUrl;
-    return `${img?.replace("http://", "https://")}?param=${imageSize}y${imageSize}`;
-  }
+    return `${img?.replace(
+      "http://",
+      "https://"
+    )}?param=${imageSize}y${imageSize}`;
+  };
 
-  
-  const renderItem = ({item}: any) => {
+  const renderItem = ({ item }: any) => {
     // let subText = getSubText(item);
     const universalStyle: ViewStyle = {
       borderRadius: 22,
-      marginLeft: 20, 
+      marginLeft: 20,
       marginBottom: 5,
-    }
+    };
     const circleStyle: ViewStyle = {
       borderRadius: 100,
       marginLeft: 20,
@@ -59,30 +64,38 @@ export function CoverRow(props: CoverRowProps|any) {
       height: 200,
       width: 200,
       marginRight: 20,
-    }
+    };
     const listStyle: ViewStyle = {
-      height: width/2-30,
-      width: width/2-30,
+      height: width / 2 - 30,
+      width: width / 2 - 30,
       marginLeft: 20,
-      marginRight: 20
+      marginRight: 20,
       // margin: 20
       // marginLeft: 20,
     };
     const itemProps = {
-      id: item.id, imageUrl: getImageUrl(item), type, name: item.name,
+      id: item.id,
+      imageUrl: getImageUrl(item),
+      type,
+      name: item.name,
       isExplicit: Boolean(type === "album" && item.mark === 1056768),
       isPrivacy: Boolean(type === "playlist" && item.privacy === 10),
-      subText: subText??undefined,
+      subText: subText ?? undefined,
       // imageStyle: type=="artist"?circleStyle:!isHorizontal?listStyle:universalStyle,
-      imageStyle: [type=='artist' ? circleStyle : universalStyle, isHorizontal ? rowStyle : listStyle],
-      viewStyle: isHorizontal ? { width: 240, height: 260} : {width: width /2, height: width/2 +10 }
-    }
+      imageStyle: [
+        type == "artist" ? circleStyle : universalStyle,
+        isHorizontal ? rowStyle : listStyle,
+      ],
+      viewStyle: isHorizontal
+        ? { width: 240, height: 260 }
+        : { width: width / 2, height: width / 2 + 10 },
+    };
     const handlePress = () => {
       console.log(itemProps);
-      props.navigate('Playlist', {itemProps})
+      navigation.navigate("Playlist", { itemProps });
     };
     // console.log(item, itemProps);
-    
+
     return (
       <TouchableHighlight onPress={handlePress}>
         <Cover {...itemProps} />
@@ -96,8 +109,8 @@ export function CoverRow(props: CoverRowProps|any) {
       <FlatList
         data={items}
         renderItem={renderItem}
-        key={isHorizontal?'#':'_'}
-        keyExtractor={(item, index) => '#'+index.toString()}
+        key={isHorizontal ? "#" : "_"}
+        keyExtractor={(item, index) => "#" + index.toString()}
         horizontal={isHorizontal}
         numColumns={numColumns}
         nestedScrollEnabled={true}
@@ -107,32 +120,31 @@ export function CoverRow(props: CoverRowProps|any) {
   );
 }
 
-
 function getSubText(item) {
-  if (item.subText === 'copywriter') return item.copywriter;
-  if (item.subText === 'description') return item.description;
-  if (item.subText === 'updateFrequency') return item.updateFrequency;
-  if (item.subText === 'creator') return 'by ' + item.creator.nickname;
-  if (item.subText === 'releaseYear')
+  if (item.subText === "copywriter") return item.copywriter;
+  if (item.subText === "description") return item.description;
+  if (item.subText === "updateFrequency") return item.updateFrequency;
+  if (item.subText === "creator") return "by " + item.creator.nickname;
+  if (item.subText === "releaseYear")
     return new Date(item.publishTime).getFullYear();
-  if (item.subText === 'artist') {
+  if (item.subText === "artist") {
     if (item.artist !== undefined)
       return `<a href="/#/artist/${item.artist.id}">${item.artist.name}</a>`;
     if (item.artists !== undefined)
       return `<a href="/#/artist/${item.artists[0].id}">${item.artists[0].name}</a>`;
   }
-  if (item.subText === 'albumType+releaseYear') {
+  if (item.subText === "albumType+releaseYear") {
     let albumType = item.type;
-    if (item.type === 'EP/Single') {
-      albumType = item.size === 1 ? 'Single' : 'EP';
-    } else if (item.type === 'Single') {
-      albumType = 'Single';
-    } else if (item.type === '专辑') {
-      albumType = 'Album';
+    if (item.type === "EP/Single") {
+      albumType = item.size === 1 ? "Single" : "EP";
+    } else if (item.type === "Single") {
+      albumType = "Single";
+    } else if (item.type === "专辑") {
+      albumType = "Album";
     }
     return `${albumType} · ${new Date(item.publishTime).getFullYear()}`;
   }
-  if (item.subText === 'appleMusic') return 'by Apple Music';
+  if (item.subText === "appleMusic") return "by Apple Music";
 }
 
 const styles = StyleSheet.create({
@@ -140,7 +152,7 @@ const styles = StyleSheet.create({
     display: "flex",
   },
   flatListStyle: {
-    alignSelf: 'center',
-    alignContent: 'center',
+    alignSelf: "center",
+    alignContent: "center",
   },
 });

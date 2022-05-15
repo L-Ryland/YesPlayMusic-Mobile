@@ -1,4 +1,9 @@
-import { fetchPlaylist } from "@/api/playlist";
+import {
+  fetchPlaylist,
+  fetchRecommendedPlaylists,
+  FetchRecommendedPlaylistsParams,
+  fetchToplists,
+} from "@/api/playlist";
 import reactQueryClient from "@/utils/reactQueryClient";
 import { APIs } from "@/api/CacheAPIs";
 import {
@@ -37,13 +42,23 @@ export function fetchPlaylistWithReactQuery(params: FetchPlaylistParams) {
 }
 
 export async function prefetchPlaylist(params: FetchPlaylistParams) {
-  const queryKey = [PlaylistApiNames.FETCH_PLAYLIST, params]
-  await reactQueryClient.prefetchQuery(
-    queryKey,
-    () => fetch(params),
-    {
-      staleTime: 3600000,
-    }
-  );
+  const queryKey = [PlaylistApiNames.FETCH_PLAYLIST, params];
+  await reactQueryClient.prefetchQuery(queryKey, () => fetch(params), {
+    staleTime: 3600000,
+  });
   return reactQueryClient.getQueryData(queryKey);
+}
+
+export function useRecommendPlaylist(params?: FetchRecommendedPlaylistsParams) {
+  return useQuery(
+    [PlaylistApiNames.FETCH_RECOMMENDED_PLAYLISTS, params],
+    () => fetchRecommendedPlaylists(params),
+    { staleTime: 3600000 }
+  );
+}
+
+export function useToplist() {
+  return useQuery([PlaylistApiNames.FETCH_TOP_LISTS], () => fetchToplists(), {
+    staleTime: 3600000,
+  });
 }

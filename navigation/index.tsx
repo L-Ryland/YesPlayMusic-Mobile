@@ -35,7 +35,6 @@ import {
   RootTabScreenProps,
 } from "@/types";
 import LinkingConfiguration from "./LinkingConfiguration";
-import { Tracker } from "@/components/Tracker";
 
 export default function Navigation({
   colorScheme,
@@ -77,7 +76,7 @@ function RootNavigator() {
       <RootStack.Group screenOptions={{ presentation: "modal" }}>
         <RootStack.Screen name="Player" component={PlayerScreen} />
         <RootStack.Screen name="Playlist" component={PlaylistScreen} />
-        <RootStack.Screen name="Tracker" component={Tracker} />
+        <RootStack.Screen name="Album" component={PlaylistScreen} />
       </RootStack.Group>
     </RootStack.Navigator>
   );
@@ -93,10 +92,8 @@ function BottomTabNavigator() {
   const colorScheme = useColorScheme();
 
   return (
-    <>
-      <Tracker />
       <BottomTab.Navigator
-        initialRouteName="Home"
+        initialRouteName="Settings"
         screenOptions={{
           tabBarActiveTintColor: Colors[colorScheme].tint,
         }}
@@ -130,7 +127,7 @@ function BottomTabNavigator() {
         />
         <BottomTab.Screen
           name="Settings"
-          component={SettingsNavigator}
+          component={SettingsScreen}
           options={{
             title: "Settings",
             tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
@@ -138,7 +135,6 @@ function BottomTabNavigator() {
           }}
         />
       </BottomTab.Navigator>
-    </>
   );
 }
 
@@ -146,17 +142,17 @@ function SettingsNavigator() {
   const SettingsStack = createNativeStackNavigator<SettingsStackParamList>();
 
   return (
-    <SettingsStack.Navigator initialRouteName="SettingsScreen">
+    <SettingsStack.Navigator initialRouteName="Settings">
       <SettingsStack.Group>
         <SettingsStack.Screen
-          name="SettingsScreen"
+          name="Settings"
           component={SettingsScreen}
           options={{
             headerShown: false
           }}
         />
         <SettingsStack.Screen
-          name="SubSettingsScreen"
+          name="SubSettings"
           component={SubSettingsScreen}
         />
       </SettingsStack.Group>

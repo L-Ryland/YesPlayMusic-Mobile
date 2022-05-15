@@ -1,60 +1,69 @@
 import * as React from "react";
+import type { TextStyle, ViewStyle } from "react-native";
 import { StyleSheet } from "react-native";
-import type { ViewStyle, TextStyle } from "react-native";
 
-import { useThemeColor, View, Text } from "@/components/Themed";
+import { Text, useThemeColor, View } from "@/components/Themed";
 // import { SubSettings } from '../components';
 import type { OptionType, SettingsStackScreenProps } from "@/types";
 import { createSettingsDataFactory } from "react-native-settings-template";
-import { settings } from "@/hydrate/settings";
+import {
+  Appearance,
+  Lang,
+  LyricsBackground,
+  LyricsFontSize,
+  MusicLang,
+  MusicQuality,
+  settings
+} from "@/hydrate/settings";
 import { useSnapshot } from "valtio";
 
 const SubSettings = createSettingsDataFactory();
 const SectionData = SubSettings.createSectionFactory();
 
 const languageOptions: OptionType<"lang">[] = [
-  { option: "en", name: "🇬🇧 English" },
-  { option: "tr", name: "🇹🇷 Türkçe" },
-  { option: "zh-CN", name: "🇨🇳 简体中文" },
-  { option: "zh-TW", name: "繁體中文" },
+  { option: Lang.EN ,name: "🇬🇧 English" },
+  { option: Lang.TR, name: "🇹🇷 Türkçe" },
+  { option: Lang.CN, name: "🇨🇳 简体中文" },
+  { option: Lang.TW, name: "繁體中文" },
 ];
 
 const appearanceOptions: OptionType<"appearance">[] = [
-  { option: "auto", name: "Auto" },
-  { option: "light", name: "Bright" },
-  { option: "dark", name: "Dark" },
+  { option: Appearance.Auto, name: "Auto" },
+  { option: Appearance.Light, name: "Bright" },
+  { option: Appearance.Dark, name: "Dark" },
 ];
 
 const musicLangOptions: OptionType<"musicLanguage">[] = [
-  { option: "all", name: "No Preference" },
-  { option: "zh", name: "China-Pop" },
-  { option: "ea", name: "Western" },
-  { option: "jp", name: "Jan-Pop" },
-  { option: "kr", name: "K-Pop" },
+  { option: undefined, name: "No Preference" },
+  { option: MusicLang.zh, name: "China-Pop" },
+  { option: MusicLang.ea, name: "Western" },
+  { option: MusicLang.jp, name: "Jan-Pop" },
+  { option: MusicLang.kr, name: "K-Pop" },
 ];
 
 const musicQualityOptions: OptionType<"musicQuality">[] = [
-  { option: 192000, name: "192Kbps" },
-  { option: 320000, name: "320Kbps" },
-  { option: 999000, name: "FLAC" },
+  { option: MusicQuality.Low, name: "128Kbps"},
+  { option: MusicQuality.Normal, name: "192Kbps" },
+  { option: MusicQuality.High, name: "320Kbps" },
+  { option: MusicQuality.FLAC, name: "FLAC" },
 ];
 
 const lyricsBgOptions: OptionType<"lyricsBackground">[] = [
-  { option: "on", name: "On" },
-  { option: "off", name: "Off" },
-  { option: "blur", name: "Blur" },
+  { option: LyricsBackground.On, name: "On" },
+  { option: LyricsBackground.Off, name: "Off" },
+  { option: LyricsBackground.Blur, name: "Blur" },
 ];
 
 const lyricsFsizeOptions: OptionType<"lyricFontSize">[] = [
-  { option: "small", name: "16px" },
-  { option: "medium", name: "22px" },
-  { option: "large", name: "28px" },
-  { option: "xlarge", name: "36px" },
+  { option: LyricsFontSize.Small, name: "16px" },
+  { option: LyricsFontSize.Medium, name: "22px" },
+  { option: LyricsFontSize.Large, name: "28px" },
+  { option: LyricsFontSize.Xlarge, name: "36px" },
 ];
 
 export function SubSettingsScreen({
   route,
-}: SettingsStackScreenProps<"SubSettingsScreen">) {
+}: SettingsStackScreenProps<"SubSettings">) {
   const snappedSettings = useSnapshot(settings);
   const viewStyle: ViewStyle = {
     backgroundColor: useThemeColor({}, "tintBackground"),

@@ -5,23 +5,25 @@ import {
 import { fetchPersonalFMWithReactQuery } from "@/hooks/usePersonalFM";
 import { fmTrash } from "@/api/personalFM";
 import { cacheAudio } from "@/api/yesplaymusic";
-import { clamp, shuffle } from "lodash-es";
+import { shuffle } from "lodash-es";
 import axios from "axios";
 import { resizeImage } from "@/utils/common";
 import { fetchPlaylistWithReactQuery } from "@/hooks/usePlaylist";
 
 import TrackPlayer, {
   Capability,
+  RepeatMode,
   State,
   Track as DefaultTrack,
-  RepeatMode,
 } from "react-native-track-player";
 import { ToastAndroid } from "react-native";
 import { proxy } from "valtio";
-import { devtools } from "valtio/utils";
-import {fetchAlbum, fetchTracks} from "@/api";
-import {Platform} from "expo-modules-core";
-if (Platform.OS !== "android") { exports.Player = class Player{}}
+import { fetchAlbum, fetchTracks } from "@/api";
+import { Platform } from "expo-modules-core";
+
+if (Platform.OS !== "android") {
+  exports.Player = class Player {};
+}
 
 type TrackID = number;
 
@@ -44,7 +46,14 @@ export enum PlayerMode {
   FM = "fm",
 }
 
-export { State, RepeatMode, Event} from "react-native-track-player";
+export {
+  State,
+  RepeatMode,
+  Event,
+  usePlaybackState,
+  useProgress,
+  useTrackPlayerEvents,
+} from "react-native-track-player";
 
 export class Player {
   private _track: ModifiedTrack | undefined;
@@ -52,20 +61,18 @@ export class Player {
   // private _progress: number = 0
   // private _progressInterval: ReturnType<typeof setInterval> | undefined
   // private _volume: number = 1 // 0 to 1
-  // private _repeatMode: RepeatMode = RepeatMode.Off
+  private _repeatMode: RepeatMode = RepeatMode.Off;
   private _shuffle: boolean = false;
   private _trackListSource: TrackListSource | null = null;
-  private _player!: typeof TrackPlayer;
+  private _player: typeof TrackPlayer = TrackPlayer;
 
-  state: State = State.Connecting;
   mode: PlayerMode = PlayerMode.TrackList;
   trackList: ModifiedTrack[] = [];
   fmTrackList: ModifiedTrack[] = [];
   shuffledList: ModifiedTrack[] = [];
 
   constructor() {
-    this.init().then();
-    this._player = TrackPlayer;
+    this.init();
   }
 
   // init(params: { [key: string]: any }) {
@@ -113,7 +120,6 @@ export class Player {
         Capability.SkipToPrevious,
       ],
     });
-    // return TrackPlayer;
   }
 
   /**
@@ -132,13 +138,26 @@ export class Player {
   //   }
   // }
   /**
+   * Get Current Track Index
+   */
+  get trackIndex() {
+    return this._trackIndex;
+  }
+
+  /**
    * Get Repeat Mode
    */
-  getRepeatMode() {
-    return this._player.getRepeatMode();
+  get repeatMode() {
+    return this._repeatMode;
   }
+
   set repeatMode(mode) {
     this._player.setRepeatMode(mode);
+    this._repeatMode = mode;
+  }
+
+  private getRepeatMode() {
+    return this._player.getRepeatMode();
   }
 
   /**
@@ -162,7 +181,7 @@ export class Player {
    * Get current playing track
    */
   async getCurrentTrack(trackID?: number): Promise<ModifiedTrack | null> {
-    if (trackID) return this._player.getTrack(trackID);
+    if (trackID) return await this._player.getTrack(trackID);
     let currentList: ModifiedTrack[];
     if (this.mode === PlayerMode.TrackList) {
       currentList = this.shuffle ? this.shuffledList : this.trackList;
@@ -258,7 +277,6 @@ export class Player {
    * Play a track based on this.trackID
    */
   private async _playTrack() {
-    this.state = State.Buffering;
     const track = await this.getCurrentTrack();
     if (!track) {
       ToastAndroid.show("加载歌曲信息失败", ToastAndroid.SHORT);
@@ -308,7 +326,7 @@ export class Player {
     const prefetchNextTrack = async () => {
       const prefetchTrackID = this.fmTrackList[1].id!;
       const { artwork } = await this._fetchTrack(prefetchTrackID);
-      if (!artwork) return
+      if (!artwork) return;
       axios.get(resizeImage(artwork.toString(), "md"));
       axios.get(resizeImage(artwork.toString(), "xs"));
     };
@@ -352,17 +370,14 @@ export class Player {
    * Play current track
    */
   async play() {
-    if ((await this.getState()) == State.Playing) {
-      return;
-    }
-    this._player.play();
+    if ((await this.getState()) != State.Playing) this._player.play();
   }
 
   /**
    * Pause current track
    */
   async pause() {
-    if ((await this.getState()) == State.Paused) return this._player.pause();
+    if ((await this.getState()) != State.Paused) this._player.pause();
   }
 
   /**
@@ -376,7 +391,7 @@ export class Player {
    * Play or pause current track
    */
   async playOrPause() {
-    (await this.getState()) === State.Playing ? this.pause() : this.play();
+    (await this.getState()) == State.Playing ? this.pause() : this.play();
   }
 
   /**
@@ -429,7 +444,6 @@ export class Player {
    * @param {null|number} autoPlayTrackID
    */
   async playAList(trackIds: TrackID[], autoPlayTrackID?: null | number) {
-    ToastAndroid.show(`[trackplayer] playAList`, ToastAndroid.CENTER);
     this.mode = PlayerMode.TrackList;
     // const trackList = await Promise.all(songs.map(async (s) => {
     //   const audioSource = await fetchAudioSourceWithReactQuery({id: s.id});
@@ -443,7 +457,9 @@ export class Player {
     //   };
     // }))
     // this.trackList = trackList.filter(t => t.url != '');
-    this.trackList = await Promise.all(trackIds.map(async (t) => await this._fetchTrack(t)));
+    this.trackList = await Promise.all(
+      trackIds.map(async (t) => await this._fetchTrack(t))
+    );
     this._player.reset();
     this._player.add(this.trackList);
     autoPlayTrackID && this._player.skip(autoPlayTrackID);
@@ -469,9 +485,9 @@ export class Player {
       ids: playlist.trackIds?.map((t) => t.id) ?? [],
     });
     this.playAList(
-      playlist.trackIds.map(t => t.id),
+      playlist.trackIds.map((t) => t.id),
       autoPlayTrackID
-    )
+    );
   }
 
   /**
@@ -486,7 +502,10 @@ export class Player {
       type: TrackListSourceType.Album,
       id: albumID,
     };
-    this.playAList(songs.map(t=>t.id), autoPlayTrackID);
+    this.playAList(
+      songs.map((t) => t.id),
+      autoPlayTrackID
+    );
   }
 
   /**
@@ -527,4 +546,3 @@ export class Player {
 }
 
 export const trackPlayer = proxy(new Player());
-devtools(trackPlayer, { name: "player", enabled: true });

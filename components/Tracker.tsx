@@ -1,29 +1,41 @@
-import React from 'react'
-import { Platform, StyleSheet } from "react-native";
+import React from "react";
+import {Platform, StyleSheet, ToastAndroid} from "react-native";
 import { View, Text } from "@/components/Themed";
-import {ModifiedTrack, trackPlayer} from "@/hydrate/player";
-import {useSnapshot} from "valtio";
+import { trackPlayer, usePlaybackState, useTrackPlayerEvents, Event } from "@/hydrate/player";
+import type { ModifiedTrack } from "@/hydrate/player";
 
-export const Tracker = (props) => {
+import { useSnapshot } from "valtio";
+import {useQuery} from "react-query";
+
+export const Tracker = React.memo((props) => {
   console.log("tracker props", props);
-  const snappedPlayer = useSnapshot(trackPlayer);
-  const [currentTrack, setCurrentTrack] = React.useState<ModifiedTrack | null>();
-  if (Platform.OS == 'web') {
+  const [currentTrack, setCurrentTrack] =
+    React.useState<ModifiedTrack | null>();
+  if (Platform.OS == "web") {
     return <View></View>;
   }
-  React.useMemo(async ()=>setCurrentTrack(await snappedPlayer.getCurrentTrack()), [snappedPlayer]);
+  const playingState = usePlaybackState();
+  useTrackPlayerEvents(
+    [Event.PlaybackTrackChanged, Event.PlaybackState, Event.PlaybackError],
+    async (event) => {
+      switch (event.type) {
+        case Event.PlaybackTrackChanged:
+          const track = await trackPlayer.getCurrentTrack(event.nextTrack);
+          setCurrentTrack(track);
+          break;
+      }
+    }
+  );
+  return currentTrack? (
+    <View style={styles.tracker}>
+      <Text>Track Helper {`current track - ${JSON.stringify(currentTrack)}`}</Text>
+    </View>
+  ) : (
+    <View></View>
+  );
+});
+Tracker.displayName = "Tracker";
 
-  return (
-    currentTrack ? <View style={styles.tracker}>
-      <Text>Track Helper</Text>
-    </View> : <View></View>
-  )
-}
 const styles = StyleSheet.create({
-  tracker: {
-
-  }
-})
-
-
-
+  tracker: {},
+});

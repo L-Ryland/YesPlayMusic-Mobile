@@ -17,9 +17,9 @@ import useUser from "@/hooks/useUser";
 
 const MainSettings = createSettingsDataFactory();
 
-export function SettingsScreen({
+export const SettingsScreen = ({
   navigation,
-}: SettingsStackScreenProps<"SettingsScreen">) {
+}: SettingsStackScreenProps<"Settings">) => {
   const handleLogOut = useMutation(logout, {
     onSuccess: () => {
       Object.assign(userData, initialUserData);
@@ -28,7 +28,7 @@ export function SettingsScreen({
     },
   });
   const switchSubSettings = (param: keyof SettingsState) => {
-    navigation.navigate("SubSettingsScreen", {
+    navigation.navigate("SubSettings", {
       requestSubSettings: param,
     });
     navigation.navigate("Settings")

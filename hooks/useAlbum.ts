@@ -1,4 +1,4 @@
-import { fetchAlbum } from "@/api/album";
+import { fetchAlbum, fetchNewAlbums, NewALbumsParams } from "@/api/album";
 import reactQueryClient from "@/utils/reactQueryClient";
 import { APIs } from "@/api/CacheAPIs";
 import {
@@ -45,5 +45,13 @@ export async function prefetchAlbum(params: FetchAlbumParams) {
     {
       staleTime: Infinity,
     }
+  );
+}
+
+export function useNewAlbums(params: NewALbumsParams) {
+  return useQuery(
+    [AlbumApiNames.FETCH_NEW_ALBUM, params],
+    () => fetchNewAlbums(params),
+    { staleTime: 3600000 }
   );
 }
