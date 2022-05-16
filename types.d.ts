@@ -23,9 +23,9 @@ export type RootStackParamList = {
   Modal: undefined;
   NotFound: undefined;
   Player: {track} | undefined;
-  Playlist: { itemProps?: {id: number}; likedSongs?: unknown };
-  Album: { itemProps?: {id: number}; likedSongs?: unknown };
-  Artist: { itemProps?: {id: number}; likedSongs?: unknown };
+  Playlist: { id?: number; likedSongs?: unknown };
+  Album: {id?: number; likedSongs?: unknown };
+  Artist: {id?: number; likedSongs?: unknown };
 }
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
@@ -43,10 +43,9 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
     BottomTabScreenProps<RootTabParamList, Screen>,
     NativeStackScreenProps<RootStackParamList>
   >;
-
 type test = NativeStackScreenProps<RootTabParamList | SettingsStackParamList | LibraryStackParamList>["navigation"]["navigate"]
 export type SettingsStackParamList = {
-  Settings:  undefined;
+  MainSettings:  undefined;
   SubSettings: { requestSubSettings: keyof SettingsState } | undefined;
   Library: undefined
 };
@@ -65,33 +64,7 @@ export interface OptionType<T extends keyof SettingsState = any> {
   option: SettingsState[T];
   name: string;
 }
-export type CoverProps = {
-  coverImgUrl?: string;
-  name?: String;
-  id: Number;
-  img1v1ID?: String;
-  mark?: Number;
-  img1v1Url?: String;
-  picUrl?: String;
-  privacy?: Number;
-  type?: "album" | "playlist";
-  imageUrl?;
-  subText?;
-  isPrivacy?;
-  isExplicit?;
-};
-export type CoverRowProps = {
-  items: CoverProps[];
-  type: String;
-  subText: String;
-  subTextFontSize?: String;
-  showPlayCount?: Boolean;
-  columnNumber?: Number;
-  gap?: String;
-  playButtonSize?: Number;
-  imageSize?: Number;
-  rowNumber?: Number;
-};
+
 export interface PlaylistProps {
   id: Number;
   coverImgUrl: String;

@@ -34,7 +34,7 @@ const linking: LinkingOptions<RootStackParamList> = {
           },
           Settings: {
             screens: {
-              Settings: "settings_screen",
+              MainSettings: "settings_screen",
               SubSettings: "sub_settings",
             },
           },

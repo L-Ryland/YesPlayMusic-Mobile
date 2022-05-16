@@ -19,7 +19,7 @@ const MainSettings = createSettingsDataFactory();
 
 export const SettingsScreen = ({
   navigation,
-}: SettingsStackScreenProps<"Settings">) => {
+}: SettingsStackScreenProps<"MainSettings">) => {
   const handleLogOut = useMutation(logout, {
     onSuccess: () => {
       Object.assign(userData, initialUserData);
@@ -31,7 +31,6 @@ export const SettingsScreen = ({
     navigation.navigate("SubSettings", {
       requestSubSettings: param,
     });
-    navigation.navigate("Settings")
   };
   const tintBackgroundColor = useThemeColor({}, "tintBackground");
   const textColor = useThemeColor({}, "text");

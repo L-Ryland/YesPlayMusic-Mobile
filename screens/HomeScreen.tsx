@@ -1,13 +1,22 @@
-import { StyleSheet, Appearance, StatusBar } from "react-native";
+import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React from "react";
 
-import { Text, ScrollView, View, Title } from "@/components";
-import { CoverRow, DailyTracksCard, FMCard, Tracker } from "@/components";
+import {
+  CoverRow,
+  DailyTracksCard,
+  FMCard,
+  ScrollView,
+  Subtitle,
+  Text,
+  Title,
+  Tracker,
+  View,
+} from "@/components";
 import { RootTabScreenProps } from "@/types";
 import { byAppleMusic } from "@/utils/staticData";
 import { useSnapshot } from "valtio";
-import { MusicLang, settings } from "@/hydrate/settings";
+import { settings } from "@/hydrate/settings";
 import { useRecommendPlaylist, useToplist } from "@/hooks/usePlaylist";
 import { useNewAlbums } from "@/hooks/useAlbum";
 import { useTopArtists } from "@/hooks/useArtist";
@@ -16,10 +25,9 @@ const AppleMusic: React.FC = () => (
   <View>
     <Title>by Apple Music</Title>
     <CoverRow
-      rowNumber={1}
       type="playlist"
       items={byAppleMusic}
-      subText="by AppleMusic"
+      subtitle={Subtitle.AppleMusic}
       imageSize={1024}
     />
   </View>
@@ -33,10 +41,9 @@ const RecommendPlaylists: React.FC = () => {
         <Text>Loading</Text>
       ) : (
         <CoverRow
-          rowNumber={2}
           type="playlist"
           items={recommendPlaylist?.result}
-          subText="copywriter"
+          subtitle={Subtitle.Copywriter}
         />
       )}
     </View>
@@ -53,7 +60,7 @@ const RecommendArtists: React.FC = () => {
       {isLoading ? (
         <Text>Loading</Text>
       ) : (
-        <CoverRow rowNumber={1} type="artist" items={topArtists} />
+        <CoverRow type="artist" items={topArtists} />
       )}
     </View>
   );
@@ -70,10 +77,9 @@ const NewAlbums: React.FC = () => {
         <Text>Loading</Text>
       ) : (
         <CoverRow
-          rowNumber={1}
           type="album"
           items={newAlbums?.albums}
-          subText="artist"
+          subtitle={Subtitle.Artist}
         />
       )}
     </View>
@@ -88,10 +94,9 @@ const Charts: React.FC = () => {
         <Text>Loading</Text>
       ) : (
         <CoverRow
-          rowNumber={1}
           type="playlist"
           items={toplist?.list}
-          subText="updateFrequency"
+          subtitle={Subtitle.UpdateFrequency}
         />
       )}
     </View>

@@ -21,7 +21,7 @@ import { proxy } from "valtio";
 import { fetchAlbum, fetchTracks } from "@/api";
 import { Platform } from "expo-modules-core";
 
-if (Platform.OS !== "android") {
+if (Platform.OS !== "android" && Platform.OS !== "ios") {
   exports.Player = class Player {};
 }
 
@@ -142,6 +142,10 @@ export class Player {
    */
   get trackIndex() {
     return this._trackIndex;
+  }
+
+  get track() {
+    return this._track;
   }
 
   /**

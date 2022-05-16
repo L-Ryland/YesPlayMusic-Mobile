@@ -148,7 +148,7 @@ const UserAlbums = () => {
   });
   return (
     <CoverRow
-      type="playlist"
+      type="album"
       items={albums?.data.slice(0, 8)}
       imageSize={1024}
       verticalStyle={true}

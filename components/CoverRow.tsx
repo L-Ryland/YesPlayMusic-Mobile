@@ -1,27 +1,51 @@
-import { CoverRowProps, CoverProps } from "@/types";
 import React from "react";
 import {
   Dimensions,
+  ImageStyle,
   StyleSheet,
   TouchableHighlight,
-  ViewProps,
-  ViewStyle,
 } from "react-native";
 import { SafeAreaView, ListRenderItem } from "react-native";
 import styled from "styled-components/native";
 
-import { Cover } from "@/components/Cover";
+import { Cover, CoverProps } from "@/components/Cover";
 import { useNavigation } from "@react-navigation/core";
+import { formatDate, resizeImage } from "@/utils/common";
 
 const FlatList = styled.FlatList`
   display: flex;
 `;
 
-export function CoverRow(props: CoverRowProps | any) {
+export enum Subtitle {
+  Copywriter = "copywriter",
+  Creator = "creator",
+  TypeReleaseYear = "type+releaseYear",
+  Artist = "artist",
+  AppleMusic = "appleMusic",
+  UpdateFrequency = "updateFrequency",
+}
+
+export type CoverRowProps = {
+  title?: string;
+  items?: {}[];
+  albums?: Album[];
+  artists?: Artist[];
+  playlists?: Playlist[];
+  subtitle?: Subtitle;
+  seeMoreLink?: string;
+  verticalStyle?: boolean;
+  navigateCallback?: () => void;
+  type: "playlist" | "artist" | "album";
+  subTextFontSize?: String;
+  showPlayCount?: Boolean;
+  playButtonSize?: Number;
+  imageSize?: Number;
+};
+export const CoverRow: React.FC<CoverRowProps> = (props) => {
   const [isHorizontal, setIsHorizontal] = React.useState(true);
   const [numColumns, setNumColumns] = React.useState<number>();
   const navigation = useNavigation();
-  let { items, type, subText, verticalStyle, imageSize } = props;
+  let { type, items, verticalStyle, subtitle } = props;
   React.useEffect(() => {
     if (verticalStyle) {
       setIsHorizontal(false);
@@ -32,40 +56,32 @@ export function CoverRow(props: CoverRowProps | any) {
 
   // console.log(items, subText);
   const { width } = Dimensions.get("window");
-  const getImageUrl = (item: CoverProps) => {
-    if (item.img1v1Url) {
-      let img1v1ID = item.img1v1Url.split("/");
-      let imgName = img1v1ID[img1v1ID.length - 1];
-      if (imgName === "5639395138885805.jpg") {
-        // 没有头像的歌手，网易云返回的img1v1Url并不是正方形的 😅😅😅
-        return `https://p2.music.126.net/VnZiScyynLG7atLIZ2YPkw==/18686200114669622.jpg?param=${imageSize}y${imageSize}`;
-      }
-    }
-    let img = item.img1v1Url || item.picUrl || item.coverImgUrl;
-    return `${img?.replace(
-      "http://",
-      "https://"
-    )}?param=${imageSize}y${imageSize}`;
+  const getImageUrl = (item: Album | Playlist | Artist) => {
+    let cover: string | undefined = "";
+    if ("coverImgUrl" in item) cover = item.coverImgUrl;
+    if ("picUrl" in item) cover = item.picUrl;
+    if ("img1v1Url" in item) cover = item.img1v1Url;
+    return resizeImage(cover || "", "md");
   };
 
   const renderItem = ({ item }: any) => {
     // let subText = getSubText(item);
-    const universalStyle: ViewStyle = {
+    const universalStyle: ImageStyle = {
       borderRadius: 22,
       marginLeft: 20,
       marginBottom: 5,
     };
-    const circleStyle: ViewStyle = {
+    const circleStyle: ImageStyle = {
       borderRadius: 100,
       marginLeft: 20,
       marginBottom: 5,
     };
-    const rowStyle: ViewStyle = {
+    const rowStyle: ImageStyle = {
       height: 200,
       width: 200,
       marginRight: 20,
     };
-    const listStyle: ViewStyle = {
+    const listStyle: ImageStyle = {
       height: width / 2 - 30,
       width: width / 2 - 30,
       marginLeft: 20,
@@ -73,31 +89,45 @@ export function CoverRow(props: CoverRowProps | any) {
       // margin: 20
       // marginLeft: 20,
     };
-    const itemProps = {
-      id: item.id,
+    const itemProps: CoverProps = {
+      // id: item.id,
       imageUrl: getImageUrl(item),
       type,
       name: item.name,
-      isExplicit: Boolean(type === "album" && item.mark === 1056768),
-      isPrivacy: Boolean(type === "playlist" && item.privacy === 10),
-      subText: subText ?? undefined,
+      isExplicit: Boolean(
+        type === "album" && "mark" in item && item.mark === 1056768
+      ),
+      isPrivacy: Boolean(
+        type === "playlist" && "privacy" in item && item.privacy === 10
+      ),
+      subTitle: subtitle ? getSubtitleText(item, subtitle) : undefined,
       // imageStyle: type=="artist"?circleStyle:!isHorizontal?listStyle:universalStyle,
       imageStyle: [
-        type == "artist" ? circleStyle : universalStyle,
+        type === "artist" ? circleStyle : universalStyle,
         isHorizontal ? rowStyle : listStyle,
       ],
       viewStyle: isHorizontal
         ? { width: 240, height: 260 }
         : { width: width / 2, height: width / 2 + 10 },
     };
-    const handlePress = () => {
+    const handlePress = (id: number) => {
       console.log(itemProps);
-      navigation.navigate("Playlist", { itemProps });
+      switch (type) {
+        case "album":
+          navigation.navigate("Album", { id });
+          break;
+        case "artist":
+          navigation.navigate("Artist", { id });
+          break;
+        case "playlist":
+          navigation.navigate("Playlist", { id });
+          break;
+      }
     };
     // console.log(item, itemProps);
 
     return (
-      <TouchableHighlight onPress={handlePress}>
+      <TouchableHighlight onPress={() => handlePress(item.id)}>
         <Cover {...itemProps} />
       </TouchableHighlight>
     );
@@ -118,34 +148,59 @@ export function CoverRow(props: CoverRowProps | any) {
       />
     </SafeAreaView>
   );
-}
+};
+const getSubtitleText = (
+  item: Album | Playlist | Artist,
+  subtitle: Subtitle
+) => {
+  const nickname =
+    "creator" in item
+      ? item.creator
+        ? item.creator.nickname
+        : "someone"
+      : "someone";
+  const artist =
+    "artist" in item
+      ? item.artist.name
+      : "artists" in item
+      ? item.artists?.[0]?.name
+      : "unknown";
+  const copywriter = "copywriter" in item ? item.copywriter : "unknown";
+  const releaseYear =
+    ("publishTime" in item &&
+      formatDate(item.publishTime ?? 0, "en", "YYYY")) ||
+    "unknown";
+  const updateFrequency =
+    "updateFrequency" in item
+      ? item.updateFrequency
+        ? item.updateFrequency
+        : "updateFrequency"
+      : "updateFrequency";
 
-function getSubText(item) {
-  if (item.subText === "copywriter") return item.copywriter;
-  if (item.subText === "description") return item.description;
-  if (item.subText === "updateFrequency") return item.updateFrequency;
-  if (item.subText === "creator") return "by " + item.creator.nickname;
-  if (item.subText === "releaseYear")
-    return new Date(item.publishTime).getFullYear();
-  if (item.subText === "artist") {
-    if (item.artist !== undefined)
-      return `<a href="/#/artist/${item.artist.id}">${item.artist.name}</a>`;
-    if (item.artists !== undefined)
-      return `<a href="/#/artist/${item.artists[0].id}">${item.artists[0].name}</a>`;
-  }
-  if (item.subText === "albumType+releaseYear") {
-    let albumType = item.type;
-    if (item.type === "EP/Single") {
-      albumType = item.size === 1 ? "Single" : "EP";
-    } else if (item.type === "Single") {
-      albumType = "Single";
-    } else if (item.type === "专辑") {
-      albumType = "Album";
-    }
-    return `${albumType} · ${new Date(item.publishTime).getFullYear()}`;
-  }
-  if (item.subText === "appleMusic") return "by Apple Music";
-}
+  const type = {
+    playlist: "playlist",
+    album: "Album",
+    专辑: "Album",
+    Single: "Single",
+    "EP/Single": "EP",
+    EP: "EP",
+    unknown: "unknown",
+    精选集: "Collection",
+  }[
+    ("type" in item && typeof item.type !== "number" && item.type) || "unknown"
+  ];
+
+  const table = {
+    [Subtitle.Creator]: `by ${nickname}`,
+    [Subtitle.TypeReleaseYear]: `${type} · ${releaseYear}`,
+    [Subtitle.Artist]: artist,
+    [Subtitle.Copywriter]: copywriter,
+    [Subtitle.AppleMusic]: `by Apple Music`,
+    [Subtitle.UpdateFrequency]: updateFrequency,
+  };
+  // alert(table[subtitle])
+  return table[subtitle];
+};
 
 const styles = StyleSheet.create({
   coverRow: {

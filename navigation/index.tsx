@@ -26,7 +26,9 @@ import {
   NotFoundScreen,
   SubSettingsScreen,
   ModalScreen,
-  PlaylistScreen
+  PlaylistScreen,
+  ArtistScreen,
+  AlbumScreen,
 } from "@/screens";
 import {
   RootStackParamList,
@@ -76,7 +78,8 @@ function RootNavigator() {
       <RootStack.Group screenOptions={{ presentation: "modal" }}>
         <RootStack.Screen name="Player" component={PlayerScreen} />
         <RootStack.Screen name="Playlist" component={PlaylistScreen} />
-        <RootStack.Screen name="Album" component={PlaylistScreen} />
+        <RootStack.Screen name="Album" component={AlbumScreen} />
+        <RootStack.Screen name="Artist" component={ArtistScreen} />
       </RootStack.Group>
     </RootStack.Navigator>
   );
@@ -92,49 +95,49 @@ function BottomTabNavigator() {
   const colorScheme = useColorScheme();
 
   return (
-      <BottomTab.Navigator
-        initialRouteName="Settings"
-        screenOptions={{
-          tabBarActiveTintColor: Colors[colorScheme].tint,
+    <BottomTab.Navigator
+      initialRouteName="Settings"
+      screenOptions={{
+        tabBarActiveTintColor: Colors[colorScheme].tint,
+      }}
+    >
+      <BottomTab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={({ navigation }: RootTabScreenProps<"Home">) => ({
+          title: "Home Demo",
+          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          headerShown: false,
+        })}
+      />
+      <BottomTab.Screen
+        name="Library"
+        component={LibraryNavigator}
+        options={{
+          title: "Library",
+          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          headerShown: false,
         }}
-      >
-        <BottomTab.Screen
-          name="Home"
-          component={HomeScreen}
-          options={({ navigation }: RootTabScreenProps<"Home">) => ({
-            title: "Home Demo",
-            tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-            headerShown: false,
-          })}
-        />
-        <BottomTab.Screen
-          name="Library"
-          component={LibraryNavigator}
-          options={{
-            title: "Library",
-            tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-            headerShown: false,
-          }}
-        />
-        <BottomTab.Screen
-          name="Explore"
-          component={ExploreScreen}
-          options={{
-            title: "Explore",
-            tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-            headerShown: false,
-          }}
-        />
-        <BottomTab.Screen
-          name="Settings"
-          component={SettingsScreen}
-          options={{
-            title: "Settings",
-            tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-            headerShown: true,
-          }}
-        />
-      </BottomTab.Navigator>
+      />
+      <BottomTab.Screen
+        name="Explore"
+        component={ExploreScreen}
+        options={{
+          title: "Explore",
+          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          headerShown: false,
+        }}
+      />
+      <BottomTab.Screen
+        name="Settings"
+        component={SettingsNavigator}
+        options={{
+          title: "Settings",
+          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          headerShown: true,
+        }}
+      />
+    </BottomTab.Navigator>
   );
 }
 
@@ -142,13 +145,13 @@ function SettingsNavigator() {
   const SettingsStack = createNativeStackNavigator<SettingsStackParamList>();
 
   return (
-    <SettingsStack.Navigator initialRouteName="Settings">
+    <SettingsStack.Navigator initialRouteName="MainSettings">
       <SettingsStack.Group>
         <SettingsStack.Screen
-          name="Settings"
+          name="MainSettings"
           component={SettingsScreen}
           options={{
-            headerShown: false
+            headerShown: false,
           }}
         />
         <SettingsStack.Screen
@@ -159,16 +162,25 @@ function SettingsNavigator() {
     </SettingsStack.Navigator>
   );
 }
+
 function LibraryNavigator() {
   const LibraryStack = createNativeStackNavigator();
   return (
     <LibraryStack.Navigator initialRouteName="LibraryScreen">
       <LibraryStack.Group>
-        <LibraryStack.Screen name="Library" component={LibraryScreen} options={{headerShown: false}}/>
-        <LibraryStack.Screen name="Login" component={LoginScreen} options={{headerShown: false}}/>
+        <LibraryStack.Screen
+          name="Library"
+          component={LibraryScreen}
+          options={{ headerShown: false }}
+        />
+        <LibraryStack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ headerShown: false }}
+        />
       </LibraryStack.Group>
     </LibraryStack.Navigator>
-  )
+  );
 }
 
 /**

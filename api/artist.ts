@@ -28,7 +28,7 @@ export interface FetchArtistResponse {
 export function fetchArtist(
   params: FetchArtistParams,
   noCache: boolean
-): AxiosPromise<FetchArtistResponse> {
+): Promise<FetchArtistResponse> {
   const otherParams: { timestamp?: number } = {}
   if (noCache) otherParams.timestamp = new Date().getTime()
   return request({
@@ -51,7 +51,7 @@ export interface FetchArtistAlbumsResponse extends ResponseFormat {
 }
 export function fetchArtistAlbums(
   params: FetchArtistAlbumsParams
-): AxiosPromise<FetchArtistAlbumsResponse> {
+): Promise<FetchArtistAlbumsResponse> {
   return request({
     url: 'artist/album',
     method: 'get',

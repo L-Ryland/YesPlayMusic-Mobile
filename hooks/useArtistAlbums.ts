@@ -2,7 +2,7 @@ import { fetchArtistAlbums, FetchArtistAlbumsParams, ArtistApiNames, FetchArtist
 import { APIs } from '@/api/CacheAPIs'
 import {useQuery} from "react-query";
 
-export default function useUserAlbums(params: FetchArtistAlbumsParams) {
+export default function useArtistAlbums(params: FetchArtistAlbumsParams) {
   return useQuery(
     [ArtistApiNames.FETCH_ARTIST_ALBUMS, params],
     async () => {

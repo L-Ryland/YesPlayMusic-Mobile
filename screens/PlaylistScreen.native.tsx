@@ -142,7 +142,7 @@ const Header = memo(
                 5277771961, 5277965913, 5277969451, 5277778542, 5278068783,
               ].includes(playlist?.id ?? 0)
                 ? "Apple Music"
-                : playlist?.creator.nickname}
+                : playlist?.creator?.nickname}
             </ArtistInfo>
             <Description ellipsizeMode="tail">
               {playlist?.description}
@@ -232,11 +232,11 @@ export const PlaylistScreen = ({
 }: RootStackScreenProps<"Playlist">) => {
   const {
     likedSongs,
-    itemProps,
+    id,
   } = route.params;
   const likedSongPlaylistID = useUserPlaylists().data?.playlist[0].id;
   const { data, isLoading } = usePlaylist({
-    id: likedSongs ? likedSongPlaylistID || 0 : itemProps?.id || 0,
+    id: likedSongs ? likedSongPlaylistID || 0 : id || 0,
   });
   const playlist = data?.playlist;
 

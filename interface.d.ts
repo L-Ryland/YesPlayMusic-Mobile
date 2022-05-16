@@ -1,3 +1,47 @@
+declare interface Chart {
+  "subscribers"?: [],
+  "subscribed"?: null,
+  "creator"?: null,
+  "artists": null,
+  "tracks": null,
+  "updateFrequency": "每天更新",
+  "backgroundCoverId": 0,
+  "backgroundCoverUrl": null,
+  "titleImage": 0,
+  "titleImageUrl": null,
+  "englishTitle": null,
+  "opRecommend": false,
+  "recommendInfo": null,
+  "adType": 0,
+  "trackNumberUpdateTime": 1652660091936,
+  "subscribedCount": 3923247,
+  "cloudTrackCount": 0,
+  "userId": 1,
+  "createTime": 1404115136883,
+  "highQuality": false,
+  "specialType": 10,
+  "coverImgId": 109951166952713760,
+  "trackUpdateTime": 1652686551635,
+  "trackCount": 100,
+  "newImported": false,
+  "anonimous": false,
+  "updateTime": 1652660092312,
+  "commentThreadId": "A_PL_0_19723756",
+  "coverImgUrl": "https://p1.music.126.net/pcYHpMkdC69VVvWiynNklA==/109951166952713766.jpg",
+  "totalDuration": 0,
+  "privacy": 0,
+  "playCount": 4978615296,
+  "description": "云音乐中每天热度上升最快的100首单曲，每日更新。",
+  "ordered": true,
+  "tags": [
+
+  ],
+  "status": 0,
+  "name": "飙升榜",
+  "id": 19723756,
+  "coverImgId_str": "109951166952713766",
+  "ToplistType": "S"
+}
 declare interface Playlist {
   id: number
   name: string
@@ -14,7 +58,7 @@ declare interface Playlist {
   artists?: Artist[]
   backgroundCoverId?: number
   backgroundCoverUrl?: string | null
-  creator: User
+  creator: User | null
   canDislike?: boolean
   cloudTrackCount?: number
   commentThreadId?: string

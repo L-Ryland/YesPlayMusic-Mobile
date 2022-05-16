@@ -48,7 +48,7 @@ const enabledPlaylistCategories = playlistCategories
 export interface SettingsState {
   lang: Lang;
   appearance: Appearance;
-  musicLanguage: MusicLang;
+  musicLanguage: MusicLang | undefined;
   musicQuality: MusicQuality;
   showLyricsTranslation: boolean;
   lyricsBackground: LyricsBackground;

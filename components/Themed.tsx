@@ -128,7 +128,7 @@ export function Image<T extends ImageProps>(props: T) {
 export const Button: React.FC<ThemeProps & DefaultButton["props"]> = (
   props
 ) => {
-  const { lightColor, darkColor, onPress, title, ...otherProps } = props;
+  const { lightColor, darkColor, onPress, title } = props;
   const buttonColor = useThemeColor(
     { light: lightColor, dark: darkColor },
     "buttonColor"
@@ -157,16 +157,16 @@ export const Button: React.FC<ThemeProps & DefaultButton["props"]> = (
   );
 };
 
-export const Title: React.FC<TextProps> = styled(Text).attrs(() => ({
+export const Title: React.FC<TextProps> = styled(Text).attrs((): TextProps => ({
   adjustsFontSizeToFit: true,
 }))`
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 20;
-  font-size: 40;
+  margin-bottom: 20px;
+  font-size: 40px;
   font-weight: 700;
-  padding: 0px 0px 8px 8px;
+  padding: 0 0 8px 8px;
 `;
 export const CoverTitle: React.FC<TextProps> = styled(Text)`
   font-size: 16px;

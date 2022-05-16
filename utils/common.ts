@@ -2,6 +2,7 @@ import { isAccountLoggedIn } from "./auth";
 import { refreshCookie } from "@/api/auth";
 import { dailySignin } from "@/api/user";
 import dayjs from "dayjs";
+import duration from 'dayjs/plugin/duration'
 // import store from '@/store';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -136,19 +137,51 @@ export function randomNum(minNum, maxNum) {
   }
 }
 
-export function shuffleAList(list) {
-  let sortsList = list.map((t) => t.sort);
-  for (let i = 1; i < sortsList.length; i++) {
-    const random = Math.floor(Math.random() * (i + 1));
-    [sortsList[i], sortsList[random]] = [sortsList[random], sortsList[i]];
-  }
-  let newSorts = {};
-  list.map((track) => {
-    newSorts[track.id] = sortsList.pop();
-  });
-  return newSorts;
-}
+/**
+ * @description 格式化时长
+ * @param  {number} milliseconds - 毫秒数
+ * @param  {'en'|'zh-TW'|'zh-CN'='en'} locale - 语言
+ * @param  {'hh:mm:ss'|'hh[hr]mm[min]'='hh:mm:ss'} format - 格式化字符串
+ */
+export function formatDuration(
+  milliseconds: number,
+  locale: 'en' | 'zh-TW' | 'zh-CN' = 'zh-CN',
+  format: 'hh:mm:ss' | 'hh[hr] mm[min]' = 'hh:mm:ss'
+): string {
+  dayjs.extend(duration)
 
+  const time = dayjs.duration(milliseconds)
+  const hours = time.hours().toString()
+  const mins = time.minutes().toString()
+  const seconds = time.seconds().toString().padStart(2, '0')
+
+  if (format === 'hh:mm:ss') {
+    return hours !== '0'
+      ? `${hours}:${mins.padStart(2, '0')}:${seconds}`
+      : `${mins}:${seconds}`
+  } else {
+    const units = {
+      en: {
+        hours: 'hr',
+        mins: 'min',
+      },
+      'zh-CN': {
+        hours: '小时',
+        mins: '分钟',
+      },
+      'zh-TW': {
+        hours: '小時',
+        mins: '分鐘',
+      },
+    }
+
+    return hours !== '0'
+      ? `${hours} ${units[locale].hours}${
+        mins === '0' ? '' : ` ${mins} ${units[locale].mins}`
+      }`
+      : `${mins} ${units[locale].mins}`
+  }
+}
 // export function throttle(fn, time) {
 //   let isRun = false;
 //   return function () {

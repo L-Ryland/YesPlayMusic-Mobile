@@ -1,4 +1,4 @@
-import React, { Fragment, memo} from "react";
+import React, { Fragment, memo, useMemo } from "react";
 import {
   StyleSheet,
   TouchableHighlight,
@@ -14,17 +14,22 @@ import {
   Text,
   View,
   useSvgStyle,
-  TrackItem,
+  TrackItem, SvgIcon
 } from "@/components";
 import { RootStackScreenProps} from "@/types";
 import { Heart, HeartSolid, Plus, Play, Lock } from "@/components/icons";
 import { useSnapshot } from "valtio";
 import { SvgProps } from "react-native-svg";
 import usePlaylist from "@/hooks/usePlaylist";
-import { formatDate, resizeImage } from "@/utils/common";
+import { formatDate, formatDuration, resizeImage } from "@/utils/common";
 import useTracksInfinite from "@/hooks/useTracksInfinite";
 import {PlayerMode, TrackListSourceType, trackPlayer} from "@/hydrate/player";
 import useUserPlaylists from "@/hooks/useUserPlaylists";
+import useAlbum from "@/hooks/useAlbum";
+import useUserAlbums, { useMutationLikeAAlbum } from "@/hooks/useUserAlbums";
+import { useNavigation } from "@react-navigation/core";
+import dayjs from "dayjs";
+import useTracks from "@/hooks/useTracks";
 const { width } = Dimensions.get("window");
 
 const coverStyle = {
@@ -82,22 +87,22 @@ const ButtonBox = styled(View)`
   justify-content: space-between;
 `;
 
-const PlayButton = ({
-  svgStyle,
-  playlist,
-  handlePlay,
-}: {
+const PlayButton: React.FC<{
   svgStyle: SvgProps;
-  playlist: Playlist | undefined;
+  album: Album | undefined;
   handlePlay: () => void;
+}> = ({
+  svgStyle,
+  album,
+  handlePlay,
 }) => {
   const {mode, trackListSource} = useSnapshot(trackPlayer);
-  const isThisPlaylistPlaying =
+  const isThisAlbumPlaying  =
     mode === PlayerMode.TrackList &&
-    trackListSource?.type === TrackListSourceType.Playlist &&
-    trackListSource?.id === playlist?.id;
+    trackListSource?.type === TrackListSourceType.Album &&
+    trackListSource?.id === album?.id;
   const wrappedHandlePlay = () => {
-    if (isThisPlaylistPlaying) {
+    if (isThisAlbumPlaying) {
       trackPlayer.playOrPause();
     } else {
       handlePlay();
@@ -115,41 +120,62 @@ const PlayButton = ({
 
 
 
-const Header = memo(
+const Header: React.FC<{
+  album?: Album;
+  isLoading: boolean;
+  handlePlay: () => void;
+}> = memo(
   ({
-    playlist,
+    album,
     isLoading,
     handlePlay,
-  }: {
-    playlist?: Playlist;
-    isLoading: boolean;
-    handlePlay: () => void;
   }) => {
-    const coverUrl = resizeImage(playlist?.coverImgUrl || "", "lg");
+    const navigation = useNavigation();
     const svgStyle = useSvgStyle({});
+    const coverUrl = resizeImage(album?.picUrl || '', 'lg')
+    const albumDuration = useMemo(() => {
+      const duration = album?.songs?.reduce((acc, cur) => acc + cur.dt, 0) || 0
+      return formatDuration(duration, 'zh-CN', 'hh[hr] mm[min]')
+    }, [album?.songs])
+
+    const [isCoverError, setCoverError] = React.useState(
+      coverUrl.includes('3132508627578625')
+    )
+
+    const { data: userAlbums } = useUserAlbums()
+    const isThisAlbumLiked = useMemo(() => {
+      if (!album) return false
+      return !!userAlbums?.data?.find(a => a.id === album.id)
+    }, [album, userAlbums?.data])
+    const mutationLikeAAlbum = useMutationLikeAAlbum()
     return (
       <Fragment>
         <PlaylistInfo style={{ flex: 2 }}>
           <Cover imageUrl={coverUrl} imageStyle={coverStyle} />
           <Info>
             <Title>
-              {playlist?.privacy === 10 && <Lock />}
-              {playlist?.name}
+              {album?.name}
             </Title>
             <ArtistInfo>
-              Playlist by{" "}
-              {[
-                5277771961, 5277965913, 5277969451, 5277778542, 5278068783,
-              ].includes(playlist?.id ?? 0)
-                ? "Apple Music"
-                : playlist?.creator.nickname}
+              Album by{' '}
+              <Text
+                onPress={() => navigation.navigate("Artist", {id: album?.artist.id})}
+              >
+                {album?.artist.name}
+              </Text>
             </ArtistInfo>
-            <Description ellipsizeMode="tail">
-              {playlist?.description}
+            <Description ellipsizeMode="tail" numberOfLines={3}>
+              {album?.description}
             </Description>
             <DateAndCount>
-              Updated At {formatDate(playlist?.updateTime || 0, "zh-CN")} ·{" "}
-              {playlist?.trackCount} Songs
+              {album?.mark === 1056768 && (
+                <SvgIcon
+                  name='Explicit'
+                  {...svgStyle}
+                />
+              )}
+              {dayjs(album?.publishTime || 0).year()} · {album?.size} Songs ·{' '}
+              {albumDuration}
             </DateAndCount>
           </Info>
         </PlaylistInfo>
@@ -161,7 +187,7 @@ const Header = memo(
           </View>
           <PlayButton
             svgStyle={svgStyle}
-            playlist={playlist}
+            album={album}
             handlePlay={handlePlay}
           />
         </ButtonBox>
@@ -171,15 +197,15 @@ const Header = memo(
 );
 Header.displayName = "Header";
 
-const TrackList = memo(
+const TrackList: React.FC<{
+  album: Album | undefined;
+  handlePlay: () => void;
+  isLoadingAlbum: boolean;
+}> = memo(
   ({
-    playlist,
+    album,
     handlePlay,
-    isLoadingPlaylist,
-  }: {
-    playlist: Playlist | undefined;
-    handlePlay: () => void;
-    isLoadingPlaylist: boolean;
+    isLoadingAlbum
   }) => {
     // const tracks = [
     //   { id: "001", title: " Change Season ", artist: "  Tkko" },
@@ -190,23 +216,7 @@ const TrackList = memo(
     //   { id: "006", title: " 带刺的草莓 ", artist: " Mit-F " },
     //   { id: "007", title: " 带刺的草莓 ", artist: " Mit-F " },
     // ];
-    const {
-      data: tracksPages,
-      hasNextPage,
-      isLoading: isLoadingTracks,
-      isFetchingNextPage,
-      fetchNextPage,
-    } = useTracksInfinite({
-      ids: playlist?.trackIds?.map((t) => t.id) || [],
-    });
-    const tracks = React.useMemo(() => {
-      if (!tracksPages) return [];
-      const allTracks: Track[] = [];
-      tracksPages.pages.forEach((page) =>
-        allTracks.push(...(page?.songs ?? []))
-      );
-      return allTracks;
-    }, [tracksPages]);
+    const {data: tracks, isLoading: isLoadingTracks} = useTracks({ids: album ? album.songs.map(t => t.id) :[]})
 
     const renderTracks = ({ item }) => {
       return <TrackItem track={item} handlePlay={handlePlay} />;
@@ -215,7 +225,7 @@ const TrackList = memo(
       <SafeAreaView>
         <FlatList
           data={
-            isLoadingPlaylist ? [] : isLoadingTracks ? playlist?.tracks : tracks
+            isLoadingAlbum? [] : album?.songs
           }
           renderItem={renderTracks}
           keyExtractor={(item, index) => item.id + index.toString()}
@@ -231,39 +241,35 @@ export const AlbumScreen = ({
   route,
 }: RootStackScreenProps<"Album">) => {
   const {
-    likedSongs,
-    itemProps,
+    id,
   } = route.params;
-  const likedSongPlaylistID = useUserPlaylists().data?.playlist[0].id;
-  const { data, isLoading } = usePlaylist({
-    id: likedSongs ? likedSongPlaylistID || 0 : itemProps?.id || 0,
-  });
-  const playlist = data?.playlist;
+  const {data, isLoading } = useAlbum({id: id || 0});
+  const album = data?.album;
 
   const handlePlay = React.useCallback(
     (trackID: number | null = null) => {
-      if (!playlist?.id) {
-        ToastAndroid.show("无法播放歌单", ToastAndroid.SHORT);
+      if (!album?.id) {
+        ToastAndroid.show("无法播放专辑，该专辑不存在", ToastAndroid.SHORT);
         return;
       }
       // ToastAndroid.show(`TrackID - ${trackID}, Playlist ID - ${playlist.id}`, ToastAndroid.CENTER);
-      playlist && trackPlayer.playPlaylist(playlist.id, trackID);
+      album && trackPlayer.playAlbum(album.id, trackID);
     },
-    [playlist]
+    [album]
   );
   React.useEffect(() => LogBox.ignoreLogs(['VirtualizedLists should never be nested']))
   return (
     <ScrollView style={styles.container}>
       <Header
-        playlist={playlist}
+        album={album}
         isLoading={isLoading}
         handlePlay={handlePlay}
       />
 
       <TrackList
-        playlist={playlist}
+        album={album}
         handlePlay={handlePlay}
-        isLoadingPlaylist={isLoading}
+        isLoadingAlbum={isLoading}
       />
     </ScrollView>
   );
