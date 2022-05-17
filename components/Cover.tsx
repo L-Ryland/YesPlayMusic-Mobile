@@ -51,13 +51,13 @@ export const Cover: React.FC<CoverProps> = (props) => {
           }}
           style={imageStyle}
         />
-        <View >
+        <View>
           <CoverTitle style={{textAlign: type == "artist" ? 'center' : "justify" }}>
             {isExplicit && <Explicit />}
             {isPrivacy && <Lock />}
             {name ?? ''}
           </CoverTitle>
-          {subTitle && <CoverSubTitle>{subTitle}</CoverSubTitle>}
+          <CoverSubTitle>{subTitle ? subTitle : ""}</CoverSubTitle>
         </View>
       </View>
     </View>

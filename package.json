@@ -73,6 +73,7 @@
     "react-native-web": "0.17.1",
     "react-query": "^3.38.1",
     "sentry-expo": "^4.0.0",
+    "string.prototype.matchall": "^4.0.7",
     "styled-components": "^5.3.5",
     "valtio": "^1.6.0",
     "valtio-persist": "^1.0.2"

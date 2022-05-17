@@ -1,30 +1,33 @@
-import React, { Fragment, memo} from "react";
+import React, { Fragment, memo } from "react";
 import {
-  StyleSheet,
-  TouchableHighlight,
   Dimensions,
-  ToastAndroid,
+  FlatList,
+  LogBox,
   SafeAreaView,
-  FlatList, LogBox,
+  StyleSheet,
+  ToastAndroid,
+  TouchableHighlight,
 } from "react-native";
 import styled from "styled-components/native";
 import {
   Cover,
   ScrollView,
   Text,
-  View,
-  useSvgStyle,
+  Tracker,
   TrackItem,
+  useSvgStyle,
+  View,
 } from "@/components";
-import { RootStackScreenProps} from "@/types";
-import { Heart, HeartSolid, Plus, Play, Lock } from "@/components/icons";
+import { RootStackScreenProps } from "@/types";
+import { Heart, HeartSolid, Lock, Play, Plus } from "@/components/icons";
 import { useSnapshot } from "valtio";
 import { SvgProps } from "react-native-svg";
 import usePlaylist from "@/hooks/usePlaylist";
 import { formatDate, resizeImage } from "@/utils/common";
 import useTracksInfinite from "@/hooks/useTracksInfinite";
-import {PlayerMode, TrackListSourceType, trackPlayer} from "@/hydrate/player";
+import { PlayerMode, TrackListSourceType, trackPlayer } from "@/hydrate/player";
 import useUserPlaylists from "@/hooks/useUserPlaylists";
+
 const { width } = Dimensions.get("window");
 
 const coverStyle = {
@@ -91,7 +94,7 @@ const PlayButton = ({
   playlist: Playlist | undefined;
   handlePlay: () => void;
 }) => {
-  const {mode, trackListSource} = useSnapshot(trackPlayer);
+  const { mode, trackListSource } = useSnapshot(trackPlayer);
   const isThisPlaylistPlaying =
     mode === PlayerMode.TrackList &&
     trackListSource?.type === TrackListSourceType.Playlist &&
@@ -112,8 +115,6 @@ const PlayButton = ({
     </TouchableHighlight>
   );
 };
-
-
 
 const Header = memo(
   ({
@@ -227,13 +228,8 @@ const TrackList = memo(
 );
 TrackList.displayName = "TrackList";
 
-export const PlaylistScreen = ({
-  route,
-}: RootStackScreenProps<"Playlist">) => {
-  const {
-    likedSongs,
-    id,
-  } = route.params;
+export const PlaylistScreen = ({ route }: RootStackScreenProps<"Playlist">) => {
+  const { likedSongs, id } = route.params;
   const likedSongPlaylistID = useUserPlaylists().data?.playlist[0].id;
   const { data, isLoading } = usePlaylist({
     id: likedSongs ? likedSongPlaylistID || 0 : id || 0,
@@ -251,21 +247,26 @@ export const PlaylistScreen = ({
     },
     [playlist]
   );
-  React.useEffect(() => LogBox.ignoreLogs(['VirtualizedLists should never be nested']))
+  React.useEffect(() =>
+    LogBox.ignoreLogs(["VirtualizedLists should never be nested"])
+  );
   return (
-    <ScrollView style={styles.container}>
-      <Header
-        playlist={playlist}
-        isLoading={isLoading}
-        handlePlay={handlePlay}
-      />
+    <View style={styles.container}>
+      <ScrollView>
+        <Header
+          playlist={playlist}
+          isLoading={isLoading}
+          handlePlay={handlePlay}
+        />
 
-      <TrackList
-        playlist={playlist}
-        handlePlay={handlePlay}
-        isLoadingPlaylist={isLoading}
-      />
-    </ScrollView>
+        <TrackList
+          playlist={playlist}
+          handlePlay={handlePlay}
+          isLoadingPlaylist={isLoading}
+        />
+      </ScrollView>
+      <Tracker />
+    </View>
   );
 };
 

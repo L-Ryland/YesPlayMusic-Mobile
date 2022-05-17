@@ -1,28 +1,22 @@
-import React, { useState } from "react";
-import {
-  Dimensions,
-  Image,
-  StyleSheet,
-  ToastAndroid,
-  TouchableHighlight,
-} from "react-native";
+import React, {useEffect, useMemo, useState} from "react";
+import {Dimensions, Image, SafeAreaView, ToastAndroid, TouchableHighlight, StyleSheet} from "react-native";
 import styled from "styled-components/native";
 import Slider from "@react-native-community/slider";
-import { SvgIcon, Text, useSvgStyle, View } from "@/components";
+import {SvgIcon, Text, useSvgStyle, View} from "@/components";
 import dayjs from "dayjs";
 import Duration from "dayjs/plugin/duration";
 import {
-  Event,
   ModifiedTrack,
   RepeatMode,
   State as PlayingState,
   trackPlayer,
   usePlaybackState,
   useProgress,
-  useTrackPlayerEvents,
 } from "@/hydrate/player";
-import { useSnapshot } from "valtio";
+import {useSnapshot} from "valtio";
 import {ProgressState} from "react-native-track-player";
+import useLyric from "@/hooks/useLyric";
+import {lyricParser} from "@/utils/lyric";
 
 dayjs.extend(Duration);
 const { width, height } = Dimensions.get("window");
@@ -34,7 +28,6 @@ const Player = styled(View)`
   align-items: center;
   padding: 50px 26px 26px;
 
-  position: absolute;
   width: ${contentWidth};
 `;
 
@@ -45,11 +38,10 @@ const HeaderBar = styled(View)`
   align-items: center;
   padding: 0;
 
-  position: absolute;
-  width: "${contentWidth}";
-  height: "37";
-  left: "26";
-  top: "50";
+  width: ${contentWidth};
+  height: 37px;
+  left: 26px;
+  top: 50px;
 `;
 
 function LeftControlButton() {}
@@ -59,18 +51,16 @@ function MiddleControlButton() {}
 function RightControlButton() {}
 
 const LyricsBox = styled(View)`
-  width: "${contentWidth}";
-  height: "500";
   background: purple;
-  border-radius: 10;
-  position: absolute;
-  margin-top: "${height * 0.9}";
+  border-radius: 10px;
 `;
-const CoverText: React.FC<{currentTrack: ModifiedTrack | null}> = ({ currentTrack }) => {
+const CoverText: React.FC<{ currentTrack: ModifiedTrack | null }> = ({
+  currentTrack,
+}) => {
   const ViewBox = styled(View)`
-      align-content: flex-start;
-      font-weight: bold;
-    `;
+    align-content: flex-start;
+    font-weight: bold;
+  `;
   return (
     <ViewBox>
       <Text style={{ fontSize: 28 }} key="title">
@@ -80,10 +70,10 @@ const CoverText: React.FC<{currentTrack: ModifiedTrack | null}> = ({ currentTrac
         {currentTrack?.artist}
       </Text>
     </ViewBox>
-  )
+  );
 };
 const PlayButton: React.FC = () => {
-  const playingState = usePlaybackState()
+  const playingState = usePlaybackState();
   const svgStyle = useSvgStyle({ height: 50, width: 50 });
   return (
     <SvgIcon
@@ -100,20 +90,20 @@ const ControlView: React.FC<{
   handleLoop: () => void;
 }> = ({ handleShuffle, handlePlay, handleLoop }) => {
   const svgStyle = useSvgStyle({});
-  const {shuffle, repeatMode} = useSnapshot(trackPlayer);
+  const { shuffle, repeatMode } = useSnapshot(trackPlayer);
   return (
     <ControlBox style={styles.containerWidth}>
       <TouchableHighlight onPress={handleShuffle}>
-        <SvgIcon name="Shuffle" {...useSvgStyle({active: shuffle})}/>
+        <SvgIcon name="Shuffle" {...useSvgStyle({ active: shuffle })} />
       </TouchableHighlight>
       <TouchableHighlight onPress={() => trackPlayer.skipToPrevious()}>
-        <SvgIcon name="Previous" {...svgStyle}/>
+        <SvgIcon name="Previous" {...svgStyle} />
       </TouchableHighlight>
       <TouchableHighlight onPress={handlePlay}>
         <PlayButton />
       </TouchableHighlight>
       <TouchableHighlight onPress={() => trackPlayer.skipToNext()}>
-        <SvgIcon name="Next" {...svgStyle}/>
+        <SvgIcon name="Next" {...svgStyle} />
       </TouchableHighlight>
       <TouchableHighlight onPress={handleLoop}>
         <SvgIcon
@@ -134,7 +124,7 @@ const ControlView: React.FC<{
     </ControlBox>
   );
 };
-const ProgressBar: React.FC<{progress: ProgressState }> = ({progress}) => {
+const ProgressBar: React.FC<{ progress: ProgressState }> = ({ progress }) => {
   const TimeStampRow = styled(View)`
     display: flex;
     flex-direction: row;
@@ -142,8 +132,8 @@ const ProgressBar: React.FC<{progress: ProgressState }> = ({progress}) => {
     align-items: flex-start;
     padding: 0;
     width: ${width * 0.8};
-    height: 50;
-    `;
+    height: 50px;
+  `;
   return (
     <View>
       <Slider
@@ -165,42 +155,33 @@ const ProgressBar: React.FC<{progress: ProgressState }> = ({progress}) => {
         </Text>
       </TimeStampRow>
     </View>
-  )
-}
+  );
+};
 
 export function PlayerScreen({ navigation, route }) {
   const playbackState = usePlaybackState();
   const progress = useProgress();
-  const [currentTrack, setCurrentTrack] = useState<ModifiedTrack | null>(null);
   const snappedPlayer = useSnapshot(trackPlayer);
-  // const [trackTitle, setTrackTitle] = React.useState<string>();
-  // const [trackArtist, setTrackArtist] = React.useState<Track>();
-  // const [trackArtwork, setTrackArtwork] = React.useState<Track["artwork"]>();
-  console.log("player screen", navigation, route);
-  const {
-    al: { name: songTitle, picUrl },
-    ar,
-  } = route.params.track;
-  console.log("player picurl", picUrl, "screen width", width);
-  const artists =
-    ar.length == 1
-      ? ar[0].name
-      : ar.reduce((prev, curr) => prev.name + ", " + curr.name);
-  // alert(JSON.stringify(progress))
-  useTrackPlayerEvents(
-    [Event.PlaybackTrackChanged, Event.PlaybackState, Event.PlaybackError],
-    async (event) => {
-      switch (event.type) {
-        case Event.PlaybackTrackChanged:
-          const track = await trackPlayer.getCurrentTrack(event.nextTrack);
-          setCurrentTrack(track);
-          break;
-      }
-    }
-  );
+  const [currentTrack, setCurrentTrack] = useState<ModifiedTrack | null>(null);
+  // useTrackPlayerEvents(
+  //   [Event.PlaybackTrackChanged, Event.PlaybackState, Event.PlaybackError],
+  //   async (event) => {
+  //     switch (event.type) {
+  //       case Event.PlaybackTrackChanged:
+  //         const track = await trackPlayer.getCurrentTrack(event.nextTrack);
+  //         setCurrentTrack(track);
+  //         break;
+  //     }
+  //   }
+  // );
+
+  useEffect(() => setCurrentTrack(snappedPlayer.track), [snappedPlayer.track]);
+  const { data: lyricRaw } = useLyric({ id: currentTrack?.id ?? 0 });
+  const lyric = useMemo(() => lyricRaw && lyricParser(lyricRaw), [lyricRaw]);
   // React.useMemo( async () => setCurrentTrack(await snappedPlayer.getCurrentTrack()),
   //   [snappedPlayer.trackIndex]
   // );
+  const hasLyrics: boolean = lyric?.lyric !== [] ?? false;
 
   const handlePlay = async () => {
     if (currentTrack == null) {
@@ -229,27 +210,31 @@ export function PlayerScreen({ navigation, route }) {
 
   const svgStyle = useSvgStyle({});
   return (
-    <View style={styles.container}>
-      <Player>
-        <Image
-          style={styles.coverPage}
-          source={{ uri: currentTrack?.artwork?.toString() }}
-        />
-        <View style={styles.titleView}>
-          <CoverText currentTrack={currentTrack} />
-          <SvgIcon name="Heart" {...svgStyle} color="pink" />
-        </View>
-        <ProgressBar progress={progress}/>
-        <ControlView
-          handleShuffle={handleShuffle}
-          handlePlay={handlePlay}
-          handleLoop={handleLoop}
-        />
-        {/* <LyricsBox>/
-          <Text>Locate Helper</Text>
-        </LyricsBox> */}
-      </Player>
-    </View>
+    <SafeAreaView>
+      <View style={styles.container}>
+        <Player>
+          <Image
+            style={styles.coverPage}
+            source={{ uri: currentTrack?.artwork?.toString() }}
+          />
+          <View style={styles.titleView}>
+            <CoverText currentTrack={currentTrack} />
+            <SvgIcon name="Heart" {...svgStyle} color="pink" />
+          </View>
+          <ProgressBar progress={progress} />
+          <ControlView
+            handleShuffle={handleShuffle}
+            handlePlay={handlePlay}
+            handleLoop={handleLoop}
+          />
+          {hasLyrics && (
+            <LyricsBox>
+              <Text>Locate Helper</Text>
+            </LyricsBox>
+          )}
+        </Player>
+      </View>
+    </SafeAreaView>
   );
 }
 

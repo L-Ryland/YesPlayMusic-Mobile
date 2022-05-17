@@ -56,7 +56,7 @@ export {
 } from "react-native-track-player";
 
 export class Player {
-  private _track: ModifiedTrack | undefined;
+  private _track: ModifiedTrack | null = null;
   private _trackIndex: number = 0;
   // private _progress: number = 0
   // private _progressInterval: ReturnType<typeof setInterval> | undefined
@@ -164,6 +164,19 @@ export class Player {
     return this._player.getRepeatMode();
   }
 
+  async getPrevTrackIndex(): Promise<number | undefined> {
+    const repeatMode = await this._player.getRepeatMode();
+    switch (repeatMode) {
+      case RepeatMode.Track:
+        return this._trackIndex;
+      case RepeatMode.Off:
+        if (this._trackIndex === 0) return this._trackIndex;
+        return this._trackIndex - 1;
+      case RepeatMode.Queue:
+        if (this._trackIndex - 1 < 0) return this.trackList.length - 1;
+        return this._trackIndex - 1;
+    }
+  }
   /**
    * Get next track index
    */
@@ -288,6 +301,7 @@ export class Player {
     }
     if (this.mode === PlayerMode.TrackList) this._track = track;
     if (this.mode === PlayerMode.FM) this.fmTrackList[0] = track;
+    // alert(`this track - ${JSON.stringify(this._track)}`)
     this.play();
   }
 
@@ -422,7 +436,18 @@ export class Player {
    * Play previous track
    */
   async skipToPrevious() {
-    return this._player.skipToPrevious();
+    if (this.mode === PlayerMode.FM) {
+      ToastAndroid.show('Personal FM not support previous track', ToastAndroid.SHORT);
+      return
+    }
+    await this._player.skipToPrevious();
+    const prevTrackIndex = await this._player.getCurrentTrack();
+    if (this._trackIndex === prevTrackIndex) {
+      ToastAndroid.show('No previous track', ToastAndroid.SHORT);
+      return
+    }
+    this._trackIndex = prevTrackIndex;
+    this._playTrack()
   }
 
   /**
@@ -433,13 +458,14 @@ export class Player {
       this.mode = PlayerMode.FM;
       return this._nextFMTrack();
     }
-    if ((await this.getNextTrackIndex()) === undefined) {
+    await this._player.skipToNext();
+    const nextTrackIndex = await this._player.getCurrentTrack();
+    if (this._trackIndex === nextTrackIndex) {
       ToastAndroid.show("没有下一首了", ToastAndroid.SHORT);
-      this.pause();
+      return;
     }
-    this._trackIndex = (await this.getNextTrackIndex()) ?? 0;
+    this._trackIndex = nextTrackIndex;
     this._playTrack();
-    return this._player.skipToNext();
   }
 
   /**
@@ -467,6 +493,8 @@ export class Player {
     this._player.reset();
     this._player.add(this.trackList);
     autoPlayTrackID && this._player.skip(autoPlayTrackID);
+    this._trackIndex = autoPlayTrackID ?? 0;
+    this._track = await this.getCurrentTrack();
     this.play();
     if (this._shuffle) this.playShuffleList(this.trackList);
     // this._playTrack();
@@ -479,7 +507,6 @@ export class Player {
    */
   async playPlaylist(playlistID: number, autoPlayTrackID?: null | number) {
     const { playlist } = await fetchPlaylistWithReactQuery({ id: playlistID });
-    // alert(playlistID)
     if (!playlist.trackIds?.length) return;
     this._trackListSource = {
       type: TrackListSourceType.Playlist,
