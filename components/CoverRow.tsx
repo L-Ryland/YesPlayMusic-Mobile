@@ -1,7 +1,7 @@
 import React from "react";
 import {
   Dimensions,
-  ImageStyle,
+  ImageStyle, LogBox,
   StyleSheet,
   TouchableHighlight,
 } from "react-native";
@@ -47,6 +47,7 @@ export const CoverRow: React.FC<CoverRowProps> = (props) => {
   const navigation = useNavigation();
   let { type, items, verticalStyle, subtitle } = props;
   React.useEffect(() => {
+    LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
     if (verticalStyle) {
       setIsHorizontal(false);
       setNumColumns(2);
@@ -143,7 +144,7 @@ export const CoverRow: React.FC<CoverRowProps> = (props) => {
         keyExtractor={(item, index) => "#" + index.toString()}
         horizontal={isHorizontal}
         numColumns={numColumns}
-        nestedScrollEnabled={true}
+        nestedScrollEnabled
         // style={isHorizontal?null:styles.flatListStyle}
       />
     </SafeAreaView>

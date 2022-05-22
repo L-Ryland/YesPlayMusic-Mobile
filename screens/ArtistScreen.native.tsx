@@ -18,7 +18,7 @@ import {
   TrackItem,
   SvgIcon,
   Button,
-  CoverRow,
+  CoverRow, Tracker,
 } from "@/components";
 import { RootStackParamList, RootStackScreenProps } from "@/types";
 import { Heart, HeartSolid, Plus, Play, Lock } from "@/components/icons";
@@ -297,7 +297,8 @@ export const ArtistScreen = ({ route }: RootStackScreenProps<"Artist">) => {
     LogBox.ignoreLogs(["VirtualizedLists should never be nested"])
   );
   return (
-    <ScrollView style={styles.container}>
+    <SafeAreaView style={styles.container}>
+    <ScrollView>
       <Header
         artist={artist?.artist}
         hotSongs={artist?.hotSongs}
@@ -320,6 +321,8 @@ export const ArtistScreen = ({ route }: RootStackScreenProps<"Artist">) => {
       </ScrollView>
       <SwitchCategory category={category} handlePlay={handlePlay}/>
     </ScrollView>
+      <Tracker/>
+    </SafeAreaView>
   );
 };
 

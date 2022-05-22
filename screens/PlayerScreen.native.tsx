@@ -2,7 +2,7 @@ import React, {useEffect, useMemo, useState} from "react";
 import {Dimensions, Image, SafeAreaView, ToastAndroid, TouchableHighlight, StyleSheet} from "react-native";
 import styled from "styled-components/native";
 import Slider from "@react-native-community/slider";
-import {SvgIcon, Text, useSvgStyle, View} from "@/components";
+import {ScrollView, SvgIcon, Text, useSvgStyle, View} from "@/components";
 import dayjs from "dayjs";
 import Duration from "dayjs/plugin/duration";
 import {
@@ -17,6 +17,7 @@ import {useSnapshot} from "valtio";
 import {ProgressState} from "react-native-track-player";
 import useLyric from "@/hooks/useLyric";
 import {lyricParser} from "@/utils/lyric";
+import {Lyrics} from "@/components/Lyrics";
 
 dayjs.extend(Duration);
 const { width, height } = Dimensions.get("window");
@@ -27,8 +28,7 @@ const Player = styled(View)`
   align-self: center;
   align-items: center;
   padding: 50px 26px 26px;
-
-  width: ${contentWidth};
+  flex: 1;
 `;
 
 const HeaderBar = styled(View)`
@@ -53,6 +53,7 @@ function RightControlButton() {}
 const LyricsBox = styled(View)`
   background: purple;
   border-radius: 10px;
+  align-self: flex-end;
 `;
 const CoverText: React.FC<{ currentTrack: ModifiedTrack | null }> = ({
   currentTrack,
@@ -138,13 +139,14 @@ const ProgressBar: React.FC<{ progress: ProgressState }> = ({ progress }) => {
     <View>
       <Slider
         key="slider"
-        style={{ width: 0.9 * width, height: 30 }}
+        style={{ width: .8 * width, height: 30 }}
         value={progress.position}
         minimumValue={0}
         maximumValue={progress.duration}
         thumbTintColor="#335eea"
         minimumTrackTintColor="#335eea"
         maximumTrackTintColor="#000000"
+        onValueChange={(value) => trackPlayer.seekTo(value)}
       />
       <TimeStampRow>
         <Text key="startPoint" style={{ alignSelf: "auto" }}>
@@ -181,8 +183,9 @@ export function PlayerScreen({ navigation, route }) {
   // React.useMemo( async () => setCurrentTrack(await snappedPlayer.getCurrentTrack()),
   //   [snappedPlayer.trackIndex]
   // );
-  const hasLyrics: boolean = lyric?.lyric !== [] ?? false;
-
+  // test if current song has lyrics.
+  const hasLyrics: boolean = useMemo(() => !(lyricRaw && lyricParser(lyricRaw).lyric === []), [snappedPlayer.track])
+  const PlayerBox = hasLyrics ? ScrollView : View;
   const handlePlay = async () => {
     if (currentTrack == null) {
       // TODO: Perhaps present an error or restart the playlist?
@@ -210,8 +213,7 @@ export function PlayerScreen({ navigation, route }) {
 
   const svgStyle = useSvgStyle({});
   return (
-    <SafeAreaView>
-      <View style={styles.container}>
+      <PlayerBox style={styles.container}>
         <Player>
           <Image
             style={styles.coverPage}
@@ -228,13 +230,10 @@ export function PlayerScreen({ navigation, route }) {
             handleLoop={handleLoop}
           />
           {hasLyrics && (
-            <LyricsBox>
-              <Text>Locate Helper</Text>
-            </LyricsBox>
+            <Lyrics lyric={lyric}/>
           )}
         </Player>
-      </View>
-    </SafeAreaView>
+      </PlayerBox>
   );
 }
 
@@ -250,8 +249,8 @@ const ControlBox = styled(View)`
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    // alignItems: "center",
+    // justifyContent: "center",
     padding: 20,
   },
   containerWidth: {
@@ -261,6 +260,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    paddingTop: 100,
     width: contentWidth,
     lineHeight: contentWidth,
   },

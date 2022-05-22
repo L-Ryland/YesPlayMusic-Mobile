@@ -2,16 +2,16 @@ import React from "react";
 import { StyleSheet } from "react-native";
 import styled from "styled-components/native";
 
-import { Text, ScrollView, Button } from "../components/Themed";
-import { CoverList, CoverRow } from "../components";
+import { Button, ScrollView, Text } from "../components/Themed";
+import { CoverRow, Subtitle, Tracker } from "../components";
 import {
-  topPlaylist,
   fetchHighQualityPlaylist,
   fetchRecommendedPlaylists,
-  toplists,
+  topPlaylist,
+  fetchToplists
 } from "@/api";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {settings} from "@/hydrate/settings";
+import { settings } from "@/hydrate/settings";
 
 export function ExploreScreen({ navigation, route }) {
   // console.log(settings.enabledPlaylistCategories);
@@ -23,11 +23,9 @@ export function ExploreScreen({ navigation, route }) {
    * Fetch recommend playlist from api
    */
   const getRecommendPlayList = () => {
-    fetchRecommendedPlaylists({ limit: 30 }).then(
-      (data: any) => {
-        setPlaylists(data.result);
-      }
-    );
+    fetchRecommendedPlaylists({ limit: 30 }).then((data: any) => {
+      setPlaylists(data.result);
+    });
   };
   /**
    * Fetch high quality playlist from api
@@ -55,7 +53,7 @@ export function ExploreScreen({ navigation, route }) {
    * Fetch top list from api
    */
   const getTopLists = () => {
-    toplists().then((data: any) => {
+    fetchToplists().then((data: any) => {
       setPlaylists(data.list);
     });
     // setToplist(response.list);
@@ -69,7 +67,7 @@ export function ExploreScreen({ navigation, route }) {
       cat: activeCategory,
     }).then((data: any) => {
       setPlaylists(data.playlists);
-      setHasMore(data.more)
+      setHasMore(data.more);
     });
   };
   React.useEffect(() => {
@@ -91,13 +89,13 @@ export function ExploreScreen({ navigation, route }) {
       mountRef.current = false;
     };
   }, [activeCategory, mountRef]);
-  const upadatePlaylist = (first) => { };
+  const upadatePlaylist = (first) => {};
   const subText =
     activeCategory === "排行榜"
       ? "updateFrequency"
       : activeCategory === "推荐歌单"
-        ? "copywriter"
-        : "none";
+      ? "copywriter"
+      : "none";
   const handleCatogorySwitch = (category) => {
     setActiveCategory(category);
   };
@@ -122,14 +120,14 @@ export function ExploreScreen({ navigation, route }) {
           <CoverRow
             type="playlist"
             items={playlists}
-            subTtext={subText}
+            subtitle={Subtitle.Creator}
             showPlayCount={activeCategory !== "排行榜" ? true : false}
             imageSize={activeCategory !== "排行榜" ? 512 : 1024}
             verticalStyle={true}
-            navigate={navigation.navigate}
           />
         )}
       </ScrollView>
+      <Tracker />
     </SafeAreaView>
   );
 }
@@ -147,7 +145,7 @@ const CatagoryButton = styled.Pressable`
   align-items: center;
   font-weight: 600;
   font-size: 18px;
-  border-radius: 32;
+  border-radius: 32px;
   border: 2px white;
 `;
 const styles = StyleSheet.create({

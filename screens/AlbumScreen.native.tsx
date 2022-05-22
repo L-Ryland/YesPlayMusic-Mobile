@@ -14,7 +14,7 @@ import {
   Text,
   View,
   useSvgStyle,
-  TrackItem, SvgIcon
+  TrackItem, SvgIcon, Tracker
 } from "@/components";
 import { RootStackScreenProps} from "@/types";
 import { Heart, HeartSolid, Plus, Play, Lock } from "@/components/icons";
@@ -259,7 +259,8 @@ export const AlbumScreen = ({
   );
   React.useEffect(() => LogBox.ignoreLogs(['VirtualizedLists should never be nested']))
   return (
-    <ScrollView style={styles.container}>
+    <SafeAreaView style={styles.container}>
+    <ScrollView>
       <Header
         album={album}
         isLoading={isLoading}
@@ -272,6 +273,8 @@ export const AlbumScreen = ({
         isLoadingAlbum={isLoading}
       />
     </ScrollView>
+      <Tracker/>
+    </SafeAreaView>
   );
 };
 

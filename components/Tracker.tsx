@@ -1,4 +1,4 @@
-import React, {Fragment, useMemo} from "react";
+import React, {Fragment, useEffect, useMemo, useState} from "react";
 import {
   Platform,
   StyleSheet,
@@ -111,15 +111,16 @@ const ControlBox: React.FC = () => {
 };
 
 export const Tracker = React.memo((props) => {
-  console.log("tracker props", props);
   // const [currentTrack, setCurrentTrack] =
   //   React.useState<ModifiedTrack | null>();
   if (Platform.OS == "web") {
     return <Fragment />;
   }
+  const [currentTrack, setCurrentTrack] = useState<ModifiedTrack | null>(null);
   const playingState = usePlaybackState();
   const snappedPlayer = useSnapshot(trackPlayer);
-  const currentTrack = useMemo( () => snappedPlayer.track, [snappedPlayer.track]);
+  useEffect(() => setCurrentTrack(snappedPlayer.track), [snappedPlayer.track]);
+  // const currentTrack = useMemo( () => snappedPlayer.track, [snappedPlayer.track]);
   // useTrackPlayerEvents(
   //   [Event.PlaybackTrackChanged, Event.PlaybackState, Event.PlaybackError],
   //   async (event) => {
@@ -148,5 +149,6 @@ export const Tracker = React.memo((props) => {
 Tracker.displayName = "Tracker";
 
 const styles = StyleSheet.create({
-  tracker: {},
+  tracker: {
+  },
 });

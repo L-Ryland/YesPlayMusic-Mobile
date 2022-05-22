@@ -22,7 +22,7 @@ import { Play } from "@/components/icons";
 import i18n, { t } from "i18n-js";
 
 // import EditScreenInfo from "../components/EditScreenInfo";
-import { Text, View } from "@/components";
+import {Text, Tracker, View} from "@/components";
 import styled from "styled-components/native";
 import { database } from "@/index";
 import { CoverRow } from "@/components";
@@ -197,12 +197,11 @@ export const LibraryScreen = ({
     id: playlists?.playlist?.[0].id ?? 0,
   });
   React.useEffect(() => {
-    LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
     console.log("[LibraryScreen] [userData]", userData);
     if (!userData.loginMode) navigation.navigate("Login");
   }, [userData.loginMode, user?.profile]);
   return (
-    <SafeAreaView>
+    <SafeAreaView style={styles.container}>
       <ScrollView>
         <RowView>
           <Title>
@@ -210,8 +209,7 @@ export const LibraryScreen = ({
             {t("library.sLibrary")}{" "}
           </Title>
         </RowView>
-        <Button title="delete test database" onPress={handleDatabase} />
-        {/*<ScrollView>*/}
+        {/*<Button title="delete test database" onPress={handleDatabase} />*/}
         <UserCard profile={user?.profile} />
         <ScrollView horizontal={true}>
           <Button
@@ -240,8 +238,8 @@ export const LibraryScreen = ({
           />
         </ScrollView>
         <SwitchCatagory category={category} />
-        {/*</ScrollView>*/}
       </ScrollView>
+      <Tracker/>
     </SafeAreaView>
   );
 };
