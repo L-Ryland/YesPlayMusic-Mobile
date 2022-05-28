@@ -106,7 +106,7 @@ function BottomTabNavigator() {
         component={HomeScreen}
         options={({ navigation }: RootTabScreenProps<"Home">) => ({
           title: "Home Demo",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
           headerShown: false,
         })}
       />
@@ -115,7 +115,7 @@ function BottomTabNavigator() {
         component={LibraryNavigator}
         options={{
           title: "Library",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="book" color={color} />,
           headerShown: false,
         }}
       />
@@ -124,7 +124,7 @@ function BottomTabNavigator() {
         component={ExploreScreen}
         options={{
           title: "Explore",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="compass" color={color} />,
           headerShown: false,
         }}
       />
@@ -133,7 +133,7 @@ function BottomTabNavigator() {
         component={SettingsNavigator}
         options={{
           title: "Settings",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="gear" color={color} />,
           headerShown: true,
         }}
       />

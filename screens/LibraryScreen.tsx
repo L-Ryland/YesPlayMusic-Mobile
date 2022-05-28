@@ -22,7 +22,7 @@ import { Play } from "@/components/icons";
 import i18n, { t } from "i18n-js";
 
 // import EditScreenInfo from "../components/EditScreenInfo";
-import {Text, Tracker, View} from "@/components";
+import { Text, Tracker, View } from "@/components";
 import styled from "styled-components/native";
 import { database } from "@/index";
 import { CoverRow } from "@/components";
@@ -32,12 +32,13 @@ import usePlaylist from "@/hooks/usePlaylist";
 import useUserAlbums from "@/hooks/useUserAlbums";
 import useUser from "@/hooks/useUser";
 import useUserArtists from "@/hooks/useUserArtists";
-import {
-  LibraryStackScreenProps,
-} from "@/types";
+import { LibraryStackScreenProps } from "@/types";
 import useUserLikedTracksIDs, {
   useUserLikedTracks,
 } from "@/hooks/useUserLikedTracksIDs";
+import { FetchUserAccountResponse } from "@/api";
+import { useSnapshot } from "valtio";
+import { useMemo } from "react";
 
 const { width } = Dimensions.get("window");
 
@@ -82,7 +83,7 @@ const LikedPlaylists = ({ item }) => (
     </View>
   </View>
 );
-const UserCard = ({ profile }) => {
+const UserCard: React.FC<{ profile }> = ({ profile }) => {
   const svgStyle = useSvgStyle({});
   const { data: playlists } = useUserPlaylists();
   const { data: likedSongsPlaylist } = usePlaylist({
@@ -181,9 +182,10 @@ const SwitchCatagory: React.FC<{ category: Category }> = ({ category }) => {
 };
 export const LibraryScreen = ({
   navigation,
+  route,
 }: LibraryStackScreenProps<"Library">) => {
-  const svgStyle = useSvgStyle({});
   const [category, setCategory] = React.useState<Category>(Category.Playlists);
+  const [loginStatus, setLoginStatus] = React.useState<boolean>(false);
   const handleDatabase = async () => {
     await database.write(async () => {
       const post = await database.unsafeResetDatabase();
@@ -191,26 +193,23 @@ export const LibraryScreen = ({
     });
   };
   // console.log("liked", liked);
-  const { data: user } = useUser();
-  const { data: playlists } = useUserPlaylists();
-  const { data: likedSongsPlaylist } = usePlaylist({
-    id: playlists?.playlist?.[0].id ?? 0,
-  });
+  const snappedUser = useSnapshot(userData);
   React.useEffect(() => {
-    console.log("[LibraryScreen] [userData]", userData);
     if (!userData.loginMode) navigation.navigate("Login");
-  }, [userData.loginMode, user?.profile]);
+    else setLoginStatus(true);
+  }, [userData.loginMode]);
+  // alert(`useUser - ${JSON.stringify(useUser().data)}`)
+  const profile = useUser().data?.profile;
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
+      {loginStatus && (<ScrollView>
         <RowView>
           <Title>
-            {user?.profile?.nickname ?? ""}
-            {t("library.sLibrary")}{" "}
+            {`${profile?.nickname}${t("library.sLibrary")}`}
           </Title>
         </RowView>
         {/*<Button title="delete test database" onPress={handleDatabase} />*/}
-        <UserCard profile={user?.profile} />
+        <UserCard profile={profile} />
         <ScrollView horizontal={true}>
           <Button
             title={t("library.playlists")}
@@ -238,8 +237,8 @@ export const LibraryScreen = ({
           />
         </ScrollView>
         <SwitchCatagory category={category} />
-      </ScrollView>
-      <Tracker/>
+      </ScrollView>)}
+      <Tracker />
     </SafeAreaView>
   );
 };

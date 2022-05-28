@@ -1,6 +1,7 @@
 import proxyWithPersist, { PersistStrategy } from "valtio-persist";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { devtools } from "valtio/utils";
+import { FetchUserAccountResponse } from "@/api";
 
 interface LikedItemInject {
   name: string;

@@ -197,6 +197,7 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   lrc: {
     height: 40,
+    width: .8 * width,
     backgroundColor: "transparent",
     // backgroundColor: "#ccc",
     justifyContent: 'center',

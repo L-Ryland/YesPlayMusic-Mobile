@@ -243,6 +243,7 @@ const ControlBox = styled(View)`
   justify-content: space-between;
   align-items: center;
   padding: 0;
+  margin: 0 0 20px 0;
   position: relative;
   height: 50px;
 `;

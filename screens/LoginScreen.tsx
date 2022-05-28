@@ -15,11 +15,13 @@ import {
   loginWithEmail,
   loginWithPhone,
 } from "@/api";
-import { isAccountLoggedIn, setCookies } from "@/utils/auth";
+import { getCookie, isAccountLoggedIn, setCookies } from "@/utils/auth";
 import { RootTabParamList } from "@/types";
 import { useMutation } from "react-query";
 import { userData } from "@/hydrate/data";
 import {Platform} from "expo-modules-core";
+import { setUser } from "@sentry/react-native";
+import useUser from "@/hooks/useUser";
 
 const AuthenticationMode = React.createContext("qr");
 
@@ -314,14 +316,15 @@ export function LoginScreen() {
   }, [authentication]);
   // @ts-ignore
   const handleLogin = useMutation(shouldUseLoginMethod, {
-    onSuccess: ({ cookie }) => {
-      setCookies(cookie);
+    onSuccess: async ({ cookie }) => {
+      await setCookies(cookie);
+      userData.cookie = await getCookie('MUSIC_U');
       userData.loginMode = "account";
       navigation.navigate("Library");
     },
     onError: (error) => {
       if (Platform.OS == 'web') alert(JSON.stringify(error))
-      if (Platform.OS == "android") ToastAndroid.show("Login Failed", ToastAndroid.SHORT)
+      if (Platform.OS == "android") ToastAndroid.show(`Login Failed - ${JSON.stringify(error)}`, ToastAndroid.SHORT)
     },
   });
   return (
