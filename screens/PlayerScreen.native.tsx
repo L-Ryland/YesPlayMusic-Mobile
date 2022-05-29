@@ -162,6 +162,7 @@ const ProgressBar: React.FC<{ progress: ProgressState }> = ({ progress }) => {
 
 export function PlayerScreen({ navigation, route }) {
   const playbackState = usePlaybackState();
+  const [enableScrollViewScroll, setEnableScrollViewScroll] = useState<boolean>(true);
   const progress = useProgress();
   const snappedPlayer = useSnapshot(trackPlayer);
   const [currentTrack, setCurrentTrack] = useState<ModifiedTrack | null>(null);
@@ -213,7 +214,7 @@ export function PlayerScreen({ navigation, route }) {
 
   const svgStyle = useSvgStyle({});
   return (
-      <PlayerBox style={styles.container}>
+      <PlayerBox style={styles.container} scrollEnabled={enableScrollViewScroll}>
         <Player>
           <Image
             style={styles.coverPage}
@@ -230,7 +231,7 @@ export function PlayerScreen({ navigation, route }) {
             handleLoop={handleLoop}
           />
           {hasLyrics && (
-            <Lyrics lyric={lyric}/>
+            <Lyrics lyric={lyric} onEnableScroll={setEnableScrollViewScroll}/>
           )}
         </Player>
       </PlayerBox>
@@ -250,8 +251,6 @@ const ControlBox = styled(View)`
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // alignItems: "center",
-    // justifyContent: "center",
     padding: 20,
   },
   containerWidth: {

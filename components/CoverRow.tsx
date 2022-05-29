@@ -145,6 +145,8 @@ export const CoverRow: React.FC<CoverRowProps> = (props) => {
         horizontal={isHorizontal}
         numColumns={numColumns}
         nestedScrollEnabled
+        showsHorizontalScrollIndicator
+        showsVerticalScrollIndicator
         // style={isHorizontal?null:styles.flatListStyle}
       />
     </SafeAreaView>
