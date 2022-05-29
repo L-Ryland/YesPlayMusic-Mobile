@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useState} from "react";
-import {Dimensions, Image, SafeAreaView, ToastAndroid, TouchableHighlight, StyleSheet} from "react-native";
+import {Dimensions, Image, SafeAreaView, ToastAndroid, TouchableHighlight, StyleSheet, ViewStyle} from "react-native";
 import styled from "styled-components/native";
 import Slider from "@react-native-community/slider";
 import {ScrollView, SvgIcon, Text, useSvgStyle, View} from "@/components";
@@ -9,15 +9,17 @@ import {
   ModifiedTrack,
   RepeatMode,
   State as PlayingState,
+  Event,
   trackPlayer,
   usePlaybackState,
-  useProgress,
+  useProgress, useTrackPlayerEvents,
 } from "@/hydrate/player";
 import {useSnapshot} from "valtio";
 import {ProgressState} from "react-native-track-player";
 import useLyric from "@/hooks/useLyric";
 import {lyricParser} from "@/utils/lyric";
 import {Lyrics} from "@/components/Lyrics";
+import {useQuery} from "react-query";
 
 dayjs.extend(Duration);
 const { width, height } = Dimensions.get("window");
@@ -55,7 +57,7 @@ const LyricsBox = styled(View)`
   border-radius: 10px;
   align-self: flex-end;
 `;
-const CoverText: React.FC<{ currentTrack: ModifiedTrack | null }> = ({
+const CoverText: React.FC<{ currentTrack: ModifiedTrack}> = ({
   currentTrack,
 }) => {
   const ViewBox = styled(View)`
@@ -65,10 +67,10 @@ const CoverText: React.FC<{ currentTrack: ModifiedTrack | null }> = ({
   return (
     <ViewBox>
       <Text style={{ fontSize: 28 }} key="title">
-        {currentTrack?.title}
+        {currentTrack.title}
       </Text>
       <Text style={{ fontSize: 22 }} key="artists">
-        {currentTrack?.artist}
+        {currentTrack.artist}
       </Text>
     </ViewBox>
   );
@@ -165,20 +167,22 @@ export function PlayerScreen({ navigation, route }) {
   const [enableScrollViewScroll, setEnableScrollViewScroll] = useState<boolean>(true);
   const progress = useProgress();
   const snappedPlayer = useSnapshot(trackPlayer);
-  const [currentTrack, setCurrentTrack] = useState<ModifiedTrack | null>(null);
-  // useTrackPlayerEvents(
-  //   [Event.PlaybackTrackChanged, Event.PlaybackState, Event.PlaybackError],
-  //   async (event) => {
-  //     switch (event.type) {
-  //       case Event.PlaybackTrackChanged:
-  //         const track = await trackPlayer.getCurrentTrack(event.nextTrack);
-  //         setCurrentTrack(track);
-  //         break;
-  //     }
-  //   }
-  // );
+  const [currentTrack, setCurrentTrack] = useState<ModifiedTrack | null>();
+  useEffect( () => {
+    if (!currentTrack) trackPlayer.getCurrentTrack().then(data => setCurrentTrack(data))
+  },[currentTrack]);
+  useTrackPlayerEvents(
+    [Event.PlaybackTrackChanged, Event.PlaybackState, Event.PlaybackError],
+    async (event) => {
+      switch (event.type) {
+        case Event.PlaybackTrackChanged:
+          const track = await trackPlayer.getCurrentTrack(event.nextTrack);
+          setCurrentTrack(track);
+          break;
+      }
+    }
+  );
 
-  useEffect(() => setCurrentTrack(snappedPlayer.track), [snappedPlayer.track]);
   const { data: lyricRaw } = useLyric({ id: currentTrack?.id ?? 0 });
   const lyric = useMemo(() => lyricRaw && lyricParser(lyricRaw), [lyricRaw]);
   // React.useMemo( async () => setCurrentTrack(await snappedPlayer.getCurrentTrack()),
@@ -221,7 +225,7 @@ export function PlayerScreen({ navigation, route }) {
             source={{ uri: currentTrack?.artwork?.toString() }}
           />
           <View style={styles.titleView}>
-            <CoverText currentTrack={currentTrack} />
+            {currentTrack && <CoverText currentTrack={currentTrack} />}
             <SvgIcon name="Heart" {...svgStyle} color="pink" />
           </View>
           <ProgressBar progress={progress} />
@@ -252,7 +256,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-  },
+  } as ViewStyle,
   containerWidth: {
     width: contentWidth,
   },

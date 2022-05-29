@@ -29,6 +29,7 @@ const AppleMusic: React.FC = () => (
       items={byAppleMusic}
       subtitle={Subtitle.AppleMusic}
       imageSize={1024}
+      isHorizontal
     />
   </View>
 );
@@ -44,6 +45,7 @@ const RecommendPlaylists: React.FC = () => {
           type="playlist"
           items={recommendPlaylist?.result}
           subtitle={Subtitle.Copywriter}
+          isHorizontal
         />
       )}
     </View>
@@ -60,7 +62,7 @@ const RecommendArtists: React.FC = () => {
       {isLoading ? (
         <Text>Loading</Text>
       ) : (
-        <CoverRow type="artist" items={topArtists} />
+        <CoverRow type="artist" items={topArtists} isHorizontal />
       )}
     </View>
   );
@@ -80,6 +82,7 @@ const NewAlbums: React.FC = () => {
           type="album"
           items={newAlbums?.albums}
           subtitle={Subtitle.Artist}
+          isHorizontal
         />
       )}
     </View>
@@ -97,6 +100,7 @@ const Charts: React.FC = () => {
           type="playlist"
           items={toplist?.list}
           subtitle={Subtitle.UpdateFrequency}
+          isHorizontal
         />
       )}
     </View>

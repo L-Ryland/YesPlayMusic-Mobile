@@ -1,31 +1,29 @@
 import * as React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
-  StyleSheet,
   Dimensions,
-  ImageBackground,
-  Image,
   FlatList,
-  LogBox,
+  Image,
+  ImageBackground,
+  StyleSheet,
   ToastAndroid,
 } from "react-native";
 import {
+  Button,
+  CoverSubTitle,
+  CoverTitle,
+  ScrollView,
   Title,
   useSvgStyle,
-  Button,
-  ScrollView,
-  CoverTitle,
-  CoverSubTitle,
 } from "@/components/Themed";
 import { Play } from "@/components/icons";
 
-import i18n, { t } from "i18n-js";
+import { t } from "i18n-js";
 
 // import EditScreenInfo from "../components/EditScreenInfo";
-import { Text, Tracker, View } from "@/components";
+import { CoverRow, Text, Tracker, View } from "@/components";
 import styled from "styled-components/native";
 import { database } from "@/index";
-import { CoverRow } from "@/components";
 import { userData } from "@/hydrate/data";
 import useUserPlaylists from "@/hooks/useUserPlaylists";
 import usePlaylist from "@/hooks/usePlaylist";
@@ -33,14 +31,11 @@ import useUserAlbums from "@/hooks/useUserAlbums";
 import useUser from "@/hooks/useUser";
 import useUserArtists from "@/hooks/useUserArtists";
 import { LibraryStackScreenProps } from "@/types";
-import useUserLikedTracksIDs, {
-  useUserLikedTracks,
-} from "@/hooks/useUserLikedTracksIDs";
-import { FetchUserAccountResponse } from "@/api";
+import { useUserLikedTracks } from "@/hooks/useUserLikedTracksIDs";
 import { useSnapshot } from "valtio";
-import { useMemo } from "react";
+import { usePlaybackState, State } from "@/hydrate/player";
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 
 enum Category {
   Playlists,
@@ -129,7 +124,7 @@ const UserCard: React.FC<{ profile }> = ({ profile }) => {
     </RowView>
   );
 };
-const UserPlaylists = () => {
+const UserPlaylists: React.FC = (props) => {
   const { data: playlists } = useUserPlaylists();
   const { data: likedSongsPlaylist } = usePlaylist({
     id: playlists?.playlist?.[0].id ?? 0,
@@ -140,10 +135,11 @@ const UserPlaylists = () => {
       items={playlists?.playlist.slice(0, 8)}
       imageSize={1024}
       verticalStyle={true}
+      {...props}
     />
   );
 };
-const UserAlbums = () => {
+const UserAlbums = (props) => {
   const { data: albums } = useUserAlbums({
     limit: 1000,
   });
@@ -153,10 +149,11 @@ const UserAlbums = () => {
       items={albums?.data.slice(0, 8)}
       imageSize={1024}
       verticalStyle={true}
+      {...props}
     />
   );
 };
-const UserArtists = () => {
+const UserArtists = (props) => {
   const { data: artists } = useUserArtists();
   return (
     <CoverRow
@@ -164,21 +161,59 @@ const UserArtists = () => {
       items={artists?.data.slice(0, 8)}
       imageSize={1024}
       verticalStyle={true}
+      {...props}
     />
   );
 };
-const SwitchCatagory: React.FC<{ category: Category }> = ({ category }) => {
+const SwitchCategory: React.FC<{
+  category: Category;
+  setOuterScroll: (param: boolean) => void;
+  setInnerScroll: boolean,
+}> = ({category, ...otherProps}) => {
   switch (category) {
     case Category.Playlists:
-      return <UserPlaylists />;
+      return <UserPlaylists {...otherProps} />;
     case Category.Albums:
-      return <UserAlbums />;
+      return <UserAlbums {...otherProps} />;
     case Category.Artists:
-      return <UserArtists />;
+      return <UserArtists {...otherProps} />;
     default:
       ToastAndroid.show("Still Working On That", ToastAndroid.SHORT);
       return <View></View>;
   }
+};
+
+const Switcher: React.FC<{ setCategory: (param: Category) => void }> = ({
+  setCategory,
+}) => {
+  return (
+    <ScrollView horizontal>
+      <Button
+        title={t("library.playlists")}
+        onPress={() => setCategory(Category.Playlists)}
+      />
+      <Button
+        title={t("library.albums")}
+        onPress={() => setCategory(Category.Albums)}
+      />
+      <Button
+        title={t("library.artists")}
+        onPress={() => setCategory(Category.Artists)}
+      />
+      <Button
+        title={t("library.mvs")}
+        onPress={() => setCategory(Category.MVs)}
+      />
+      <Button
+        title={t("library.cloudDisk")}
+        onPress={() => setCategory(Category.CloudDisk)}
+      />
+      <Button
+        title={t("library.topListen")}
+        onPress={() => setCategory(Category.TopListen)}
+      />
+    </ScrollView>
+  );
 };
 export const LibraryScreen = ({
   navigation,
@@ -186,6 +221,9 @@ export const LibraryScreen = ({
 }: LibraryStackScreenProps<"Library">) => {
   const [category, setCategory] = React.useState<Category>(Category.Playlists);
   const [loginStatus, setLoginStatus] = React.useState<boolean>(false);
+  const [scrollEnabled, setScrollEnabled] = React.useState<boolean>(true);
+  const [coverRowScroll, setCoverRowScroll] = React.useState<boolean>(false);
+  const playingState = usePlaybackState();
   const handleDatabase = async () => {
     await database.write(async () => {
       const post = await database.unsafeResetDatabase();
@@ -200,44 +238,46 @@ export const LibraryScreen = ({
   }, [userData.loginMode]);
   // alert(`useUser - ${JSON.stringify(useUser().data)}`)
   const profile = useUser().data?.profile;
+  const coverRowRef = React.useRef<boolean>(false);
+  const scrollListener = ({
+    nativeEvent,
+  }: {
+    nativeEvent: {
+      contentSize: { height: number };
+      contentOffset: { y: number };
+      layoutMeasurement: { height: number };
+    };
+  }) => {
+    // if (y > 250) alert(`scroll event - ${JSON.stringify(y)}`);
+    const { contentSize, contentOffset, layoutMeasurement } = nativeEvent;
+    // alert(JSON.stringify(nativeEvent))
+    coverRowRef.current = false;
+    setCoverRowScroll(false);
+    const screenOffset = playingState === State.None ? contentSize.height - layoutMeasurement.height : contentSize.height - layoutMeasurement.height - 64;
+    if (contentOffset.y >= screenOffset) {
+      // setScrollEnabled(false);
+      coverRowRef.current = true
+      setCoverRowScroll(true)
+    }
+    // if (contentOffset.y > 230) setScrollEnabled(false);
+  };
   return (
     <SafeAreaView style={styles.container}>
-      {loginStatus && (<ScrollView>
-        <RowView>
-          <Title>
-            {`${profile?.nickname}${t("library.sLibrary")}`}
-          </Title>
-        </RowView>
-        {/*<Button title="delete test database" onPress={handleDatabase} />*/}
-        <UserCard profile={profile} />
-        <ScrollView horizontal={true}>
-          <Button
-            title={t("library.playlists")}
-            onPress={() => setCategory(Category.Playlists)}
-          />
-          <Button
-            title={t("library.albums")}
-            onPress={() => setCategory(Category.Albums)}
-          />
-          <Button
-            title={t("library.artists")}
-            onPress={() => setCategory(Category.Artists)}
-          />
-          <Button
-            title={t("library.mvs")}
-            onPress={() => setCategory(Category.MVs)}
-          />
-          <Button
-            title={t("library.cloudDisk")}
-            onPress={() => setCategory(Category.CloudDisk)}
-          />
-          <Button
-            title={t("library.topListen")}
-            onPress={() => setCategory(Category.TopListen)}
+      {loginStatus && (
+        <ScrollView onScroll={scrollListener} scrollEnabled={scrollEnabled}>
+          <RowView>
+            <Title>{`${profile?.nickname}${t("library.sLibrary")}`}</Title>
+          </RowView>
+          {/*<Button title="delete test database" onPress={handleDatabase} />*/}
+          <UserCard profile={profile} />
+          <Switcher setCategory={setCategory} />
+          <SwitchCategory
+            category={category}
+            setOuterScroll={setScrollEnabled}
+            setInnerScroll={coverRowScroll}
           />
         </ScrollView>
-        <SwitchCatagory category={category} />
-      </ScrollView>)}
+      )}
       <Tracker />
     </SafeAreaView>
   );
@@ -253,6 +293,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignSelf: "stretch",
+    height,
   },
   title: {
     fontSize: 20,

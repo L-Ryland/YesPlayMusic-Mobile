@@ -1,9 +1,10 @@
-import React from "react";
+import React, {ForwardedRef, useRef} from "react";
 import {
-  Dimensions,
+  Dimensions, FlatListProps,
   ImageStyle, LogBox,
   StyleSheet,
   TouchableHighlight,
+  FlatList
 } from "react-native";
 import { SafeAreaView, ListRenderItem } from "react-native";
 import styled from "styled-components/native";
@@ -12,9 +13,7 @@ import { Cover, CoverProps } from "@/components/Cover";
 import { useNavigation } from "@react-navigation/core";
 import { formatDate, resizeImage } from "@/utils/common";
 
-const FlatList = styled.FlatList`
-  display: flex;
-`;
+const {height} = Dimensions.get("window");
 
 export enum Subtitle {
   Copywriter = "copywriter",
@@ -40,22 +39,30 @@ export type CoverRowProps = {
   showPlayCount?: Boolean;
   playButtonSize?: Number;
   imageSize?: Number;
+  setOuterScroll?: (param: boolean) => void,
+  setInnerScroll?: boolean
+  flatListStyle?: FlatListProps<"style">,
+  isHorizontal?: boolean,
 };
 export const CoverRow: React.FC<CoverRowProps> = (props) => {
-  const [isHorizontal, setIsHorizontal] = React.useState(true);
-  const [numColumns, setNumColumns] = React.useState<number>();
   const navigation = useNavigation();
-  let { type, items, verticalStyle, subtitle } = props;
-  React.useEffect(() => {
-    LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
-    if (verticalStyle) {
-      setIsHorizontal(false);
-      setNumColumns(2);
-    }
-    // console.log("isHorizontal", isHorizontal);
-  }, [verticalStyle]);
+  const { type, items, verticalStyle, subtitle, isHorizontal, setInnerScroll, setOuterScroll } = props;
 
-  // console.log(items, subText);
+  const handleScrollBegin = () => {
+    if (setOuterScroll) {
+      // if (!setInnerScroll) setOuterScroll(true)
+      setOuterScroll(false);
+    }
+  }
+  const handleScrollEnd = () => {
+    const {setOuterScroll} = props;
+    if (setOuterScroll) {
+      // if (setInnerScroll) setOuterScroll(false)
+      setOuterScroll(true)
+    }
+  }
+  const isFlatListScrollable = React.useMemo(() => isHorizontal ? true : setInnerScroll !== false, [setInnerScroll, isHorizontal])
+
   const { width } = Dimensions.get("window");
   const getImageUrl = (item: Album | Playlist | Artist) => {
     let cover: string | undefined = "";
@@ -125,16 +132,14 @@ export const CoverRow: React.FC<CoverRowProps> = (props) => {
           break;
       }
     };
-    // console.log(item, itemProps);
 
     return (
       <TouchableHighlight onPress={() => handlePress(item.id)}>
         <Cover {...itemProps} />
       </TouchableHighlight>
     );
-    // return <Text>test</Text>
   };
-
+  // alert(`isFlatListScrollable - ${isFlatListScrollable.valueOf()}`)
   return (
     <SafeAreaView>
       <FlatList
@@ -143,11 +148,12 @@ export const CoverRow: React.FC<CoverRowProps> = (props) => {
         key={isHorizontal ? "#" : "_"}
         keyExtractor={(item, index) => "#" + index.toString()}
         horizontal={isHorizontal}
-        numColumns={numColumns}
+        numColumns={isHorizontal ? undefined : 2}
+        onMomentumScrollBegin={handleScrollBegin}
+        onMomentumScrollEnd={handleScrollEnd}
+        style={!isHorizontal && {height: height - 100}}
         nestedScrollEnabled
-        showsHorizontalScrollIndicator
-        showsVerticalScrollIndicator
-        // style={isHorizontal?null:styles.flatListStyle}
+        scrollEnabled={isFlatListScrollable}
       />
     </SafeAreaView>
   );
@@ -201,7 +207,6 @@ const getSubtitleText = (
     [Subtitle.AppleMusic]: `by Apple Music`,
     [Subtitle.UpdateFrequency]: updateFrequency,
   };
-  // alert(table[subtitle])
   return table[subtitle];
 };
 

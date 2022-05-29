@@ -119,19 +119,17 @@ export const Tracker = React.memo((props) => {
   const [currentTrack, setCurrentTrack] = useState<ModifiedTrack | null>(null);
   const playingState = usePlaybackState();
   const snappedPlayer = useSnapshot(trackPlayer);
-  useEffect(() => setCurrentTrack(snappedPlayer.track), [snappedPlayer.track]);
-  // const currentTrack = useMemo( () => snappedPlayer.track, [snappedPlayer.track]);
-  // useTrackPlayerEvents(
-  //   [Event.PlaybackTrackChanged, Event.PlaybackState, Event.PlaybackError],
-  //   async (event) => {
-  //     switch (event.type) {
-  //       case Event.PlaybackTrackChanged:
-  //         const track = await trackPlayer.getCurrentTrack(event.nextTrack);
-  //         setCurrentTrack(track);
-  //         break;
-  //     }
-  //   }
-  // );
+  useTrackPlayerEvents(
+    [Event.PlaybackTrackChanged, Event.PlaybackState, Event.PlaybackError],
+    async (event) => {
+      switch (event.type) {
+        case Event.PlaybackTrackChanged:
+          const track = await trackPlayer.getCurrentTrack(event.nextTrack);
+          setCurrentTrack(track);
+          break;
+      }
+    }
+  );
   return currentTrack ? (
     <View style={styles.tracker}>
       {/*<Text>*/}

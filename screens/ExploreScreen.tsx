@@ -7,18 +7,22 @@ import { CoverRow, Subtitle, Tracker } from "../components";
 import {
   fetchHighQualityPlaylist,
   fetchRecommendedPlaylists,
+  fetchToplists,
   topPlaylist,
-  fetchToplists
 } from "@/api";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { settings } from "@/hydrate/settings";
+import {State, usePlaybackState} from "@/hydrate/player";
 
 export function ExploreScreen({ navigation, route }) {
   // console.log(settings.enabledPlaylistCategories);
   const [activeCategory, setActiveCategory] = React.useState("全部");
   const [playlists, setPlaylists] = React.useState([]);
   const [hasMore, setHasMore] = React.useState([]);
-  const mountRef = React.useRef(true);
+  const [scrollEnabled, setScrollEnabled] = React.useState<boolean>(true);
+  const [coverRowScroll, setCoverRowScroll] = React.useState<boolean>(false);
+  const mountRef = React.useRef<boolean>(true);
+  const playingState = usePlaybackState();
   /**
    * Fetch recommend playlist from api
    */
@@ -89,20 +93,37 @@ export function ExploreScreen({ navigation, route }) {
       mountRef.current = false;
     };
   }, [activeCategory, mountRef]);
-  const upadatePlaylist = (first) => {};
   const subText =
     activeCategory === "排行榜"
       ? "updateFrequency"
       : activeCategory === "推荐歌单"
       ? "copywriter"
       : "none";
-  const handleCatogorySwitch = (category) => {
+  const handleCategorySwitch = (category) => {
     setActiveCategory(category);
   };
-
+  const scrollListener = ({
+    nativeEvent,
+  }: {
+    nativeEvent: {
+      contentSize: { height: number };
+      contentOffset: { y: number };
+      layoutMeasurement: { height: number };
+    };
+  }) => {
+    // if (y > 250) alert(`scroll event - ${JSON.stringify(y)}`);
+    const { contentSize, contentOffset, layoutMeasurement } = nativeEvent;
+    setCoverRowScroll(false);
+    const screenOffset = playingState === State.None ? contentSize.height - layoutMeasurement.height : contentSize.height - layoutMeasurement.height - 64;
+    if (contentOffset.y >= screenOffset) {
+      // setScrollEnabled(false);
+      setCoverRowScroll(true)
+    }
+    // if (contentOffset.y > 230) setScrollEnabled(false);
+  };
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
+      <ScrollView onScroll={scrollListener} scrollEnabled={scrollEnabled}>
         {/* <Text style={styles.title}>Explore</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <EditScreenInfo path="/screens/Explore.tsx" /> */}
@@ -111,7 +132,7 @@ export function ExploreScreen({ navigation, route }) {
           {settings.enabledPlaylistCategories.map((category, index) => (
             <Button
               key={index}
-              onPress={() => handleCatogorySwitch(category)}
+              onPress={() => handleCategorySwitch(category)}
               title={category}
             />
           ))}
@@ -124,6 +145,8 @@ export function ExploreScreen({ navigation, route }) {
             showPlayCount={activeCategory !== "排行榜" ? true : false}
             imageSize={activeCategory !== "排行榜" ? 512 : 1024}
             verticalStyle={true}
+            setOuterScroll={setScrollEnabled}
+            setInnerScroll={coverRowScroll}
           />
         )}
       </ScrollView>

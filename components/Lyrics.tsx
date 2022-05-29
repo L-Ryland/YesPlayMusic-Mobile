@@ -169,7 +169,6 @@ export const Lyrics: React.FC<{ lyric: ReturnType<typeof lyricParser> | undefine
         style={{ height: 350, width: width - 40 }}
         // contentContainerStyle={{ height: 350 }}
         nestedScrollEnabled
-        showsVerticalScrollIndicator
         onMomentumScrollBegin={() => onEnableScroll(false)}
         onMomentumScrollEnd={() => onEnableScroll(true)}
         // onScrollToIndexFailed={handleFallbackScroll}
