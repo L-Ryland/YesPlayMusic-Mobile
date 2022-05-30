@@ -151,7 +151,7 @@ export const CoverRow: React.FC<CoverRowProps> = (props) => {
         numColumns={isHorizontal ? undefined : 2}
         onMomentumScrollBegin={handleScrollBegin}
         onMomentumScrollEnd={handleScrollEnd}
-        style={!isHorizontal && {height: height - 100}}
+        style={!isHorizontal && items && items.length > 6 &&{height: height - 100}}
         nestedScrollEnabled
         scrollEnabled={isFlatListScrollable}
       />

@@ -490,7 +490,7 @@ export class Player {
     this.trackList = await Promise.all(
       trackIds.map(async (t) => await this._fetchTrack(t))
     );
-    this._player.reset();
+    await this._player.reset();
     this._player.add(this.trackList);
     autoPlayTrackID && this._player.skip(autoPlayTrackID);
     this._trackIndex = autoPlayTrackID ?? 0;

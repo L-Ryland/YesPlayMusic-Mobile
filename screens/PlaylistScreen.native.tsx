@@ -179,18 +179,9 @@ const TrackList = memo(
     isLoadingPlaylist,
   }: {
     playlist: Playlist | undefined;
-    handlePlay: () => void;
+    handlePlay: (param: number) => void;
     isLoadingPlaylist: boolean;
   }) => {
-    // const tracks = [
-    //   { id: "001", title: " Change Season ", artist: "  Tkko" },
-    //   { id: "002", title: " 带刺的草莓 ", artist: " Mit-F " },
-    //   { id: "003", title: " 带刺的草莓 ", artist: " Mit-F " },
-    //   { id: "004", title: " 带刺的草莓 ", artist: " Mit-F " },
-    //   { id: "005", title: " 带刺的草莓 ", artist: " Mit-F " },
-    //   { id: "006", title: " 带刺的草莓 ", artist: " Mit-F " },
-    //   { id: "007", title: " 带刺的草莓 ", artist: " Mit-F " },
-    // ];
     const {
       data: tracksPages,
       hasNextPage,
@@ -209,8 +200,8 @@ const TrackList = memo(
       return allTracks;
     }, [tracksPages]);
 
-    const renderTracks = ({ item }) => {
-      return <TrackItem track={item} handlePlay={handlePlay} />;
+    const renderTracks = ({ item, index }) => {
+      return <TrackItem track={item} handlePlay={() => handlePlay(index)} />;
     };
     return (
       <SafeAreaView>
@@ -237,19 +228,19 @@ export const PlaylistScreen = ({ route }: RootStackScreenProps<"Playlist">) => {
   const playlist = data?.playlist;
 
   const handlePlay = React.useCallback(
-    (trackID: number | null = null) => {
+    async (trackID: number | null = null) => {
       if (!playlist?.id) {
         ToastAndroid.show("无法播放歌单", ToastAndroid.SHORT);
         return;
       }
       // ToastAndroid.show(`TrackID - ${trackID}, Playlist ID - ${playlist.id}`, ToastAndroid.CENTER);
-      playlist && trackPlayer.playPlaylist(playlist.id, trackID);
+      playlist && await trackPlayer.playPlaylist(playlist.id, trackID);
     },
     [playlist]
   );
-  React.useEffect(() =>
-    LogBox.ignoreLogs(["VirtualizedLists should never be nested"])
-  );
+  // React.useEffect(() =>
+  //   LogBox.ignoreLogs(["VirtualizedLists should never be nested"])
+  // );
   return (
     <View style={styles.container}>
       <ScrollView>

@@ -1,6 +1,6 @@
 import { trackPlayer, useProgress } from "@/hydrate/player";
 import { useSnapshot } from "valtio";
-import { createRef, Fragment, useCallback, useEffect, useMemo, useRef } from "react";
+import React, { createRef, Fragment, useCallback, useEffect, useMemo, useRef } from "react";
 import {
   Animated,
   StyleSheet,
@@ -17,21 +17,11 @@ import { lyricParser } from "@/utils/lyric";
 
 const { width } = Dimensions.get('window');
 
-// const getItemLayout = (_, index) => {
-//   return {
-//     length: LINE_HEIGHT,
-//     offset: LINE_HEIGHT * index,
-//     index
-//   }
-// }
 
 export const Lyrics: React.FC<{ lyric: ReturnType<typeof lyricParser> | undefined, onEnableScroll: (param: boolean) => void }> = ({ lyric, onEnableScroll }) => {
   //   const ease = [0.5, 0.2, 0.2, 0.8]
   // alert(`lyrics - ${JSON.stringify(lyric)}`)
   const lyricsFlatlistRef = useRef<FlatList>(null);
-  const snappedPlayer = useSnapshot(trackPlayer);
-  const track = useMemo(() => snappedPlayer.track, [snappedPlayer.track]);
-
   const { position: progress, duration } = useProgress();
   const currentLine = useMemo(() => {
     const index =
@@ -59,7 +49,7 @@ export const Lyrics: React.FC<{ lyric: ReturnType<typeof lyricParser> | undefine
   const renderItem = ({ item, index }) => {
     // ToastAndroid.show(`item - ${JSON.stringify(item)}`, ToastAndroid.LONG)
     const { content, time } = item;
-    const isActive = time === progress;
+    const isActive = index === currentLine.index;
     // const isActive = true
     return (
       <View style={styles.lrc} key={index}>
@@ -73,33 +63,30 @@ export const Lyrics: React.FC<{ lyric: ReturnType<typeof lyricParser> | undefine
     return text ?
       // tslint:disable-next-line:jsx-wrap-multiline
       <Animated.Text
-        style={[styles.text, isActive && { opacity }]}
+        style={[styles.text, isActive && { opacity, color: "black" }]}
       >
         {text}
       </Animated.Text> :
       null
   }
-  useEffect(() => {
-    // lyricsFlatlistRef.current?.scrollToIndex({index: currentLine.index})
-    if (lyricsFlatlistRef.current === null || !lyric || lyric.lyric.length === 0 || currentLine.index < 0) return;
-    // alert(`currentLine - ${currentLine.index}`)
-    lyricsFlatlistRef.current.scrollToIndex({ index: currentLine.index || lyric.lyric.length - 1, viewPosition: 0.5, animated: true })
-  }, [currentLine.index])
-  // alert(`displayLines - ${JSON.stringify(displayLines)}`);
-  const opacity: Animated.Value = new Animated.Value(0);
   const visible = true;
-  useEffect(() => {
-    // LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
-    if (visible) {
-      Animated.timing(opacity, { toValue: 1, useNativeDriver: true }).start()
-    } else {
-      Animated.timing(opacity, { toValue: 0, useNativeDriver: true }).start()
-    }
-  });
+  const opacity: Animated.Value = new Animated.Value(0);
   const handleFallbackScroll = () => {
     if (lyricsFlatlistRef.current === null) return;
     lyricsFlatlistRef.current.scrollToIndex({ index: 0 });
   }
+  useEffect(() => {
+    // lyricsFlatlistRef.current?.scrollToIndex({index: currentLine.index})
+    if (lyricsFlatlistRef.current === null || !lyric || lyric.lyric.length === 0 || currentLine.index < 0) return;
+    // alert(`currentLine - ${currentLine.index}`)
+    if (visible) {
+      Animated.timing(opacity, { toValue: 1, duration: 2000,useNativeDriver: true }).start()
+    } else {
+      Animated.timing(opacity, { toValue: 0, useNativeDriver: true }).start()
+    }
+    lyricsFlatlistRef.current.scrollToIndex({ index: currentLine.index, viewPosition: 0.5, animated: true })
+  }, [currentLine.index])
+  // alert(`displayLines - ${JSON.stringify(displayLines)}`);
   const variants = {
     initial: { opacity: [0, 0.2], y: ["24%", 0] },
     current: {
@@ -134,44 +121,15 @@ export const Lyrics: React.FC<{ lyric: ReturnType<typeof lyricParser> | undefine
 
 
   return (
-    // <div
-    //   style={{
-    //     paddingTop: 'calc(100vh / 7 * 3)',
-    //     paddingBottom: 'calc(100vh / 7 * 3)',
-    //     fontSize: 'calc(100vw * 0.0264)',
-    //     lineHeight: 'calc(100vw * 0.032)',
-    //   }}
-    // >
-    //   {displayLines.map(({ content, time }, index) => {
-    //     return (
-    //       <motion.div
-    //         key={`${String(index)}-${String(time)}`}
-    //         custom={index}
-    //         variants={variants}
-    //         initial={'initial'}
-    //         animate={
-    //           time === currentLine.time
-    //             ? 'current'
-    //             : time < currentLine.time
-    //               ? 'exit'
-    //               : 'rest'
-    //         }
-    //         layout
-    //       >
-    //         {content}
-    //       </motion.div>
-    //     )
-    //   })}
-    // </div>
     <View style={[styles.frame]}>
       {/*<Text>{JSON.stringify(lyric.lyric)}</Text>*/}
       <FlatList
-        style={{ height: 350, width: width - 40 }}
+        style={ lyric && { height: 350, width: width - 40 }}
         // contentContainerStyle={{ height: 350 }}
         nestedScrollEnabled
         onMomentumScrollBegin={() => onEnableScroll(false)}
         onMomentumScrollEnd={() => onEnableScroll(true)}
-        // onScrollToIndexFailed={handleFallbackScroll}
+        onScrollToIndexFailed={handleFallbackScroll}
         // initialScrollIndex={0}
         ref={lyricsFlatlistRef}
         data={lyric?.lyric}

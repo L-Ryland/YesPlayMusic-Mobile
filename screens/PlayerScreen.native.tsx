@@ -52,11 +52,6 @@ function MiddleControlButton() {}
 
 function RightControlButton() {}
 
-const LyricsBox = styled(View)`
-  background: purple;
-  border-radius: 10px;
-  align-self: flex-end;
-`;
 const CoverText: React.FC<{ currentTrack: ModifiedTrack}> = ({
   currentTrack,
 }) => {

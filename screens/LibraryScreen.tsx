@@ -238,7 +238,6 @@ export const LibraryScreen = ({
   }, [userData.loginMode]);
   // alert(`useUser - ${JSON.stringify(useUser().data)}`)
   const profile = useUser().data?.profile;
-  const coverRowRef = React.useRef<boolean>(false);
   const scrollListener = ({
     nativeEvent,
   }: {
@@ -248,18 +247,12 @@ export const LibraryScreen = ({
       layoutMeasurement: { height: number };
     };
   }) => {
-    // if (y > 250) alert(`scroll event - ${JSON.stringify(y)}`);
     const { contentSize, contentOffset, layoutMeasurement } = nativeEvent;
-    // alert(JSON.stringify(nativeEvent))
-    coverRowRef.current = false;
     setCoverRowScroll(false);
     const screenOffset = playingState === State.None ? contentSize.height - layoutMeasurement.height : contentSize.height - layoutMeasurement.height - 64;
     if (contentOffset.y >= screenOffset) {
-      // setScrollEnabled(false);
-      coverRowRef.current = true
       setCoverRowScroll(true)
     }
-    // if (contentOffset.y > 230) setScrollEnabled(false);
   };
   return (
     <SafeAreaView style={styles.container}>
